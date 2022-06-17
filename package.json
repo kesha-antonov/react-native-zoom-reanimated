@@ -1,0 +1,21 @@
+{
+  "name": "react-native-zoom-reanimated",
+  "version": "1.0.0",
+  "description": "Zoom component on react-native + react-native-reanimated + react-native-gesture-handler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "react-native-zoom-reanimated"
+  },
+  "keywords": [
+    "zoom",
+    "react-native",
+    "react-native-reanimated",
+    "react-native-gesture-handler"
+  ],
+  "author": "Kesha Antonov",
+  "license": "MIT"
+}
