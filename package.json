@@ -17,5 +17,9 @@
     "react-native-gesture-handler"
   ],
   "author": "Kesha Antonov",
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native-gesture-handler": "*",
+    "react-native-reanimated": "*"
+  }
 }
