@@ -16,13 +16,13 @@ https://user-images.githubusercontent.com/11584712/174407015-2cd13692-a32e-4591-
 Install the library using either Yarn:
 
 ```
-yarn add kesha-antonov/react-native-zoom-reanimated
+yarn add react-native-zoom-reanimated
 ```
 
 or npm:
 
 ```
-npm install --save kesha-antonov/react-native-zoom-reanimated
+npm install --save react-native-zoom-reanimated
 ```
 
 
@@ -31,13 +31,13 @@ npm install --save kesha-antonov/react-native-zoom-reanimated
 ## Usage
 
 ```javascript
-import Zoom from 'kesha-antonov/react-native-zoom-reanimated'
+import Zoom from 'react-native-zoom-reanimated'
 ```
 
 ## Example
 
 ```jsx
-import Zoom from 'kesha-antonov/react-native-zoom-reanimated'
+import Zoom from 'react-native-zoom-reanimated'
 
 
 ...
