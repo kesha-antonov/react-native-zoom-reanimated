@@ -5,9 +5,9 @@ Zoom component on React Native + react-native-reanimated + react-native-gesture-
 * You can zoom View, Image or whatever.
 * Can be used in FlatList (see Preview below).
 
-| Preview                                                                                                                      | 
-| ---------------------------------------------------------------------------------------------------------------------------- |
-| https://user-images.githubusercontent.com/11584712/174407015-2cd13692-a32e-4591-8cce-b47f6edb3cb9.mp4                        |
+## Preview
+
+https://user-images.githubusercontent.com/11584712/174407015-2cd13692-a32e-4591-8cce-b47f6edb3cb9.mp4
 
 ## Getting started
 
