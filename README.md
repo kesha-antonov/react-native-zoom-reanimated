@@ -48,9 +48,7 @@ import Zoom from 'kesha-antonov/react-native-zoom-reanimated'
 ...
 ```
 
-# Reference
-
-#### Parameters
+## Parameters
 
 | Name    | Type   | Required | Description                               |
 | ------- | ------ | -------- | ----------------------------------------- |
