@@ -151,7 +151,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
       })
       .minDistance(0)
       .minPointers(panGestureEnabled ? 1 : 0)
-      .maxPointers(panGestureEnabled ? 1 : 0)
+      .maxPointers(panGestureEnabled ? 2 : 0)
 
     let pinchGesture = Gesture.Pinch()
       .onUpdate(({ scale }) => {
