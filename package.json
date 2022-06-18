@@ -18,6 +18,7 @@
     "react-native-gesture-handler"
   ],
   "author": "Kesha Antonov",
+  "homepage": "https://github.com/kesha-antonov/react-native-zoom-reanimated",
   "license": "MIT",
   "peerDependencies": {
     "react-native-gesture-handler": "*",
