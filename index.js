@@ -150,8 +150,9 @@ function Zoom ({ style, contentContainerStyle, children }) {
         runOnJS(handlePanOutside)()
       })
       .minDistance(0)
-      .minPointers(panGestureEnabled ? 1 : 0)
-      .maxPointers(panGestureEnabled ? 2 : 0)
+      .minPointers(1)
+      .maxPointers(2)
+      .enabled(panGestureEnabled)
 
     let pinchGesture = Gesture.Pinch()
       .onUpdate(({ scale }) => {
