@@ -1,6 +1,6 @@
 {
   "name": "react-native-zoom-reanimated",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Zoom component on react-native + react-native-reanimated + react-native-gesture-handler",
   "main": "index.js",
   "scripts": {
