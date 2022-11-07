@@ -45,9 +45,10 @@ import Zoom from 'react-native-zoom-reanimated'
     <Image
       source={{ uri: ... }}
       resizeMode='contain'
-      style={[
-        { width: deviceWidth, height:imageHeight * deviceWidth / imageWidth },
-      ]}
+      style={{
+        width: deviceWidth,
+        height: imageHeight * deviceWidth / imageWidth,
+       }}
     />
   </Zoom>
 
