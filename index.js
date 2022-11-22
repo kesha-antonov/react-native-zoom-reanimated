@@ -170,7 +170,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
     if (pinchGesture.maxPointers)
       pinchGesture = pinchGesture.maxPointers(2)
 
-    return Gesture.Race(tapGesture, Gesture.Simultaneous(pinchGesture, panGesture))
+    return Gesture.Simultaneous(tapGesture, Gesture.Simultaneous(pinchGesture, panGesture))
   }, [handlePanOutside, lastOffsetX, lastOffsetY, onDoubleTap, onPinchEnd, panGestureEnabled, pinchScale, translateX, translateY, lastScale])
 
   const animContentContainerStyle = useAnimatedStyle(() => ({
