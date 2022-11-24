@@ -156,7 +156,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
       .maxPointers(2)
       .enabled(panGestureEnabled)
 
-    let pinchGesture = Gesture.Pinch()
+    const pinchGesture = Gesture.Pinch()
       .onUpdate(({ scale }) => {
         pinchScale.value = scale
       })
@@ -165,10 +165,6 @@ function Zoom ({ style, contentContainerStyle, children }) {
 
         runOnJS(onPinchEnd)(scale)
       })
-    if (pinchGesture.minPointers)
-      pinchGesture = pinchGesture.minPointers(2)
-    if (pinchGesture.maxPointers)
-      pinchGesture = pinchGesture.maxPointers(2)
 
     return Gesture.Simultaneous(tapGesture, Gesture.Simultaneous(pinchGesture, panGesture))
   }, [handlePanOutside, lastOffsetX, lastOffsetY, onDoubleTap, onPinchEnd, panGestureEnabled, pinchScale, translateX, translateY, lastScale])
