@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { View, StyleSheet } from 'react-native'
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS } from 'react-native-reanimated'
@@ -9,11 +9,10 @@ function Zoom ({ style, contentContainerStyle, children }) {
   const pinchScale = useSharedValue(1)
   const lastScale = useSharedValue(1)
   const isZoomedIn = useSharedValue(false)
-  const [panGestureEnabled, setPanGestureEnabled] = useState(false)
+  const isPanGestureEnabled = useSharedValue(false)
 
-  const [containerWidth, setContainerWidth] = useState(0)
-  const [containerHeight, setContainerHeight] = useState(0)
-  const [contentDimensions, setContainerDimensions] = useState(() => ({ width: 1, height: 1 }))
+  const containerDimensions = useSharedValue({ width: 0, height: 0 })
+  const contentDimensions = useSharedValue({ width: 1, height: 1 })
 
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
@@ -22,10 +21,10 @@ function Zoom ({ style, contentContainerStyle, children }) {
 
   const getContentContainerSize = useCallback(() => {
     return ({
-      width: containerWidth,
-      height: contentDimensions.height * containerWidth / contentDimensions.width,
+      width: containerDimensions.value.width,
+      height: contentDimensions.value.height * containerDimensions.value.width / contentDimensions.value.width,
     })
-  }, [contentDimensions, containerWidth])
+  }, [])
 
   const zoomIn = useCallback(() => {
     const { width, height } = getContentContainerSize()
@@ -52,8 +51,8 @@ function Zoom ({ style, contentContainerStyle, children }) {
     translateY.value = newOffsetY
 
     isZoomedIn.value = true
-    setPanGestureEnabled(true)
-  }, [baseScale, pinchScale, getContentContainerSize, lastOffsetX, lastOffsetY, translateX, translateY, isZoomedIn, lastScale])
+    isPanGestureEnabled.value = true
+  }, [baseScale, pinchScale, lastOffsetX, lastOffsetY, translateX, translateY, isZoomedIn, lastScale])
 
   const zoomOut = useCallback(() => {
     const newScale = 1
@@ -72,14 +71,14 @@ function Zoom ({ style, contentContainerStyle, children }) {
 
     isZoomedIn.value = false
 
-    setPanGestureEnabled(false)
+    isPanGestureEnabled.value = false
   }, [baseScale, pinchScale, lastOffsetX, lastOffsetY, translateX, translateY, lastScale, isZoomedIn])
 
   const handlePanOutside = useCallback(() => {
     const { width, height } = getContentContainerSize()
     const maxOffset = {
-      x: width * lastScale.value < containerWidth ? 0 : ((width * lastScale.value - containerWidth) / 2) / lastScale.value,
-      y: height * lastScale.value < containerHeight ? 0 : ((height * lastScale.value - containerHeight) / 2) / lastScale.value,
+      x: width * lastScale.value < containerDimensions.value.width ? 0 : ((width * lastScale.value - containerDimensions.value.width) / 2) / lastScale.value,
+      y: height * lastScale.value < containerDimensions.value.height ? 0 : ((height * lastScale.value - containerDimensions.value.height) / 2) / lastScale.value,
     }
 
     const isPanedXOutside = lastOffsetX.value > maxOffset.x || lastOffsetX.value < -maxOffset.x
@@ -101,7 +100,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
     } else {
       translateY.value = lastOffsetY.value
     }
-  }, [containerWidth, containerHeight, getContentContainerSize, lastOffsetX, lastOffsetY, lastScale, translateX, translateY])
+  }, [lastOffsetX, lastOffsetY, lastScale, translateX, translateY])
 
   const onDoubleTap = useCallback(() => {
     if (isZoomedIn.value)
@@ -111,12 +110,17 @@ function Zoom ({ style, contentContainerStyle, children }) {
   }, [zoomIn, zoomOut, isZoomedIn])
 
   const onLayout = useCallback(({ nativeEvent: { layout: { width, height } } }) => {
-    setContainerWidth(width)
-    setContainerHeight(height)
+    containerDimensions.value = {
+      width,
+      height,
+    }
   }, [])
 
   const onLayoutContent = useCallback(({ nativeEvent: { layout: { width, height } } }) => {
-    setContainerDimensions({ width, height })
+    contentDimensions.value = {
+      width,
+      height,
+    }
   }, [])
 
   const onPinchEnd = useCallback(scale => {
@@ -128,7 +132,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
       pinchScale.value = 1
 
       handlePanOutside()
-      setPanGestureEnabled(true)
+      isPanGestureEnabled.value = true
     } else {
       zoomOut()
     }
@@ -151,14 +155,20 @@ function Zoom ({ style, contentContainerStyle, children }) {
         lastOffsetY.value += translationY / lastScale.value
         runOnJS(handlePanOutside)()
       })
+      .onTouchesMove((e, state) => {
+        if (isPanGestureEnabled.value)
+          state.activate()
+        else
+          state.fail()
+      })
       .minDistance(0)
       .minPointers(1)
       .maxPointers(2)
-      .enabled(panGestureEnabled)
 
     const pinchGesture = Gesture.Pinch()
       .onUpdate(({ scale }) => {
         pinchScale.value = scale
+        isPanGestureEnabled.value = true
       })
       .onEnd(({ scale }) => {
         pinchScale.value = scale
@@ -166,8 +176,8 @@ function Zoom ({ style, contentContainerStyle, children }) {
         runOnJS(onPinchEnd)(scale)
       })
 
-    return Gesture.Simultaneous(tapGesture, Gesture.Simultaneous(pinchGesture, panGesture))
-  }, [handlePanOutside, lastOffsetX, lastOffsetY, onDoubleTap, onPinchEnd, panGestureEnabled, pinchScale, translateX, translateY, lastScale])
+    return Gesture.Race(tapGesture, Gesture.Simultaneous(pinchGesture, panGesture))
+  }, [handlePanOutside, lastOffsetX, lastOffsetY, onDoubleTap, onPinchEnd, isPanGestureEnabled, pinchScale, translateX, translateY, lastScale])
 
   const animContentContainerStyle = useAnimatedStyle(() => ({
     transform: [
