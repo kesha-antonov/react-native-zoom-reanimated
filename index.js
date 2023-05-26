@@ -4,7 +4,13 @@ import { View, StyleSheet } from 'react-native'
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 
-function Zoom ({ style, contentContainerStyle, children }) {
+function Zoom ({
+  style,
+  contentContainerStyle,
+  children,
+  animationFunction = withSpring,
+  animationConfig,
+}) {
   const baseScale = useSharedValue(1)
   const pinchScale = useSharedValue(1)
   const lastScale = useSharedValue(1)
@@ -18,6 +24,15 @@ function Zoom ({ style, contentContainerStyle, children }) {
   const translateY = useSharedValue(0)
   const lastOffsetX = useSharedValue(0)
   const lastOffsetY = useSharedValue(0)
+
+  const withAnimation = useCallback((toValue, config) => {
+    'worklet'
+
+    return animationFunction(toValue, {
+      ...animationConfig,
+      ...config,
+    })
+  }, [animationFunction, animationConfig])
 
   const getContentContainerSize = useCallback(() => {
     return ({
@@ -38,8 +53,8 @@ function Zoom ({ style, contentContainerStyle, children }) {
 
     lastScale.value = newScale
 
-    baseScale.value = withSpring(newScale)
-    pinchScale.value = withSpring(1)
+    baseScale.value = withAnimation(newScale)
+    pinchScale.value = withAnimation(1)
 
     const newOffsetX = 0
     lastOffsetX.value = newOffsetX
@@ -68,8 +83,8 @@ function Zoom ({ style, contentContainerStyle, children }) {
   const zoomOut = useCallback(() => {
     const newScale = 1
     lastScale.value = newScale
-    baseScale.value = withSpring(newScale)
-    pinchScale.value = withSpring(1)
+    baseScale.value = withAnimation(newScale)
+    pinchScale.value = withAnimation(1)
 
     const newOffsetX = 0
     lastOffsetX.value = newOffsetX
@@ -77,8 +92,8 @@ function Zoom ({ style, contentContainerStyle, children }) {
     const newOffsetY = 0
     lastOffsetY.value = newOffsetY
 
-    translateX.value = withSpring(newOffsetX)
-    translateY.value = withSpring(newOffsetY)
+    translateX.value = withAnimation(newOffsetX)
+    translateY.value = withAnimation(newOffsetY)
 
     isZoomedIn.value = false
 
@@ -107,7 +122,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
       const newOffsetX = lastOffsetX.value >= 0 ? maxOffset.x : -maxOffset.x
       lastOffsetX.value = newOffsetX
 
-      translateX.value = withSpring(newOffsetX)
+      translateX.value = withAnimation(newOffsetX)
     } else {
       translateX.value = lastOffsetX.value
     }
@@ -117,7 +132,7 @@ function Zoom ({ style, contentContainerStyle, children }) {
       const newOffsetY = lastOffsetY.value >= 0 ? maxOffset.y : -maxOffset.y
       lastOffsetY.value = newOffsetY
 
-      translateY.value = withSpring(newOffsetY)
+      translateY.value = withAnimation(newOffsetY)
     } else {
       translateY.value = lastOffsetY.value
     }
@@ -270,6 +285,8 @@ Zoom.propTypes = {
     PropTypes.number,
     PropTypes.bool,
   ]),
+  animationFunction: PropTypes.func,
+  animationConfig: PropTypes.object,
 }
 
 export default Zoom

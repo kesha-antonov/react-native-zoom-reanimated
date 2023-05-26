@@ -61,6 +61,8 @@ import Zoom from 'react-native-zoom-reanimated'
 | ------- | ------ | -------- | ----------------------------------------- |
 | style  | ViewPropTypes.style | No      | Container style |
 | contentContainerStyle  | ViewPropTypes.style | No      | Content container style |
+| animationFunction  | PropTypes.func | No      | Animation function from `react-native-reanimated`. Default: `withSpring`. For example, you can use `withTiming` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withTiming |
+| animationConfig  | PropTypes.object | No      | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
 
 
 ## License
