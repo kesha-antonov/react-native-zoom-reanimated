@@ -9,7 +9,13 @@ Zoom component on React Native + react-native-reanimated + react-native-gesture-
 
 ## Preview
 
-https://user-images.githubusercontent.com/11584712/174407015-2cd13692-a32e-4591-8cce-b47f6edb3cb9.mp4
+**iOS preview**
+
+[iOS Preview](https://user-images.githubusercontent.com/11584712/174407015-2cd13692-a32e-4591-8cce-b47f6edb3cb9.mp4)
+
+**Android preview**
+
+[Android Preview](https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e8a572b-8130-4aea-88c7-2ca035a155a1)
 
 ## Getting started
 
