@@ -232,7 +232,7 @@ function Zoom({
         runOnJS(handlePanOutside)()
       })
       .onTouchesMove((e, state) => {
-        if (e.state === State.UNDETERMINED)
+        if ([State.UNDETERMINED, State.BEGAN].includes(e.state))
           if (
             isZoomedIn.value ||
             e.numberOfTouches === 2
