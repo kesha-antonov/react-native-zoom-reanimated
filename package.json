@@ -2,7 +2,7 @@
   "name": "react-native-zoom-reanimated",
   "version": "1.2.0",
   "description": "Zoom component on react-native + react-native-reanimated + react-native-gesture-handler",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
     "lint": "eslint -c .eslintrc.js --ext .ts,.tsx .",
     "autofix": "eslint -c .eslintrc.js --ext .ts,.tsx --fix .",
