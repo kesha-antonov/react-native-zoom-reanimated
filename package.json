@@ -4,6 +4,8 @@
   "description": "Zoom component on react-native + react-native-reanimated + react-native-gesture-handler",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint -c .eslintrc.js --ext .ts,.tsx .",
+    "autofix": "eslint -c .eslintrc.js --ext .ts,.tsx --fix .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "bump": "npm version patch",
     "publish": "npm publish"
