@@ -34,7 +34,7 @@
     "eslint": "^8.41.0",
     "eslint-plugin-import": "^2.27.5",
     "react-native-gesture-handler": "^2.10.1",
-    "react-native-reanimated": "^3.1.0",
+    "react-native-reanimated": "^3.2.0",
     "typescript": "^5.0.4"
   }
 }
