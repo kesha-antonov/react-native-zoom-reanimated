@@ -98,7 +98,7 @@ module.exports = {
         ],
       },
     ],
-    curly: 'error',
+    curly: [2, 'multi', 'consistent'],
     'eol-last': 'error',
     'guard-for-in': 'error',
     indent: 'off',
@@ -292,11 +292,10 @@ module.exports = {
     '@typescript-eslint/promise-function-async': 'error',
     radix: 'error',
     '@typescript-eslint/restrict-plus-operands': 'error',
-    semi: 'off',
-    '@typescript-eslint/semi': [
+    semi: [
       'error',
+      'never',
     ],
-    'no-extra-semi': 'off',
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
@@ -319,10 +318,15 @@ module.exports = {
       'never',
     ],
     'default-case': 'error',
-    'comma-dangle': 'off',
-    '@typescript-eslint/comma-dangle': [
+    'comma-dangle': [
       'error',
-      'only-multiline',
+      {
+        arrays: 'always-multiline',
+        objects: 'always-multiline',
+        imports: 'always-multiline',
+        exports: 'never',
+        functions: 'never',
+      },
     ],
     eqeqeq: [
       'error',
@@ -352,10 +356,12 @@ module.exports = {
     ],
     'prefer-numeric-literals': 'error',
     '@typescript-eslint/no-namespace': 'error',
-    'object-curly-spacing': [
-      'error',
-      'never',
-    ],
+    'object-curly-spacing': ['warn', 'always'],
+    'react/jsx-curly-spacing': ['error', {
+      attributes: { when: 'never' },
+      children: { when: 'never' },
+      allowMultiline: true,
+    }],
     'no-multi-spaces': 'error',
     'no-whitespace-before-property': 'warn',
     'space-before-blocks': 'error',
