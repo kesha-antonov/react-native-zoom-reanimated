@@ -255,6 +255,7 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
           translationY -= panOffsetsBeforeGestureStart.value.y
         }
 
+        // SAVES LAST POSITION
         lastOffsetX.value = lastOffsetX.value + translationX / lastScale.value
         lastOffsetY.value = lastOffsetY.value + translationY / lastScale.value
 
