@@ -23,6 +23,6 @@
   "license": "MIT",
   "peerDependencies": {
     "react-native-gesture-handler": "*",
-    "react-native-reanimated": "*"
+    "react-native-reanimated": "^2.0.0"
   }
 }
