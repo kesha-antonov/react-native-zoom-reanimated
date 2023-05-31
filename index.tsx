@@ -331,8 +331,8 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
 }
 
 export interface ZoomProps {
-  style: StyleProp<ViewProps>;
-  contentContainerStyle: StyleProp<ViewProps>;
+  style?: StyleProp<ViewProps>;
+  contentContainerStyle?: StyleProp<ViewProps>;
   animationConfig?: object;
 
   animationFunction?<T extends AnimatableValue>(
