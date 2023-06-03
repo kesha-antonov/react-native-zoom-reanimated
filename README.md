@@ -21,17 +21,22 @@ Zoom component on React Native + react-native-reanimated + react-native-gesture-
 
 Install the library using either Yarn:
 
-```
+```bash
 yarn add react-native-zoom-reanimated
 ```
 
 or npm:
 
-```
+```bash
 npm install --save react-native-zoom-reanimated
 ```
 
+## Required peer dependencies
 
+|          dependency          | required version |
+|:----------------------------:|:----------------:|
+|   react-native-reanimated    |    \>= 2.0.0     |
+| react-native-gesture-handler |      \>= *       |
 
 
 ## Usage
@@ -45,7 +50,6 @@ import Zoom from 'react-native-zoom-reanimated'
 ```jsx
 import Zoom from 'react-native-zoom-reanimated'
 
-
 ...
   <Zoom>
     <Image
@@ -57,18 +61,17 @@ import Zoom from 'react-native-zoom-reanimated'
        }}
     />
   </Zoom>
-
 ...
 ```
 
 ## Parameters
 
-| Name    | Type   | Required | Description                               |
-| ------- | ------ | -------- | ----------------------------------------- |
-| style  | ViewPropTypes.style | No      | Container style |
-| contentContainerStyle  | ViewPropTypes.style | No      | Content container style |
-| animationFunction  | PropTypes.func | No      | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring |
-| animationConfig  | PropTypes.object | No      | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
+| Name                  | Type                   | Required | Description                                                                                                                                                                                                              |
+|-----------------------|------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| style                 | `StyleProp<ViewStyle>` | No       | Container style                                                                                                                                                                                                          |
+| contentContainerStyle | `StyleProp<ViewStyle>` | No       | Content container style                                                                                                                                                                                                  |
+| animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring               |
+| animationConfig       | object                 | No       | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
 
 
 ## License
