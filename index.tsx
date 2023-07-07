@@ -44,6 +44,8 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
   const translateY = useSharedValue(0)
   const lastOffsetX = useSharedValue(0)
   const lastOffsetY = useSharedValue(0)
+  const panStartOffsetX = useSharedValue(0)
+  const panStartOffsetY = useSharedValue(0)
 
   const handlePanOutsideTimeoutId: React.MutableRefObject<number | undefined> = useRef()
 
@@ -233,6 +235,10 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
       })
 
     const panGesture = Gesture.Pan()
+      .onStart((event: GestureUpdateEvent<PanGestureHandlerEventPayload>): void => {
+        panStartOffsetX.value = event.translationX
+        panStartOffsetY.value = event.translationY
+      })
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>): void => {
         let { translationX, translationY } = event
 
@@ -243,6 +249,8 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
 
         translationX -= panOffsetsBeforeGestureStart.value.x
         translationY -= panOffsetsBeforeGestureStart.value.y
+        translationX -= panStartOffsetX.value
+        translationY -= panStartOffsetY.value
 
         translateX.value = lastOffsetX.value + translationX / lastScale.value
         translateY.value = lastOffsetY.value + translationY / lastScale.value
@@ -254,6 +262,8 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
           translationX -= panOffsetsBeforeGestureStart.value.x
           translationY -= panOffsetsBeforeGestureStart.value.y
         }
+        translationX -= panStartOffsetX.value
+        translationY -= panStartOffsetY.value
 
         // SAVES LAST POSITION
         lastOffsetX.value = lastOffsetX.value + translationX / lastScale.value
