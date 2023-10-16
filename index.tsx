@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useMemo, useRef } from 'react'
-import { LayoutChangeEvent, StyleProp, StyleSheet, View, ViewProps } from 'react-native'
+import { LayoutChangeEvent, StyleProp, StyleSheet, View, ViewProps, Platform } from 'react-native'
 import Animated, {
   AnimatableValue,
   AnimationCallback,
@@ -49,6 +49,9 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
 
   const handlePanOutsideTimeoutId: React.MutableRefObject<number | undefined> = useRef()
 
+  const containerRef = useRef<View>(null);
+  const scrollWheelSubscriptionRef = useRef<number | null>(null);
+
   const withAnimation = useCallback((toValue: number, config?: object) => {
     'worklet'
 
@@ -58,6 +61,17 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
       ...animationConfig,
     })
   }, [animationFunction, animationConfig])
+
+  const onWheelScroll = useCallback(
+      (event: WheelEvent) => {
+        const scaleFactor = event.deltaY * -0.01;
+        const newScale = lastScale.value + scaleFactor;
+        const newSafeScale = Math.max(0.25, Math.min(newScale, 4));
+        lastScale.value = newSafeScale;
+        baseScale.value = withAnimation(newSafeScale);
+      },
+      [baseScale, lastScale, withAnimation],
+  );
 
   const getContentContainerSize = useCallback(() => {
     return ({
@@ -188,6 +202,18 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
   }, [zoomIn, zoomOut, isZoomedIn])
 
   const onLayout = useCallback(({ nativeEvent: { layout: { width, height } } }: LayoutChangeEvent): void => {
+    if (
+        Platform.OS !== "ios" &&
+        Platform.OS !== "android" &&
+        containerRef.current &&
+        !scrollWheelSubscriptionRef.current
+    ) {
+      scrollWheelSubscriptionRef.current =
+          containerRef.current.addEventListener(
+              'wheel',
+              onWheelScroll,
+          );
+    }
     containerDimensions.value = {
       width,
       height,
@@ -328,6 +354,7 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
         style={[styles.container, style]}
         onLayout={onLayout}
         collapsable={false}
+        ref={containerRef}
       >
         <Animated.View
           style={[animContentContainerStyle, contentContainerStyle]}

@@ -3,7 +3,8 @@
     "target": "esnext",
     "module": "commonjs",
     "lib": [
-      "esnext"
+      "esnext",
+      "dom",
     ],
     "moduleResolution": "node",
     "jsx": "react-native",
