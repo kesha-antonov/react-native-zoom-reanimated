@@ -23,11 +23,21 @@ import {
   GestureStateManagerType,
 } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
 
-export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNode {
+interface UseZoomGestureProps {
+  animationFunction?: (toValue: number, config?: object) => any;
+  animationConfig?: object;
+}
+
+export function useZoomGesture(props: UseZoomGestureProps = {}): {
+  zoomGesture: typeof Gesture;
+  contentContainerAnimatedStyle: any;
+  onLayout: (event: LayoutChangeEvent) => void;
+  onLayoutContent: (event: LayoutChangeEvent) => void;
+  zoomOut: () => void;
+  isZoomedIn: SharedValue<boolean>;
+  zoomGestureLastTime: SharedValue<Number>;
+} {
   const {
-    style,
-    contentContainerStyle,
-    children,
     animationFunction = withTiming,
     animationConfig,
   } = props
@@ -36,6 +46,7 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
   const pinchScale = useSharedValue(1)
   const lastScale = useSharedValue(1)
   const isZoomedIn = useSharedValue(false)
+  const zoomGestureLastTime = useSharedValue(0)
 
   const containerDimensions = useSharedValue({ width: 0, height: 0 })
   const contentDimensions = useSharedValue({ width: 1, height: 1 })
@@ -222,33 +233,38 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
     isZoomedIn,
   ])
 
-  const panOffsetsBeforeGestureStart: SharedValue<{ x: number | null; y: number | null }> = useSharedValue({
-    x: null,
-    y: null,
-  })
+  const updateZoomGestureLastTime = useCallback((): void => {
+    'worklet'
 
-  const zoomGestures = useMemo(() => {
+    zoomGestureLastTime.value = Date.now()
+  }, [zoomGestureLastTime])
+
+  const zoomGesture = useMemo(() => {
     const tapGesture = Gesture.Tap()
       .numberOfTaps(2)
+      .onStart(() => {
+        updateZoomGestureLastTime()
+      })
       .onEnd(() => {
+        updateZoomGestureLastTime()
+
         runOnJS(onDoubleTap)()
       })
 
     const panGesture = Gesture.Pan()
       .onStart((event: GestureUpdateEvent<PanGestureHandlerEventPayload>): void => {
-        panStartOffsetX.value = event.translationX
-        panStartOffsetY.value = event.translationY
+        updateZoomGestureLastTime()
+
+        const { translationX, translationY } = event
+
+        panStartOffsetX.value = translationX
+        panStartOffsetY.value = translationY
       })
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>): void => {
+        updateZoomGestureLastTime()
+
         let { translationX, translationY } = event
 
-        if (panOffsetsBeforeGestureStart.value.x === null || panOffsetsBeforeGestureStart.value.y === null) {
-          panOffsetsBeforeGestureStart.value.x = translationX
-          panOffsetsBeforeGestureStart.value.y = translationY
-        }
-
-        translationX -= panOffsetsBeforeGestureStart.value.x
-        translationY -= panOffsetsBeforeGestureStart.value.y
         translationX -= panStartOffsetX.value
         translationY -= panStartOffsetY.value
 
@@ -256,21 +272,16 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
         translateY.value = lastOffsetY.value + translationY / lastScale.value
       })
       .onEnd((event: GestureStateChangeEvent<PanGestureHandlerEventPayload>): void => {
+        updateZoomGestureLastTime()
+
         let { translationX, translationY } = event
 
-        if (panOffsetsBeforeGestureStart.value.x !== null && panOffsetsBeforeGestureStart.value.y !== null) {
-          translationX -= panOffsetsBeforeGestureStart.value.x
-          translationY -= panOffsetsBeforeGestureStart.value.y
-        }
         translationX -= panStartOffsetX.value
         translationY -= panStartOffsetY.value
 
         // SAVES LAST POSITION
         lastOffsetX.value = lastOffsetX.value + translationX / lastScale.value
         lastOffsetY.value = lastOffsetY.value + translationY / lastScale.value
-
-        panOffsetsBeforeGestureStart.value.x = null
-        panOffsetsBeforeGestureStart.value.y = null
 
         runOnJS(handlePanOutside)()
       })
@@ -287,16 +298,23 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
       .maxPointers(2)
 
     const pinchGesture = Gesture.Pinch()
+      .onStart(() => {
+        updateZoomGestureLastTime()
+      })
       .onUpdate(({ scale }: GestureUpdateEvent<PinchGestureHandlerEventPayload>): void => {
+        updateZoomGestureLastTime()
+
         pinchScale.value = scale
       })
       .onEnd(({ scale }: GestureUpdateEvent<PinchGestureHandlerEventPayload>): void => {
+        updateZoomGestureLastTime()
+
         pinchScale.value = scale
 
         runOnJS(onPinchEnd)(scale)
       })
 
-    return Gesture.Race(
+    return Gesture.Exclusive(
       Gesture.Simultaneous(pinchGesture, panGesture),
       tapGesture
     )
@@ -311,10 +329,9 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
     translateY,
     lastScale,
     isZoomedIn,
-    panOffsetsBeforeGestureStart,
   ])
 
-  const animContentContainerStyle = useAnimatedStyle(() => ({
+  const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: baseScale.value * pinchScale.value },
       { translateX: translateX.value },
@@ -322,15 +339,43 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
     ],
   }))
 
+  return ({
+    zoomGesture,
+    contentContainerAnimatedStyle,
+    onLayout,
+    onLayoutContent,
+    zoomOut,
+    isZoomedIn,
+    zoomGestureLastTime,
+  })
+}
+
+export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNode {
+  const {
+    style,
+    contentContainerStyle,
+    children,
+    ...rest
+  } = props
+
+  const {
+    zoomGesture,
+    onLayout,
+    onLayoutContent,
+    contentContainerAnimatedStyle,
+  } = useZoomGesture({
+    ...rest
+  })
+
   return (
-    <GestureDetector gesture={zoomGestures}>
+    <GestureDetector gesture={zoomGesture}>
       <View
         style={[styles.container, style]}
         onLayout={onLayout}
         collapsable={false}
       >
         <Animated.View
-          style={[animContentContainerStyle, contentContainerStyle]}
+          style={[contentContainerAnimatedStyle, contentContainerStyle]}
           onLayout={onLayoutContent}
         >
           {children}
