@@ -77,3 +77,8 @@ import Zoom from 'react-native-zoom-reanimated'
 ## License
 
 The library is released under the MIT licence. For more information see [`LICENSE`](/LICENSE).
+
+## TODO
+
+- document useZoomGesture
+- add examples of usage Zoom, useZoomGesture with react-native app code
