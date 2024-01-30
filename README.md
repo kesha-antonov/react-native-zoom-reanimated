@@ -82,3 +82,5 @@ The library is released under the MIT licence. For more information see [`LICENS
 
 - document useZoomGesture
 - add examples of usage Zoom, useZoomGesture with react-native app code
+- add examples of list of images with FlatList
+- make list component with https://github.com/callstack/react-native-pager-view and export it for galleries usecase
