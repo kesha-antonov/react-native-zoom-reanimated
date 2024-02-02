@@ -45,6 +45,7 @@ module.exports = {
     JSX: true,
     React: true,
     '__DEV__': true,
+    'NodeJS': true
   },
 
   rules: {
