@@ -316,8 +316,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
       })
 
     return Gesture.Exclusive(
-      Gesture.Simultaneous(pinchGesture, panGesture),
-      tapGesture
+      Gesture.Simultaneous(pinchGesture, panGesture, tapGesture)
     )
   }, [
     handlePanOutside,
