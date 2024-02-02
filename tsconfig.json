@@ -24,7 +24,8 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "types": ["node"]
   },
   "include": [
     "index.tsx"

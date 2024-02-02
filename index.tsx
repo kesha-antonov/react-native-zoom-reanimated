@@ -10,6 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import {
+  ComposedGesture,
   Gesture,
   GestureDetector,
   GestureStateChangeEvent,
@@ -29,7 +30,7 @@ interface UseZoomGestureProps {
 }
 
 export function useZoomGesture(props: UseZoomGestureProps = {}): {
-  zoomGesture: typeof Gesture;
+  zoomGesture: ComposedGesture;
   contentContainerAnimatedStyle: any;
   onLayout: (event: LayoutChangeEvent) => void;
   onLayoutContent: (event: LayoutChangeEvent) => void;
@@ -58,7 +59,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   const panStartOffsetX = useSharedValue(0)
   const panStartOffsetY = useSharedValue(0)
 
-  const handlePanOutsideTimeoutId: React.MutableRefObject<number | undefined> = useRef()
+  const handlePanOutsideTimeoutId: React.MutableRefObject<NodeJS.Timeout | undefined> = useRef()
 
   const withAnimation = useCallback((toValue: number, config?: object) => {
     'worklet'
@@ -286,7 +287,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
         runOnJS(handlePanOutside)()
       })
       .onTouchesMove((e: GestureTouchEvent, state: GestureStateManagerType): void => {
-        if ([State.UNDETERMINED, State.BEGAN].includes(e.state))
+        if (([State.UNDETERMINED, State.BEGAN] as State[]).includes(e.state))
           if (isZoomedIn.value || e.numberOfTouches === 2)
             state.activate()
           else
