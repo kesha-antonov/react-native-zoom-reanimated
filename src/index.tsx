@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useMemo, useRef } from 'react'
-import { LayoutChangeEvent, StyleProp, StyleSheet, View, ViewProps } from 'react-native'
+import { LayoutChangeEvent, StyleProp, View, ViewProps } from 'react-native'
 import Animated, {
   AnimatableValue,
   AnimationCallback,
@@ -23,6 +23,8 @@ import {
 import {
   GestureStateManagerType,
 } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
+
+import styles from './styles'
 
 interface UseZoomGestureProps {
   animationFunction?: (toValue: number, config?: object) => any;
@@ -251,6 +253,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
 
         runOnJS(onDoubleTap)()
       })
+      .maxDeltaX(25)
+      .maxDeltaY(25)
 
     const panGesture = Gesture.Pan()
       .onStart((event: GestureUpdateEvent<PanGestureHandlerEventPayload>): void => {
@@ -294,6 +298,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
             state.fail()
 
       })
+      .onFinalize(() => {
+      })
       .minDistance(0)
       .minPointers(2)
       .maxPointers(2)
@@ -301,6 +307,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     const pinchGesture = Gesture.Pinch()
       .onStart(() => {
         updateZoomGestureLastTime()
+
       })
       .onUpdate(({ scale }: GestureUpdateEvent<PinchGestureHandlerEventPayload>): void => {
         updateZoomGestureLastTime()
@@ -314,10 +321,15 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
 
         runOnJS(onPinchEnd)(scale)
       })
+      .onFinalize(() => {
+      })
 
-    return Gesture.Exclusive(
-      Gesture.Simultaneous(pinchGesture, panGesture),
-      tapGesture
+    return (
+      Gesture.Simultaneous(
+        tapGesture,
+        panGesture,
+        pinchGesture
+      )
     )
   }, [
     handlePanOutside,
@@ -330,6 +342,9 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     translateY,
     lastScale,
     isZoomedIn,
+    panStartOffsetX,
+    panStartOffsetY,
+    updateZoomGestureLastTime,
   ])
 
   const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
@@ -397,12 +412,3 @@ export interface ZoomProps {
     callback?: AnimationCallback,
   ): T;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-})
