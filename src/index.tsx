@@ -27,16 +27,16 @@ import {
 import styles from './styles'
 
 interface UseZoomGestureProps {
-  animationFunction?: (toValue: number, config?: object) => any;
+  animationFunction?(toValue: number, config?: object): any;
   animationConfig?: object;
 }
 
 export function useZoomGesture(props: UseZoomGestureProps = {}): {
   zoomGesture: ComposedGesture;
   contentContainerAnimatedStyle: any;
-  onLayout: (event: LayoutChangeEvent) => void;
-  onLayoutContent: (event: LayoutChangeEvent) => void;
-  zoomOut: () => void;
+  onLayout(event: LayoutChangeEvent): void;
+  onLayoutContent(event: LayoutChangeEvent): void;
+  zoomOut(): void;
   isZoomedIn: SharedValue<boolean>;
   zoomGestureLastTime: SharedValue<Number>;
 } {
@@ -380,7 +380,7 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
     onLayoutContent,
     contentContainerAnimatedStyle,
   } = useZoomGesture({
-    ...rest
+    ...rest,
   })
 
   return (

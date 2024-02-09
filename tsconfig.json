@@ -27,7 +27,7 @@
     "types": ["node"]
   },
   "include": [
-    "index.tsx"
+    "src/index.tsx"
   ],
   "exclude": [
     "node_modules",
