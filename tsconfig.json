@@ -5,6 +5,9 @@
     "lib": [
       "esnext"
     ],
+    "paths": {
+      "react": ["./node_modules/@types/react"]
+    },
     "moduleResolution": "node",
     "jsx": "react-native",
     "allowJs": true,
