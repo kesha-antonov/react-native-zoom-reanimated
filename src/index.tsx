@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useMemo, useRef } from 'react'
-import { LayoutChangeEvent, StyleProp, View, ViewProps } from 'react-native'
+import { LayoutChangeEvent, StyleProp, View, type ViewStyle } from 'react-native'
 import Animated, {
   AnimatableValue,
   AnimationCallback,
@@ -38,7 +38,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   onLayoutContent(event: LayoutChangeEvent): void;
   zoomOut(): void;
   isZoomedIn: SharedValue<boolean>;
-  zoomGestureLastTime: SharedValue<Number>;
+  zoomGestureLastTime: SharedValue<number>;
 } {
   const {
     animationFunction = withTiming,
@@ -366,7 +366,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   })
 }
 
-export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNode {
+export default function Zoom(props: PropsWithChildren<ZoomProps>): React.JSX.Element {
   const {
     style,
     contentContainerStyle,
@@ -402,8 +402,8 @@ export default function Zoom(props: PropsWithChildren<ZoomProps>): React.ReactNo
 }
 
 export interface ZoomProps {
-  style?: StyleProp<ViewProps>;
-  contentContainerStyle?: StyleProp<ViewProps>;
+  style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   animationConfig?: object;
 
   animationFunction?<T extends AnimatableValue>(
