@@ -30,7 +30,8 @@
     "types": ["node"]
   },
   "include": [
-    "src/index.tsx"
+    "src/*.ts",
+    "src/*.tsx",
   ],
   "exclude": [
     "node_modules",
