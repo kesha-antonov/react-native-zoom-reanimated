@@ -67,11 +67,12 @@ import Zoom from 'react-native-zoom-reanimated'
 ## Parameters
 
 | Name                  | Type                   | Required | Description                                                                                                                                                                                                              |
-|-----------------------|------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| style                 | `StyleProp<ViewStyle>` | No       | Container style                                                                                                                                                                                                          |
-| contentContainerStyle | `StyleProp<ViewStyle>` | No       | Content container style                                                                                                                                                                                                  |
-| animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring               |
+|-----------------------|------------------------|----------|------------------|
+| style                 | `StyleProp<ViewStyle>` | No       | Container style |
+| contentContainerStyle | `StyleProp<ViewStyle>` | No       | Content container style |
+| animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring |
 | animationConfig       | object                 | No       | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
+| doubleTapConfig       | { defaultScale?: number, minZoomScale?: number, maxZoomScale?: number } | No | Config for zoom on double tap. `defaultScale` - if you want to have fixed zoom on double tap, or calculated based on dimensions then leave it as it is. `minZoomScale` and `maxZoomScale` define range with min zoom & max zoom on double tap |
 
 
 ## License
