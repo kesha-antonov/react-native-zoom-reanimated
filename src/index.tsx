@@ -28,17 +28,19 @@ import {
 import {
   GestureStateManagerType,
 } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
+import { clampScale, getScaleFromDimensions } from './utils'
+import { MAX_SCALE, MIN_SCALE } from './constants'
 
 import styles from './styles'
-import { clamp, getScaleFromDimensions } from './utils'
-import { MAXIMUM_SCALE, MINIMUM_SCALE } from './constants'
 
 interface UseZoomGestureProps {
-  animationFunction?(toValue: number, config?: object): any;
+  animationFunction?(toValue: number, config?: object): void;
   animationConfig?: object;
-  doubleTapScaleStep?: number;
-  minimumZoomScale?: number;
-  maximumZoomScale?: number;
+  doubleTapConfig?: {
+    defaultScale?: number;
+    minZoomScale?: number;
+    maxZoomScale?: number;
+  };
 }
 
 export function useZoomGesture(props: UseZoomGestureProps = {}): {
@@ -50,7 +52,11 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   isZoomedIn: SharedValue<boolean>;
   zoomGestureLastTime: SharedValue<number>;
 } {
-  const { animationFunction = withTiming, animationConfig, doubleTapScaleStep } = props
+  const {
+    animationFunction = withTiming,
+    animationConfig,
+    doubleTapConfig,
+  } = props
 
   const baseScale = useSharedValue(1)
   const pinchScale = useSharedValue(1)
@@ -92,14 +98,18 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
         (contentDimensions.value.height * containerDimensions.value.width) /
         contentDimensions.value.width,
     }
-  }, [containerDimensions])
+  }, [containerDimensions, contentDimensions])
 
   const zoomIn = useCallback((): void => {
     const { width, height } = getContentContainerSize()
 
-    const newScale = doubleTapScaleStep ?? getScaleFromDimensions(width, height)
+    const newScale = doubleTapConfig?.defaultScale ?? getScaleFromDimensions(width, height)
 
-    const clampedScale = clamp(newScale, MINIMUM_SCALE, MAXIMUM_SCALE)
+    const clampedScale = clampScale(
+      newScale,
+      doubleTapConfig?.minZoomScale ?? MIN_SCALE,
+      doubleTapConfig?.maxZoomScale ?? MAX_SCALE
+    )
 
     lastScale.value = clampedScale
 
@@ -127,6 +137,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     lastScale,
     getContentContainerSize,
     withAnimation,
+    doubleTapConfig,
   ])
 
   const zoomOut = useCallback((): void => {
@@ -436,9 +447,11 @@ export interface ZoomProps {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   animationConfig?: object;
-  doubleTapScaleStep?: number;
-  minimumZoomScale?: number;
-  maximumZoomScale?: number;
+  doubleTapConfig?: {
+    defaultScale?: number;
+    minZoomScale?: number;
+    maxZoomScale?: number;
+  };
 
   animationFunction?<T extends AnimatableValue>(
     toValue: T,

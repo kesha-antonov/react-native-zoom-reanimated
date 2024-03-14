@@ -1,2 +1,2 @@
-export const MAXIMUM_SCALE = 4
-export const MINIMUM_SCALE = 1.4
+export const MIN_SCALE = 1.4
+export const MAX_SCALE = 4
