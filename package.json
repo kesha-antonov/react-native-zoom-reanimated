@@ -16,12 +16,20 @@
   "license": "MIT",
   "author": "Kesha Antonov",
   "main": "src/index.tsx",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "src/"
+  ],
+
   "scripts": {
     "autofix": "eslint -c .eslintrc.js --ext .ts,.tsx --fix .",
     "bump": "npm version patch",
     "lint": "eslint -c .eslintrc.js --ext .ts,.tsx .",
     "publish": "npm publish",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "jest && npm run lint",
+    "test": "jest"
   },
   "devDependencies": {
     "@react-native-community/eslint-config": "^3.2.0",
