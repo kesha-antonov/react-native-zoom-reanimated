@@ -4,6 +4,7 @@ module.exports = {
     '@babel/preset-typescript',
   ],
   plugins: [
+    '@babel/plugin-syntax-jsx',
     'react-native-reanimated/plugin',
   ],
 }
