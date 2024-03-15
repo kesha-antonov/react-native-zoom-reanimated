@@ -78,3 +78,9 @@ const styles = StyleSheet.create({
 })
 
 export default App
+
+// SAMPLE IMAGES
+// https://cdn.hasselblad.com/hasselblad-com/6cb604081ef3086569319ddb5adcae66298a28c5_x1d-ii-sample-01-web.jpg?auto=format&q=97
+// https://vgl.ucdavis.edu/sites/g/files/dgvnsk15116/files/styles/sf_landscape_4x3/public/images/marketing_highlight/Sample-Collection-Box-Cat-640px.jpg?h=52d3fcb6&itok=4r75E_w2
+// https://cdn.pixabay.com/photo/2022/01/28/18/32/leaves-6975462_1280.png
+// https://static.remove.bg/sample-gallery/graphics/bird-thumbnail.jpg
