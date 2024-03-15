@@ -18,7 +18,7 @@
     "react-native": "0.73.6",
     "react-native-gesture-handler": "^2.15.0",
     "react-native-reanimated": "^3.8.0",
-    "react-native-zoom-reanimated": "^1.4.3"
+    "react-native-zoom-reanimated": "^1.4.4"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

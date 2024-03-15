@@ -1,6 +1,6 @@
 {
   "name": "react-native-zoom-reanimated",
-  "version": "1.4.4-alpha.0",
+  "version": "1.4.4",
   "description": "Zoom component on react-native + react-native-reanimated + react-native-gesture-handler",
   "keywords": [
     "zoom",
@@ -27,7 +27,7 @@
     "bump": "npm version patch",
     "lint": "eslint -c .eslintrc.js --ext .ts,.tsx .",
     "publish": "npm publish",
-    "prepublishOnly": "jest && npm run lint",
+    "_prepublishOnly": "jest && npm run lint",
     "test": "jest"
   },
   "devDependencies": {

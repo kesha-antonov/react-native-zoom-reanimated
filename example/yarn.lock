@@ -5958,10 +5958,10 @@ react-native-reanimated@^3.8.0:
     convert-source-map "^2.0.0"
     invariant "^2.2.4"
 
-react-native-zoom-reanimated@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-zoom-reanimated/-/react-native-zoom-reanimated-1.4.3.tgz#fada02a8ff5836f74e7ff0ce18e18882a24af271"
-  integrity sha512-/ATkZS7Tjf7vLKTePldRUu1X0k4fqVqTC5n4MCXZJeaTdMpGag1xCGKCVoBaJfLJIRU2eycbqs38XWT6iYh8DA==
+react-native-zoom-reanimated@^1.4.4-alpha.0:
+  version "1.4.4-alpha.0"
+  resolved "https://registry.yarnpkg.com/react-native-zoom-reanimated/-/react-native-zoom-reanimated-1.4.4-alpha.0.tgz#704fc9fb6682946e13c9dc51b019bdae5ec6f007"
+  integrity sha512-tB5/UIPn+jsXQgmZcbRUV0ulcsDLjtHrKXySOGI1urzSVOaxQ2XemXF1yWZfzMlIkXo8qlvZf6ZwXCT41Oaz1g==
 
 react-native@0.73.6:
   version "0.73.6"
