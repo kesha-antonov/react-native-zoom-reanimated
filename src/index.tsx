@@ -34,7 +34,7 @@ import { MAX_SCALE, MIN_SCALE } from './constants'
 import styles from './styles'
 
 interface UseZoomGestureProps {
-  animationFunction?(toValue: number, config?: object): void;
+  animationFunction?: typeof withTiming;
   animationConfig?: object;
   doubleTapConfig?: {
     defaultScale?: number;
@@ -103,7 +103,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   const zoomIn = useCallback((): void => {
     const { width, height } = getContentContainerSize()
 
-    const newScale = doubleTapConfig?.defaultScale ?? getScaleFromDimensions(width, height)
+    const newScale =
+      doubleTapConfig?.defaultScale ?? getScaleFromDimensions(width, height)
 
     const clampedScale = clampScale(
       newScale,
@@ -456,6 +457,6 @@ export interface ZoomProps {
   animationFunction?<T extends AnimatableValue>(
     toValue: T,
     userConfig?: object,
-    callback?: AnimationCallback,
+    callback?: AnimationCallback
   ): T;
 }
