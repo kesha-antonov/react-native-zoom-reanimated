@@ -13,6 +13,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  withDecay,
 } from 'react-native-reanimated'
 import {
   ComposedGesture,
@@ -73,6 +74,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   const lastOffsetY = useSharedValue(0)
   const panStartOffsetX = useSharedValue(0)
   const panStartOffsetY = useSharedValue(0)
+  const velocity = useSharedValue({ x: 0, y: 0 })
 
   const handlePanOutsideTimeoutId: React.MutableRefObject<
     NodeJS.Timeout | undefined
@@ -191,27 +193,39 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
               lastScale.value,
       }
 
-      const isPanedXOutside =
-        lastOffsetX.value > maxOffset.x || lastOffsetX.value < -maxOffset.x
-      if (isPanedXOutside) {
-        const newOffsetX = lastOffsetX.value >= 0 ? maxOffset.x : -maxOffset.x
-        lastOffsetX.value = newOffsetX
+      translateX.value = withDecay(
+        {
+          velocity: velocity.value.x,
+        },
+        () => {
+          lastOffsetX.value = translateX.value
+          const isPanedXOutside =
+            lastOffsetX.value > maxOffset.x || lastOffsetX.value < -maxOffset.x
+          if (isPanedXOutside) {
+            const newOffsetX = lastOffsetX.value >= 0 ? maxOffset.x : -maxOffset.x
+            lastOffsetX.value = newOffsetX
 
-        translateX.value = withAnimation(newOffsetX)
-      } else {
-        translateX.value = lastOffsetX.value
-      }
+            translateX.value = withAnimation(newOffsetX)
+          }
+        }
+      )
 
-      const isPanedYOutside =
-        lastOffsetY.value > maxOffset.y || lastOffsetY.value < -maxOffset.y
-      if (isPanedYOutside) {
-        const newOffsetY = lastOffsetY.value >= 0 ? maxOffset.y : -maxOffset.y
-        lastOffsetY.value = newOffsetY
+      translateY.value = withDecay(
+        {
+          velocity: velocity.value.y,
+        },
+        () => {
+          lastOffsetY.value = translateY.value
+          const isPanedYOutside =
+            lastOffsetY.value > maxOffset.y || lastOffsetY.value < -maxOffset.y
+          if (isPanedYOutside) {
+            const newOffsetY = lastOffsetY.value >= 0 ? maxOffset.y : -maxOffset.y
+            lastOffsetY.value = newOffsetY
 
-        translateY.value = withAnimation(newOffsetY)
-      } else {
-        translateY.value = lastOffsetY.value
-      }
+            translateY.value = withAnimation(newOffsetY)
+          }
+        }
+      )
     }, 10)
   }, [
     lastOffsetX,
@@ -328,6 +342,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
 
           translationX -= panStartOffsetX.value
           translationY -= panStartOffsetY.value
+
+          // Save the ending pan velocity for withDecay
+          const { velocityX, velocityY } = event
+          velocity.value = { x: velocityX, y: velocityY }
 
           // SAVES LAST POSITION
           lastOffsetX.value =
