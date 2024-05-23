@@ -32,10 +32,10 @@ import { clampScale, getScaleFromDimensions } from './utils'
 import { MAX_SCALE, MIN_SCALE } from './constants'
 
 import styles from './styles'
-
+export type AnimationConfigProps = Parameters<typeof withTiming>[1];
 interface UseZoomGestureProps {
   animationFunction?: typeof withTiming;
-  animationConfig?: object;
+  animationConfig?: AnimationConfigProps;
   doubleTapConfig?: {
     defaultScale?: number;
     minZoomScale?: number;
@@ -79,7 +79,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   > = useRef()
 
   const withAnimation = useCallback(
-    (toValue: number, config?: object) => {
+    (toValue: number, config?: AnimationConfigProps) => {
       'worklet'
 
       return animationFunction(toValue, {
@@ -447,7 +447,7 @@ export default function Zoom(
 export interface ZoomProps {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  animationConfig?: object;
+  animationConfig?: AnimationConfigProps;
   doubleTapConfig?: {
     defaultScale?: number;
     minZoomScale?: number;
@@ -456,7 +456,7 @@ export interface ZoomProps {
 
   animationFunction?<T extends AnimatableValue>(
     toValue: T,
-    userConfig?: object,
+    userConfig?: AnimationConfigProps,
     callback?: AnimationCallback
   ): T;
 }
