@@ -77,7 +77,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   const velocity = useSharedValue({ x: 0, y: 0 })
 
   const handlePanOutsideTimeoutId: React.MutableRefObject<
-    NodeJS.Timeout | undefined
+    ReturnType<typeof setTimeout> | undefined
   > = useRef()
 
   const withAnimation = useCallback(
