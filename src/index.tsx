@@ -5,16 +5,6 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import Animated, {
-  AnimatableValue,
-  AnimationCallback,
-  runOnJS,
-  SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  withDecay,
-} from 'react-native-reanimated'
 import {
   ComposedGesture,
   Gesture,
@@ -26,11 +16,19 @@ import {
   PinchGestureHandlerEventPayload,
   State,
 } from 'react-native-gesture-handler'
-import {
-  GestureStateManagerType,
-} from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
-import { clampScale, getScaleFromDimensions } from './utils'
+import { GestureStateManagerType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
+import Animated, {
+  AnimatableValue,
+  AnimationCallback,
+  runOnJS,
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withDecay,
+  withTiming,
+} from 'react-native-reanimated'
 import { MAX_SCALE, MIN_SCALE } from './constants'
+import { clampScale, getScaleFromDimensions } from './utils'
 
 import styles from './styles'
 export type AnimationConfigProps = Parameters<typeof withTiming>[1];
@@ -193,39 +191,27 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
               lastScale.value,
       }
 
-      translateX.value = withDecay(
-        {
-          velocity: velocity.value.x,
-        },
-        () => {
-          lastOffsetX.value = translateX.value
-          const isPanedXOutside =
-            lastOffsetX.value > maxOffset.x || lastOffsetX.value < -maxOffset.x
-          if (isPanedXOutside) {
-            const newOffsetX = lastOffsetX.value >= 0 ? maxOffset.x : -maxOffset.x
-            lastOffsetX.value = newOffsetX
+      translateX.value = withDecay({
+        velocity: velocity.value.x,
+        clamp: [-maxOffset.x, maxOffset.x],
+        rubberBandEffect: true,
+      })
+      translateY.value = withDecay({
+        velocity: velocity.value.y,
+        clamp: [-maxOffset.y, maxOffset.y],
+        rubberBandEffect: true,
+      })
 
-            translateX.value = withAnimation(newOffsetX)
-          }
-        }
-      )
-
-      translateY.value = withDecay(
-        {
-          velocity: velocity.value.y,
-        },
-        () => {
-          lastOffsetY.value = translateY.value
-          const isPanedYOutside =
-            lastOffsetY.value > maxOffset.y || lastOffsetY.value < -maxOffset.y
-          if (isPanedYOutside) {
-            const newOffsetY = lastOffsetY.value >= 0 ? maxOffset.y : -maxOffset.y
-            lastOffsetY.value = newOffsetY
-
-            translateY.value = withAnimation(newOffsetY)
-          }
-        }
-      )
+      lastOffsetX.value = withDecay({
+        velocity: velocity.value.x,
+        clamp: [-maxOffset.x, maxOffset.x],
+        rubberBandEffect: true,
+      })
+      lastOffsetY.value = withDecay({
+        velocity: velocity.value.y,
+        clamp: [-maxOffset.y, maxOffset.y],
+        rubberBandEffect: true,
+      })
     }, 10)
   }, [
     lastOffsetX,
@@ -349,7 +335,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
 
           // Save the ending pan velocity for withDecay
           const { velocityX, velocityY } = event
-          velocity.value = { x: velocityX, y: velocityY }
+          velocity.value = {
+            x: velocityX / lastScale.value,
+            y: velocityY / lastScale.value,
+          }
 
           // SAVES LAST POSITION
           lastOffsetX.value =
@@ -479,6 +468,6 @@ export interface ZoomProps {
   animationFunction?<T extends AnimatableValue>(
     toValue: T,
     userConfig?: AnimationConfigProps,
-    callback?: AnimationCallback
+    callback?: AnimationCallback,
   ): T;
 }
