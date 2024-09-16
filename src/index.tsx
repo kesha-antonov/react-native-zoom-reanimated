@@ -328,8 +328,12 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
           translationX -= panStartOffsetX.value
           translationY -= panStartOffsetY.value
 
-          translateX.value = lastOffsetX.value + translationX / lastScale.value
-          translateY.value = lastOffsetY.value + translationY / lastScale.value
+          translateX.value =
+            lastOffsetX.value +
+            translationX / lastScale.value / pinchScale.value
+          translateY.value =
+            lastOffsetY.value +
+            translationY / lastScale.value / pinchScale.value
         }
       )
       .onEnd(
