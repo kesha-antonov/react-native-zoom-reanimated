@@ -35,7 +35,7 @@ import {
 } from "react-native-gesture-handler";
 import { GestureStateManagerType } from "react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager";
 
-interface ZoomRef {
+export interface ZoomRef {
   zoomIn: () => void;
   zoomOut: () => void;
 }
@@ -411,14 +411,10 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(function Zoom(
     ],
   }));
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      zoomIn,
-      zoomOut,
-    }),
-    [zoomIn, zoomOut]
-  );
+  useImperativeHandle(ref, () => ({
+    zoomIn,
+    zoomOut,
+  }));
 
   return (
     <GestureDetector gesture={zoomGestures}>
