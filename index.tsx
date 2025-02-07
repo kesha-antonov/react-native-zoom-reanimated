@@ -411,7 +411,6 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>((
     ],
   }));
 
-  console.log('rendering zoom', ref);
   useImperativeHandle(ref, () => ({
     zoomIn,
     zoomOut,
