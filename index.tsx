@@ -414,7 +414,7 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(function Zoom(
   useImperativeHandle(ref, () => ({
     zoomIn,
     zoomOut,
-  }));
+  }), [zoomIn, zoomOut]);
 
   return (
     <GestureDetector gesture={zoomGestures}>
