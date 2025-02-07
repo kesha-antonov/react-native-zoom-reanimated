@@ -40,10 +40,10 @@ export interface ZoomRef {
   zoomOut: () => void;
 }
 
-export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(function Zoom(
+export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>((
   props,
   ref
-) {
+) => {
   const {
     style,
     contentContainerStyle,
@@ -411,6 +411,7 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(function Zoom(
     ],
   }));
 
+  console.log('rendering zoom', ref);
   useImperativeHandle(ref, () => ({
     zoomIn,
     zoomOut,
