@@ -1,0 +1,33 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{js,mjs,cjs,ts,tsx,json,yml}]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+
+# Matches the exact files either package.json or .travis.yml
+[package.json]
+insert_final_newline = false
+indent_style = space
+indent_size = 2
+
+[.nvmrc]
+insert_final_newline = false
+
+[Fastfile]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+
+[{*.kt,*.kts}]
+max_line_length=180
+
+[{*.swift}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+trim_trailing_whitespace = true
