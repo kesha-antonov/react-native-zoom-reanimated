@@ -447,12 +447,10 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 			[lastScale, pinchScale, onPinchEnd, isZoomedIn]
 		);
 
-		const zoomGestures = useMemo(
-			() =>
-				Gesture.Exclusive(
-					tapGesture,
-					Gesture.Simultaneous(pinchGesture, panGesture)
-				),
+		const zoomGestures = useMemo(() =>
+			Gesture.Race(
+				Gesture.Simultaneous(pinchGesture, panGesture, tapGesture),
+			),
 			[pinchGesture, panGesture, tapGesture]
 		);
 
