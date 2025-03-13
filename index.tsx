@@ -48,6 +48,7 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 			children,
 			animationFunction = withTiming,
 			animationConfig,
+			panThreshold = 0,
 		} = props;
 
 		const baseScale = useSharedValue(1);
@@ -64,6 +65,8 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 		const lastOffsetY = useSharedValue(0);
 		const panStartOffsetX = useSharedValue(0);
 		const panStartOffsetY = useSharedValue(0);
+		const startX = useSharedValue(0); // Store initial X position
+		const startY = useSharedValue(0); // Store initial Y position
 
 		const handlePanOutsideTimeoutId: React.MutableRefObject<
 			number | undefined
@@ -326,12 +329,50 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 		const panGesture = useMemo(
 			() =>
 				Gesture.Pan()
+					.maxPointers(2)
+					.onTouchesMove(
+						(
+							e: GestureTouchEvent,
+							state: GestureStateManagerType
+						): void => {
+							const currentX = Math.abs(
+								e.allTouches[0].absoluteX
+							);
+							const currentY = Math.abs(
+								e.allTouches[0].absoluteY
+							);
+							const deltaX = Math.abs(currentX - startX.value);
+							const deltaY = Math.abs(currentY - startY.value);
+							const THRESHOLD = panThreshold; // Min distance required to activate
+
+							if (
+								e.state === State.UNDETERMINED ||
+								e.state === State.BEGAN
+							) {
+								if (
+									isZoomedIn.value ||
+									e.numberOfTouches === 1
+								) {
+									if (
+										deltaX > THRESHOLD ||
+										deltaY > THRESHOLD
+									) {
+										state.activate();
+									} else {
+										state.fail();
+									}
+								} else state.fail();
+							}
+						}
+					)
 					.onStart(
 						(
 							event: GestureUpdateEvent<PanGestureHandlerEventPayload>
 						): void => {
 							panStartOffsetX.value = event.translationX;
 							panStartOffsetY.value = event.translationY;
+							startX.value = event.absoluteX;
+							startY.value = event.absoluteY;
 						}
 					)
 					.onUpdate(
@@ -396,25 +437,7 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 
 							runOnJS(handlePanOutside)();
 						}
-					)
-					.onTouchesMove(
-						(
-							e: GestureTouchEvent,
-							state: GestureStateManagerType
-						): void => {
-							if (
-								[State.UNDETERMINED, State.BEGAN].includes(
-									e.state
-								)
-							)
-								if (isZoomedIn.value || e.numberOfTouches === 2)
-									state.activate();
-								else state.fail();
-						}
-					)
-					.minDistance(0)
-					.minPointers(1)
-					.maxPointers(2),
+					),
 			[
 				handlePanOutside,
 				lastOffsetX,
@@ -447,11 +470,14 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 			[lastScale, pinchScale, onPinchEnd, isZoomedIn]
 		);
 
-		const zoomGestures = useMemo(() =>
-			Gesture.Race(
-				Gesture.Simultaneous(pinchGesture, panGesture, tapGesture),
-			),
-			[pinchGesture, panGesture, tapGesture]
+		const composedGestures = useMemo(
+			() => Gesture.Simultaneous(pinchGesture, panGesture),
+			[pinchGesture, panGesture]
+		);
+
+		const zoomGestures = useMemo(
+			() => Gesture.Exclusive(composedGestures, tapGesture),
+			[composedGestures, tapGesture]
 		);
 
 		const animContentContainerStyle = useAnimatedStyle(() => ({
@@ -504,6 +530,7 @@ export interface ZoomProps {
 		userConfig?: object,
 		callback?: AnimationCallback
 	): T;
+	panThreshold?: number;
 }
 
 const styles = StyleSheet.create({
