@@ -321,6 +321,8 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 			() =>
 				Gesture.Tap()
 					.numberOfTaps(2)
+					.maxDelay(300)
+					.maxDistance(10)
 					.onEnd(() => {
 						runOnJS(onDoubleTap)();
 					}),
@@ -336,7 +338,6 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 							e: GestureTouchEvent,
 							state: GestureStateManagerType
 						): void => {
-							const THRESHOLD = panThreshold;
 							const isSingleTouch = e.numberOfTouches === 1;
 							
 							// Only allow panning when zoomed in or single touch
@@ -349,9 +350,13 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 							const deltaX = Math.abs(e.allTouches[0].absoluteX - startX.value);
 							const deltaY = Math.abs(e.allTouches[0].absoluteY - startY.value);
 
-							// Activate if movement exceeds threshold
+							// Only activate if movement exceeds threshold
 							if (e.state === State.UNDETERMINED || e.state === State.BEGAN) {
-								state.activate();
+								if (deltaX > panThreshold || deltaY > panThreshold) {
+									state.activate();
+								} else {
+									state.fail();
+								}
 							}
 						}
 					)
@@ -407,7 +412,8 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 				startX,
 				startY,
 				isZoomedIn,
-				lastScale
+				lastScale,
+				panThreshold
 			]
 		);
 
