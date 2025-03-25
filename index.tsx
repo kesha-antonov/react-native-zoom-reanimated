@@ -257,6 +257,7 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 					!scrollWheelSubscriptionRef.current
 				) {
 					scrollWheelSubscriptionRef.current =
+						// @ts-expect-error - web only
 						containerRef.current.addEventListener(
 							"wheel",
 							onWheelScroll
@@ -335,33 +336,22 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 							e: GestureTouchEvent,
 							state: GestureStateManagerType
 						): void => {
-							const currentX = Math.abs(
-								e.allTouches[0].absoluteX
-							);
-							const currentY = Math.abs(
-								e.allTouches[0].absoluteY
-							);
-							const deltaX = Math.abs(currentX - startX.value);
-							const deltaY = Math.abs(currentY - startY.value);
-							const THRESHOLD = panThreshold; // Min distance required to activate
+							const THRESHOLD = panThreshold;
+							const isSingleTouch = e.numberOfTouches === 1;
+							
+							// Only allow panning when zoomed in or single touch
+							if (!isZoomedIn.value && !isSingleTouch) {
+								state.fail();
+								return;
+							}
 
-							if (
-								e.state === State.UNDETERMINED ||
-								e.state === State.BEGAN
-							) {
-								if (
-									isZoomedIn.value ||
-									e.numberOfTouches === 1
-								) {
-									if (
-										deltaX > THRESHOLD ||
-										deltaY > THRESHOLD
-									) {
-										state.activate();
-									} else {
-										state.fail();
-									}
-								} else state.fail();
+							// Calculate total movement
+							const deltaX = Math.abs(e.allTouches[0].absoluteX - startX.value);
+							const deltaY = Math.abs(e.allTouches[0].absoluteY - startY.value);
+
+							// Activate if movement exceeds threshold
+							if (e.state === State.UNDETERMINED || e.state === State.BEGAN) {
+								state.activate();
 							}
 						}
 					)
@@ -369,71 +359,39 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 						(
 							event: GestureUpdateEvent<PanGestureHandlerEventPayload>
 						): void => {
-							panStartOffsetX.value = event.translationX;
-							panStartOffsetY.value = event.translationY;
+							// Store initial touch position
 							startX.value = event.absoluteX;
 							startY.value = event.absoluteY;
+							
+							// Store initial translation for relative movement
+							panStartOffsetX.value = event.translationX;
+							panStartOffsetY.value = event.translationY;
 						}
 					)
 					.onUpdate(
 						(
 							event: GestureUpdateEvent<PanGestureHandlerEventPayload>
 						): void => {
-							let { translationX, translationY } = event;
+							// Calculate relative movement from start position
+							const relativeX = event.translationX - panStartOffsetX.value;
+							const relativeY = event.translationY - panStartOffsetY.value;
 
-							if (
-								panOffsetsBeforeGestureStart.value.x === null ||
-								panOffsetsBeforeGestureStart.value.y === null
-							) {
-								panOffsetsBeforeGestureStart.value.x =
-									translationX;
-								panOffsetsBeforeGestureStart.value.y =
-									translationY;
-							}
-
-							translationX -=
-								panOffsetsBeforeGestureStart.value.x;
-							translationY -=
-								panOffsetsBeforeGestureStart.value.y;
-							translationX -= panStartOffsetX.value;
-							translationY -= panStartOffsetY.value;
-
-							translateX.value =
-								lastOffsetX.value +
-								translationX / lastScale.value;
-							translateY.value =
-								lastOffsetY.value +
-								translationY / lastScale.value;
+							// Apply movement scaled by current zoom level
+							translateX.value = lastOffsetX.value + relativeX / lastScale.value;
+							translateY.value = lastOffsetY.value + relativeY / lastScale.value;
 						}
 					)
 					.onEnd(
 						(
 							event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
 						): void => {
-							let { translationX, translationY } = event;
+							// Calculate final position
+							const finalX = event.translationX - panStartOffsetX.value;
+							const finalY = event.translationY - panStartOffsetY.value;
 
-							if (
-								panOffsetsBeforeGestureStart.value.x !== null &&
-								panOffsetsBeforeGestureStart.value.y !== null
-							) {
-								translationX -=
-									panOffsetsBeforeGestureStart.value.x;
-								translationY -=
-									panOffsetsBeforeGestureStart.value.y;
-							}
-							translationX -= panStartOffsetX.value;
-							translationY -= panStartOffsetY.value;
-
-							// SAVES LAST POSITION
-							lastOffsetX.value =
-								lastOffsetX.value +
-								translationX / lastScale.value;
-							lastOffsetY.value =
-								lastOffsetY.value +
-								translationY / lastScale.value;
-
-							panOffsetsBeforeGestureStart.value.x = null;
-							panOffsetsBeforeGestureStart.value.y = null;
+							// Update last known position
+							lastOffsetX.value += finalX / lastScale.value;
+							lastOffsetY.value += finalY / lastScale.value;
 
 							runOnJS(handlePanOutside)();
 						}
@@ -444,7 +402,12 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 				lastOffsetY,
 				translateX,
 				translateY,
-				panOffsetsBeforeGestureStart,
+				panStartOffsetX,
+				panStartOffsetY,
+				startX,
+				startY,
+				isZoomedIn,
+				lastScale
 			]
 		);
 
