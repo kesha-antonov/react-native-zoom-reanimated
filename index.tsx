@@ -92,7 +92,7 @@ export default forwardRef<ZoomRef, PropsWithChildren<ZoomProps>>(
 			(event: WheelEvent) => {
 				const scaleFactor = event.deltaY * -0.01;
 				const newScale = lastScale.value + scaleFactor;
-				const newSafeScale = Math.max(1, Math.min(newScale, 4));
+				const newSafeScale = Math.max(0.75, Math.min(newScale, 4));
 				lastScale.value = newSafeScale;
 				baseScale.value = withAnimation(newSafeScale);
 			},
