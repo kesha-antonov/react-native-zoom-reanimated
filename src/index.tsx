@@ -9,6 +9,7 @@ import {
   ComposedGesture,
   Gesture,
   GestureDetector,
+  GestureHandlerRootView,
   GestureStateChangeEvent,
   GestureTouchEvent,
   GestureUpdateEvent,
@@ -438,20 +439,22 @@ export default function Zoom(
   })
 
   return (
-    <GestureDetector gesture={zoomGesture}>
-      <View
-        style={[styles.container, style]}
-        onLayout={onLayout}
-        collapsable={false}
-      >
-        <Animated.View
-          style={[contentContainerAnimatedStyle, contentContainerStyle]}
-          onLayout={onLayoutContent}
+    <GestureHandlerRootView>
+      <GestureDetector gesture={zoomGesture}>
+        <View
+          style={[styles.container, style]}
+          onLayout={onLayout}
+          collapsable={false}
         >
-          {children}
-        </Animated.View>
-      </View>
-    </GestureDetector>
+          <Animated.View
+            style={[contentContainerAnimatedStyle, contentContainerStyle]}
+            onLayout={onLayoutContent}
+          >
+            {children}
+          </Animated.View>
+        </View>
+      </GestureDetector>
+    </GestureHandlerRootView>
   )
 }
 
