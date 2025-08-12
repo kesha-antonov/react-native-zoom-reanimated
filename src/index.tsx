@@ -77,7 +77,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
 
   const handlePanOutsideTimeoutId: React.MutableRefObject<
     ReturnType<typeof setTimeout> | undefined
-  > = useRef()
+  > = useRef(undefined)
 
   const withAnimation = useCallback(
     (toValue: number, config?: AnimationConfigProps) => {
