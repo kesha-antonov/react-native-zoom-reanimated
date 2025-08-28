@@ -1,5 +1,4 @@
-import React from 'react'
-import type {PropsWithChildren} from 'react'
+import React, { useState } from 'react'
 import {
   SafeAreaView,
   Image,
@@ -7,17 +6,21 @@ import {
   StyleSheet,
   useColorScheme,
   useWindowDimensions,
+  TouchableOpacity,
+  Text,
+  View,
 } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Zoom from 'react-native-zoom-reanimated'
+import FlatListExample from './FlatListExample'
 
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen'
 
-
-function App(): React.JSX.Element {
+function App (): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark'
+  const [showFlatListExample, setShowFlatListExample] = useState(false)
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -27,6 +30,10 @@ function App(): React.JSX.Element {
   const imageWidth = 1100
   const imageHeight = 910
 
+  const toggleExample = () => {
+    setShowFlatListExample(!showFlatListExample)
+  }
+
   return (
     <GestureHandlerRootView style={styles.fill}>
       <SafeAreaView style={[styles.fill, backgroundStyle]}>
@@ -34,22 +41,38 @@ function App(): React.JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={backgroundStyle.backgroundColor}
         />
-        <Zoom
-          doubleTapConfig={{
-            defaultScale: 5,
-            minZoomScale: 1,
-            maxZoomScale: 10,
-          }}
-        >
-          <Image
-            source={{ uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg' }}
-            resizeMode='contain'
-            style={{
-              width: deviceWidth,
-              height: imageHeight * deviceWidth / imageWidth,
-            }}
-          />
-        </Zoom>
+
+        {/* Toggle Button */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity style={styles.toggleButton} onPress={toggleExample}>
+            <Text style={[styles.toggleButtonText, { color: isDarkMode ? '#fff' : '#000' }]}>
+              {showFlatListExample ? 'Show Single Image' : 'Show Image Gallery'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {showFlatListExample
+          ? (
+            <FlatListExample isDarkMode={isDarkMode} />
+          )
+          : (
+            <Zoom
+              doubleTapConfig={{
+                defaultScale: 5,
+                minZoomScale: 1,
+                maxZoomScale: 10,
+              }}
+            >
+              <Image
+                source={{ uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg' }}
+                resizeMode='contain'
+                style={{
+                  width: deviceWidth,
+                  height: imageHeight * deviceWidth / imageWidth,
+                }}
+              />
+            </Zoom>
+          )}
       </SafeAreaView>
     </GestureHandlerRootView>
   )
@@ -58,6 +81,25 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   fill: {
     flex: 1,
+  },
+  headerContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  toggleButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  toggleButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   sectionContainer: {
     marginTop: 32,

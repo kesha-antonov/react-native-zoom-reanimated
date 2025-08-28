@@ -47,6 +47,8 @@ import Zoom from 'react-native-zoom-reanimated'
 
 ## Example
 
+### Basic Usage
+
 ```jsx
 import Zoom from 'react-native-zoom-reanimated'
 
@@ -63,6 +65,48 @@ import Zoom from 'react-native-zoom-reanimated'
   </Zoom>
 ...
 ```
+
+### Image Gallery with FlatList (Sliding Pages)
+
+```jsx
+import React from 'react'
+import { FlatList, Image, useWindowDimensions, View } from 'react-native'
+import Zoom from 'react-native-zoom-reanimated'
+
+const IMAGES = [
+  'https://example.com/image1.jpg',
+  'https://example.com/image2.jpg',
+  // ... more images
+]
+
+export default function ImageGallery () {
+  const { width: screenWidth } = useWindowDimensions()
+
+  const renderImage = ({ item: imageUri }) => (
+    <View style={{ width: screenWidth }}>
+      <Zoom>
+        <Image
+          source={{ uri: imageUri }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="contain"
+        />
+      </Zoom>
+    </View>
+  )
+
+  return (
+    <FlatList
+      data={IMAGES}
+      renderItem={renderImage}
+      horizontal
+      pagingEnabled
+      showsHorizontalScrollIndicator={false}
+    />
+  )
+}
+```
+
+> See the `example/` directory for complete working examples, including `FlatListExample.tsx` and `ImageGalleryStandalone.tsx`.
 
 ## Parameters
 
@@ -82,6 +126,6 @@ The library is released under the MIT licence. For more information see [`LICENS
 ## TODO
 
 - document useZoomGesture
-- add examples of usage Zoom (with or without different configs), useZoomGesture with react-native app code
-- add examples of list of images with FlatList
+- add examples of usage Zoom (with or without different configs), useZoomGesture with react-native app code  
+- ✅ ~~add examples of list of images with FlatList~~ (completed - see `example/FlatListExample.tsx`)
 - make list component with https://github.com/callstack/react-native-pager-view and export it for galleries usecase
