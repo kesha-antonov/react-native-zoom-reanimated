@@ -388,12 +388,16 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
           const currentScale = lastScale.value * scale
           const prevScale = lastScale.value
 
-          // Adjust translation to keep focal point stationary
-          const focalAdjustmentX = (focalX - containerDimensions.value.width / 2) * (1 / currentScale - 1 / prevScale)
-          const focalAdjustmentY = (focalY - containerDimensions.value.height / 2) * (1 / currentScale - 1 / prevScale)
+          // Standard focal point zooming formula
+          const focalOffsetX = focalX - containerDimensions.value.width / 2
+          const focalOffsetY = focalY - containerDimensions.value.height / 2
 
-          translateX.value = pinchStartX.value + focalAdjustmentX
-          translateY.value = pinchStartY.value + focalAdjustmentY
+          const scaleRatio = currentScale / prevScale
+          const translateAdjustmentX = focalOffsetX * (1 - scaleRatio)
+          const translateAdjustmentY = focalOffsetY * (1 - scaleRatio)
+
+          translateX.value = pinchStartX.value + translateAdjustmentX
+          translateY.value = pinchStartY.value + translateAdjustmentY
         }
       )
       .onEnd(
