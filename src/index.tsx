@@ -17,7 +17,8 @@ import {
   PinchGestureHandlerEventPayload,
   State,
 } from 'react-native-gesture-handler'
-import { GestureStateManagerType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
+import { GestureStateManagerType } from
+  'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
 import Animated, {
   AnimatableValue,
   AnimationCallback,
@@ -41,11 +42,13 @@ interface UseZoomGestureProps {
     minZoomScale?: number;
     maxZoomScale?: number;
   };
+  onZoomStart?(): void;
+  onZoomEnd?(): void;
 }
 
 export function useZoomGesture(props: UseZoomGestureProps = {}): {
   zoomGesture: ComposedGesture;
-  contentContainerAnimatedStyle: any;
+  contentContainerAnimatedStyle: ReturnType<typeof useAnimatedStyle>;
   onLayout(event: LayoutChangeEvent): void;
   onLayoutContent(event: LayoutChangeEvent): void;
   zoomOut(): void;
@@ -56,6 +59,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     animationFunction = withTiming,
     animationConfig,
     doubleTapConfig,
+    onZoomStart,
+    onZoomEnd,
   } = props
 
   const baseScale = useSharedValue(1)
@@ -80,14 +85,14 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   > = useRef(undefined)
 
   const withAnimation = useCallback(
-    (toValue: number, config?: AnimationConfigProps) => {
+    (toValue: number, config?: AnimationConfigProps, callback?: AnimationCallback) => {
       'worklet'
 
       return animationFunction(toValue, {
         duration: 350,
         ...config,
         ...animationConfig,
-      })
+      }, callback)
     },
     [animationFunction, animationConfig]
   )
@@ -115,7 +120,17 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
 
     lastScale.value = clampedScale
 
-    baseScale.value = withAnimation(newScale)
+    // Call onZoomStart callback
+    if (onZoomStart)
+      runOnJS(onZoomStart)()
+
+    const onAnimationEnd = () => {
+      'worklet'
+      if (onZoomEnd)
+        runOnJS(onZoomEnd)()
+    }
+
+    baseScale.value = withAnimation(newScale, undefined, onAnimationEnd)
     pinchScale.value = withAnimation(1)
 
     const newOffsetX = 0
@@ -140,13 +155,25 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     getContentContainerSize,
     withAnimation,
     doubleTapConfig,
+    onZoomStart,
+    onZoomEnd,
   ])
 
   const zoomOut = useCallback((): void => {
     const newScale = 1
     lastScale.value = newScale
 
-    baseScale.value = withAnimation(newScale)
+    // Call onZoomStart callback
+    if (onZoomStart)
+      runOnJS(onZoomStart)()
+
+    const onAnimationEnd = () => {
+      'worklet'
+      if (onZoomEnd)
+        runOnJS(onZoomEnd)()
+    }
+
+    baseScale.value = withAnimation(newScale, undefined, onAnimationEnd)
     pinchScale.value = withAnimation(1)
 
     const newOffsetX = 0
@@ -169,6 +196,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     lastScale,
     isZoomedIn,
     withAnimation,
+    onZoomStart,
+    onZoomEnd,
   ])
 
   const handlePanOutside = useCallback((): void => {
@@ -222,7 +251,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     translateY,
     containerDimensions,
     getContentContainerSize,
-    withAnimation,
+    velocity,
   ])
 
   const onDoubleTap = useCallback((): void => {
@@ -263,8 +292,18 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
       const newScale = lastScale.value * scale
       lastScale.value = newScale
       if (newScale > 1) {
+        // Call onZoomStart callback for pinch zoom in
+        if (onZoomStart)
+          runOnJS(onZoomStart)()
+
+        const onAnimationEnd = () => {
+          'worklet'
+          if (onZoomEnd)
+            runOnJS(onZoomEnd)()
+        }
+
         isZoomedIn.value = true
-        baseScale.value = newScale
+        baseScale.value = withAnimation(newScale, undefined, onAnimationEnd)
         pinchScale.value = 1
 
         handlePanOutside()
@@ -272,7 +311,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
         zoomOut()
       }
     },
-    [lastScale, baseScale, pinchScale, handlePanOutside, zoomOut, isZoomedIn]
+    [lastScale, baseScale, pinchScale, handlePanOutside, zoomOut, isZoomedIn, onZoomStart, onZoomEnd, withAnimation]
   )
 
   const updateZoomGestureLastTime = useCallback((): void => {
@@ -403,6 +442,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     panStartOffsetX,
     panStartOffsetY,
     updateZoomGestureLastTime,
+    velocity,
   ])
 
   const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
@@ -467,6 +507,8 @@ export interface ZoomProps {
     minZoomScale?: number;
     maxZoomScale?: number;
   };
+  onZoomStart?(): void;
+  onZoomEnd?(): void;
 
   animationFunction?<T extends AnimatableValue>(
     toValue: T,

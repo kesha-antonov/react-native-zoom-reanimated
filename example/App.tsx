@@ -7,6 +7,7 @@ import {
   StyleSheet,
   useColorScheme,
   useWindowDimensions,
+  Alert,
 } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Zoom from 'react-native-zoom-reanimated'
@@ -27,6 +28,16 @@ function App(): React.JSX.Element {
   const imageWidth = 1100
   const imageHeight = 910
 
+  const handleZoomStart = () => {
+    console.log('Zoom animation started!')
+    // You could also use Alert.alert for visual feedback in the app
+  }
+
+  const handleZoomEnd = () => {
+    console.log('Zoom animation ended!')
+    // You could also use Alert.alert for visual feedback in the app
+  }
+
   return (
     <GestureHandlerRootView style={styles.fill}>
       <SafeAreaView style={[styles.fill, backgroundStyle]}>
@@ -40,6 +51,8 @@ function App(): React.JSX.Element {
             minZoomScale: 1,
             maxZoomScale: 10,
           }}
+          onZoomStart={handleZoomStart}
+          onZoomEnd={handleZoomEnd}
         >
           <Image
             source={{ uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg' }}
