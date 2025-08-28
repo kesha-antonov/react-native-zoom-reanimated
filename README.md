@@ -64,6 +64,38 @@ import Zoom from 'react-native-zoom-reanimated'
 ...
 ```
 
+### Example with zoom callbacks
+
+```jsx
+import Zoom from 'react-native-zoom-reanimated'
+
+....
+  const handleZoomStart = () => {
+    console.log('Zoom animation started!')
+    // You can perform any action when zoom starts
+  }
+
+  const handleZoomEnd = () => {
+    console.log('Zoom animation ended!')
+    // You can perform any action when zoom ends
+  }
+
+  <Zoom
+    onZoomStart={handleZoomStart}
+    onZoomEnd={handleZoomEnd}
+  >
+    <Image
+      source={{ uri: ... }}
+      resizeMode='contain'
+      style={{
+        width: deviceWidth,
+        height: imageHeight * deviceWidth / imageWidth,
+       }}
+    />
+  </Zoom>
+....
+```
+
 ## Parameters
 
 | Name                  | Type                   | Required | Description                                                                                                                                                                                                              |
@@ -73,6 +105,8 @@ import Zoom from 'react-native-zoom-reanimated'
 | animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring |
 | animationConfig       | object                 | No       | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
 | doubleTapConfig       | { defaultScale?: number, minZoomScale?: number, maxZoomScale?: number } | No | Config for zoom on double tap. `defaultScale` - if you want to have fixed zoom on double tap, or calculated based on dimensions then leave it as it is. `minZoomScale` and `maxZoomScale` define range with min zoom & max zoom on double tap |
+| onZoomStart           | `() => void`           | No       | Callback function called when zoom animation starts (for both zoom in and zoom out) |
+| onZoomEnd             | `() => void`           | No       | Callback function called when zoom animation ends (for both zoom in and zoom out) |
 
 
 ## License
