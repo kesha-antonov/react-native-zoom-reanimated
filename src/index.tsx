@@ -17,7 +17,7 @@ import {
   PinchGestureHandlerEventPayload,
   State,
 } from 'react-native-gesture-handler'
-import { GestureStateManagerType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
+import { GestureStateManagerType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager' // eslint-disable-line max-len
 import Animated, {
   AnimatableValue,
   AnimationCallback,
@@ -45,7 +45,7 @@ interface UseZoomGestureProps {
 
 export function useZoomGesture(props: UseZoomGestureProps = {}): {
   zoomGesture: ComposedGesture;
-  contentContainerAnimatedStyle: any;
+  contentContainerAnimatedStyle: object;
   onLayout(event: LayoutChangeEvent): void;
   onLayoutContent(event: LayoutChangeEvent): void;
   zoomOut(): void;
@@ -74,6 +74,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
   const panStartOffsetX = useSharedValue(0)
   const panStartOffsetY = useSharedValue(0)
   const velocity = useSharedValue({ x: 0, y: 0 })
+
+  // Focal point values for pinch gesture
+  const pinchStartX = useSharedValue(0)
+  const pinchStartY = useSharedValue(0)
 
   const handlePanOutsideTimeoutId: React.MutableRefObject<
     ReturnType<typeof setTimeout> | undefined
@@ -222,7 +226,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     translateY,
     containerDimensions,
     getContentContainerSize,
-    withAnimation,
+    velocity,
   ])
 
   const onDoubleTap = useCallback((): void => {
@@ -363,16 +367,37 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
       .maxPointers(2)
 
     const pinchGesture = Gesture.Pinch()
-      .onStart(() => {
+      .onStart(({ focalX, focalY }: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
         updateZoomGestureLastTime()
+
+        // Store the focal point and current translation when pinch starts
+        pinchStartX.value = translateX.value
+        pinchStartY.value = translateY.value
       })
       .onUpdate(
         ({
           scale,
+          focalX,
+          focalY,
         }: GestureUpdateEvent<PinchGestureHandlerEventPayload>): void => {
           updateZoomGestureLastTime()
 
           pinchScale.value = scale
+
+          // Calculate translation adjustment for focal point zooming
+          const currentScale = lastScale.value * scale
+          const prevScale = lastScale.value
+
+          // Standard focal point zooming formula
+          const focalOffsetX = focalX - containerDimensions.value.width / 2
+          const focalOffsetY = focalY - containerDimensions.value.height / 2
+
+          const scaleRatio = currentScale / prevScale
+          const translateAdjustmentX = focalOffsetX * (1 - scaleRatio)
+          const translateAdjustmentY = focalOffsetY * (1 - scaleRatio)
+
+          translateX.value = pinchStartX.value + translateAdjustmentX
+          translateY.value = pinchStartY.value + translateAdjustmentY
         }
       )
       .onEnd(
@@ -403,6 +428,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     panStartOffsetX,
     panStartOffsetY,
     updateZoomGestureLastTime,
+    containerDimensions,
+    pinchStartX,
+    pinchStartY,
+    velocity,
   ])
 
   const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
