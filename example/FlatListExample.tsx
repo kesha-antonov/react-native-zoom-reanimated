@@ -9,7 +9,15 @@ import {
 } from 'react-native'
 import Zoom from 'react-native-zoom-reanimated'
 
-const SAMPLE_IMAGES = [
+interface ImageItem {
+  id: string;
+  uri: string;
+  width: number;
+  height: number;
+  title: string;
+}
+
+const SAMPLE_IMAGES: ImageItem[] = [
   {
     id: '1',
     uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg',
@@ -50,7 +58,7 @@ const SAMPLE_IMAGES = [
 export default function FlatListExample ({ isDarkMode = false }) {
   const { width: deviceWidth, height: deviceHeight } = useWindowDimensions()
 
-  const renderImageItem = ({ item }) => {
+  const renderImageItem = ({ item }: { item: ImageItem }) => {
     // Calculate the image dimensions to fit the screen width while maintaining aspect ratio
     const imageAspectRatio = item.width / item.height
     const imageHeight = deviceWidth / imageAspectRatio

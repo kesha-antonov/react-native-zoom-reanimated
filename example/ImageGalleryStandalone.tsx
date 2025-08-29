@@ -15,7 +15,7 @@ const IMAGES = [
 export default function ImageGalleryExample () {
   const { width: screenWidth } = useWindowDimensions()
 
-  const renderImage = ({ item: imageUri }) => (
+  const renderImage = ({ item: imageUri }: { item: string }) => (
     <View style={[styles.slide, { width: screenWidth }]}>
       <Zoom
         doubleTapConfig={{
