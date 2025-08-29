@@ -204,24 +204,24 @@ React Native library providing a zoomable view component built with react-native
 
 **Complete development workflow:**
 ```bash
-# Setup
-npm install
-cd example && npm install
+# Setup (run once)
+npm install                    # 45-60 seconds
+cd example && npm install      # 40-50 seconds
 
-# Validate library
-npx tsc --noEmit
-npx eslint -c .eslintrc.js --ext .ts,.tsx --fix src/
-npx eslint -c .eslintrc.js --ext .ts,.tsx src/
+# Validate library (always run after library changes)
+npx tsc --noEmit                                              # 1-2 seconds  
+npx eslint -c .eslintrc.js --ext .ts,.tsx --fix src/        # 2-3 seconds
+npx eslint -c .eslintrc.js --ext .ts,.tsx src/              # Shows remaining issues
 
-# Validate example app  
+# Validate example app (always run after example changes)
 cd example
-npx tsc --noEmit
-npx eslint . --fix
-npm run lint
+npx tsc --noEmit               # 2-3 seconds
+npx eslint . --fix             # 1-2 seconds  
+npm run lint                   # 1-2 seconds
 
-# Test builds
-npm start  # Start Metro, then Ctrl+C to stop
-npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output bundle.js --assets-dest /tmp/
+# Test builds (always run to verify integration)
+npm start                      # 15-20 seconds, shows ASCII art, then Ctrl+C
+npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output bundle.js --assets-dest /tmp/  # 4-25 seconds
 rm bundle.js
 ```
 
