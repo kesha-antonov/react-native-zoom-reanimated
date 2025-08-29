@@ -405,13 +405,22 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
     updateZoomGestureLastTime,
   ])
 
-  const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: baseScale.value * pinchScale.value },
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-    ],
-  }))
+  const contentContainerAnimatedStyle = useAnimatedStyle(() => {
+    // Ensure we get primitive number values from shared values
+    // This handles cases where shared values might be serialized as objects
+    const baseScaleNum = typeof baseScale.value === 'number' ? baseScale.value : 1
+    const pinchScaleNum = typeof pinchScale.value === 'number' ? pinchScale.value : 1
+    const translateXNum = typeof translateX.value === 'number' ? translateX.value : 0
+    const translateYNum = typeof translateY.value === 'number' ? translateY.value : 0
+
+    return {
+      transform: [
+        { scale: baseScaleNum * pinchScaleNum },
+        { translateX: translateXNum },
+        { translateY: translateYNum },
+      ],
+    }
+  })
 
   return {
     zoomGesture,
