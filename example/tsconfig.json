@@ -1,6 +1,4 @@
 {
-  "module": "node16",
-  "moduleResolution": "node16",
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
@@ -12,7 +10,8 @@
     "lib": [
       "es2017"
     ],
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "noEmit": true,
     "strict": true,
     "target": "esnext",
@@ -20,6 +19,7 @@
     "paths": {
       "@src": [
         "./src"
+      ]
     }
   },
   "exclude": [
