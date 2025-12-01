@@ -1,5 +1,5 @@
 {
-  "name": "react-native-zoom-reanimated",
+  "name": "@luiszurita/react-native-zoom-reanimated",
   "version": "1.4.10",
   "description": "Zoom component on react-native + react-native-reanimated + react-native-gesture-handler",
   "keywords": [
