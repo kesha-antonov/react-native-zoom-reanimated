@@ -372,7 +372,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
         }: GestureUpdateEvent<PinchGestureHandlerEventPayload>): void => {
           updateZoomGestureLastTime()
 
-          pinchScale.value = scale
+          const clamped = Math.max(1, scale)
+          pinchScale.value = clamped
         }
       )
       .onEnd(
@@ -381,7 +382,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): {
         }: GestureUpdateEvent<PinchGestureHandlerEventPayload>): void => {
           updateZoomGestureLastTime()
 
-          pinchScale.value = scale
+          const clamped = Math.max(1, scale)
+          pinchScale.value = clamped
 
           runOnJS(onPinchEnd)(scale)
         }
@@ -442,11 +444,13 @@ export default function Zoom(
     <GestureHandlerRootView>
       <GestureDetector gesture={zoomGesture}>
         <View
-          style={[styles.container, style]}
-          onLayout={onLayout}
-          collapsable={false}
+         style={[styles.container, style]}
+         onLayout={onLayout}
+         pointerEvents="box-none"
+         collapsable={false}
         >
           <Animated.View
+            pointerEvents="box-none"
             style={[contentContainerAnimatedStyle, contentContainerStyle]}
             onLayout={onLayoutContent}
           >
