@@ -23,23 +23,27 @@
     "src/"
   ],
   "scripts": {
-    "autofix": "eslint -c .eslintrc.js --ext .ts,.tsx --fix .",
+    "autofix": "eslint --fix .",
     "bump": "npm version patch",
-    "lint": "eslint -c .eslintrc.js --ext .ts,.tsx .",
+    "lint": "eslint .",
     "publish": "npm publish",
     "_prepublishOnly": "jest && npm run lint",
     "test": "jest"
   },
   "devDependencies": {
-    "@react-native-community/eslint-config": "^3.2.0",
+    "@eslint/js": "^9.17.0",
+    "@stylistic/eslint-plugin": "^2.12.1",
     "@types/react": "^19.2.7",
     "@types/react-native": "^0.73.0",
-    "eslint": "^9.39.1",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
     "jest": "^30.2.0",
     "react-native-gesture-handler": "^2.29.1",
     "react-native-reanimated": "^4.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.18.1"
   },
   "peerDependencies": {
     "react-native-gesture-handler": "*",
