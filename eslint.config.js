@@ -101,7 +101,6 @@ export default tseslint.config(
           propertyDeclaration: true,
         },
       ],
-      '@typescript-eslint/type-annotation-spacing': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/method-signature-style': ['error', 'method'],
       '@typescript-eslint/no-namespace': 'error',
@@ -245,6 +244,7 @@ export default tseslint.config(
       'react-hooks/rules-of-hooks': 'error',
 
       // Stylistic rules (formatting)
+      '@stylistic/type-annotation-spacing': 'error',
       '@stylistic/spaced-comment': [
         'error',
         'always',
@@ -274,11 +274,11 @@ export default tseslint.config(
       '@stylistic/quotes': ['error', 'single', { allowTemplateLiterals: true }],
       '@stylistic/jsx-quotes': ['error', 'prefer-double'],
       '@stylistic/brace-style': ['error', '1tbs'],
-      '@stylistic/semi': ['error', 'never'],
+      '@stylistic/semi': ['error', 'always'],
       '@stylistic/member-delimiter-style': [
         'error',
         {
-          multiline: { delimiter: 'semi', requireLast: true },
+          multiline: { delimiter: 'none', requireLast: false },
           singleline: { delimiter: 'semi', requireLast: false },
         },
       ],

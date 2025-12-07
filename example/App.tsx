@@ -95,10 +95,6 @@ function App(): React.JSX.Element {
     </GestureHandlerRootView>
   )
 }
-      </SafeAreaView>
-    </GestureHandlerRootView>
-  )
-}
 
 const styles = StyleSheet.create({
   fill: {

@@ -101,7 +101,7 @@ export default [
       '@stylistic/template-curly-spacing': 'off',
       '@stylistic/linebreak-style': ['error', 'unix'],
       '@stylistic/quotes': ['error', 'single'],
-      '@stylistic/semi': ['error', 'never'],
+      '@stylistic/semi': ['error', 'always'],
       '@stylistic/comma-dangle': [
         'error',
         {
