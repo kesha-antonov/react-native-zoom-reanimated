@@ -13,14 +13,17 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Zoom from 'react-native-zoom-reanimated'
 import FlatListExample from './FlatListExample'
+import UseZoomGestureExample from './UseZoomGestureExample'
 
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen'
 
-function App (): React.JSX.Element {
+type ExampleType = 'single' | 'gallery' | 'hook'
+
+function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark'
-  const [showFlatListExample, setShowFlatListExample] = useState(false)
+  const [currentExample, setCurrentExample] = useState<ExampleType>('single')
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -30,8 +33,18 @@ function App (): React.JSX.Element {
   const imageWidth = 1100
   const imageHeight = 910
 
-  const toggleExample = () => {
-    setShowFlatListExample(!showFlatListExample)
+  const cycleExample = () => {
+    setCurrentExample((prev) => {
+      if (prev === 'single') return 'gallery'
+      if (prev === 'gallery') return 'hook'
+      return 'single'
+    })
+  }
+
+  const getButtonText = () => {
+    if (currentExample === 'single') return 'Show Image Gallery'
+    if (currentExample === 'gallery') return 'Show useZoomGesture Hook'
+    return 'Show Single Image'
   }
 
   return (
@@ -44,35 +57,44 @@ function App (): React.JSX.Element {
 
         {/* Toggle Button */}
         <View style={styles.headerContainer}>
-          <TouchableOpacity style={styles.toggleButton} onPress={toggleExample}>
+          <TouchableOpacity style={styles.toggleButton} onPress={cycleExample}>
             <Text style={[styles.toggleButtonText, { color: isDarkMode ? '#fff' : '#000' }]}>
-              {showFlatListExample ? 'Show Single Image' : 'Show Image Gallery'}
+              {getButtonText()}
             </Text>
           </TouchableOpacity>
+          <Text style={[styles.exampleLabel, { color: isDarkMode ? '#aaa' : '#666' }]}>
+            {currentExample === 'single' && 'Zoom Component Example'}
+            {currentExample === 'gallery' && 'FlatList Gallery Example'}
+            {currentExample === 'hook' && 'useZoomGesture Hook Example'}
+          </Text>
         </View>
 
-        {showFlatListExample
-          ? (
-            <FlatListExample isDarkMode={isDarkMode} />
-          )
-          : (
-            <Zoom
-              doubleTapConfig={{
-                defaultScale: 5,
-                minZoomScale: 1,
-                maxZoomScale: 10,
+        {currentExample === 'gallery' ? (
+          <FlatListExample isDarkMode={isDarkMode} />
+        ) : currentExample === 'hook' ? (
+          <UseZoomGestureExample isDarkMode={isDarkMode} />
+        ) : (
+          <Zoom
+            doubleTapConfig={{
+              defaultScale: 5,
+              minZoomScale: 1,
+              maxZoomScale: 10,
+            }}
+          >
+            <Image
+              source={{ uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg' }}
+              resizeMode="contain"
+              style={{
+                width: deviceWidth,
+                height: imageHeight * deviceWidth / imageWidth,
               }}
-            >
-              <Image
-                source={{ uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg' }}
-                resizeMode='contain'
-                style={{
-                  width: deviceWidth,
-                  height: imageHeight * deviceWidth / imageWidth,
-                }}
-              />
-            </Zoom>
-          )}
+            />
+          </Zoom>
+        )}
+      </SafeAreaView>
+    </GestureHandlerRootView>
+  )
+}
       </SafeAreaView>
     </GestureHandlerRootView>
   )
@@ -94,12 +116,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
+    marginBottom: 8,
   },
   toggleButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  exampleLabel: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   sectionContainer: {
     marginTop: 32,
