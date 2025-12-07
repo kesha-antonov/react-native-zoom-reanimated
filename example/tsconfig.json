@@ -1,25 +1,10 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json",
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "jsx": "react-native",
-    "lib": [
-      "es2017"
-    ],
-    "module": "node16",
-    "moduleResolution": "node16",
-    "noEmit": true,
     "strict": true,
-    "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@src": [
-        "./src"
-      ]
+      "@src": ["./src"]
     }
   },
   "exclude": [
