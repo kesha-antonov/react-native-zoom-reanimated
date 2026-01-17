@@ -23,8 +23,6 @@ web-build/
 node_modules/
 npm-debug.log
 yarn-error.log
-yarn.lock
-package-lock.json
 
 # Testing
 /coverage
@@ -33,3 +31,6 @@ package-lock.json
 *.log
 *.tmp
 *.temp
+
+ios
+android

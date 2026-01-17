@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
+import tseslint from 'typescript-eslint'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 
@@ -12,26 +13,24 @@ export default [
       '**/.expo/**',
       '**/android/**',
       '**/ios/**',
-      '.eslintrc.js',
-      'eslint.config.js',
+      'eslint.config.mjs',
       'babel.config.js',
       'metro.config.js',
       'jest.config.js',
+      '.prettierrc.js',
     ],
   },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    plugins: {
+      '@stylistic': stylistic,
+    },
+  },
   {
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
     languageOptions: {
-      ecmaVersion: 2020,
-      sourceType: 'module',
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
       globals: {
-        // Browser/Node
         console: 'readonly',
         process: 'readonly',
         __dirname: 'readonly',
@@ -39,25 +38,19 @@ export default [
         module: 'readonly',
         require: 'readonly',
         exports: 'readonly',
-        // Testing
         describe: 'readonly',
         test: 'readonly',
         jest: 'readonly',
         expect: 'readonly',
-        // React Native
         fetch: 'readonly',
         navigator: 'readonly',
         __DEV__: 'readonly',
         XMLHttpRequest: 'readonly',
         FormData: 'readonly',
-        React$Element: 'readonly',
         requestAnimationFrame: 'readonly',
-        // Expo
-        Expo: 'readonly',
       },
     },
     plugins: {
-      '@stylistic': stylistic,
       react,
       'react-hooks': reactHooks,
     },
@@ -69,9 +62,9 @@ export default [
     rules: {
       // Core rules
       curly: ['error', 'multi', 'consistent'],
-      'no-func-assign': 'off',
-      'no-class-assign': 'off',
-      'no-useless-escape': 'off',
+
+      // TypeScript rules
+      '@typescript-eslint/no-require-imports': 'off',
 
       // React rules
       'react/prop-types': 'off',
@@ -89,19 +82,10 @@ export default [
       ],
       'react-hooks/rules-of-hooks': 'error',
 
-      // Stylistic rules (formatting)
-      '@stylistic/indent': [
-        'error',
-        2,
-        {
-          SwitchCase: 1,
-          ignoredNodes: ['TemplateLiteral'],
-        },
-      ],
-      '@stylistic/template-curly-spacing': 'off',
-      '@stylistic/linebreak-style': ['error', 'unix'],
+      // Stylistic rules
+      '@stylistic/semi': ['error', 'never'],
       '@stylistic/quotes': ['error', 'single'],
-      '@stylistic/semi': ['error', 'always'],
+      '@stylistic/indent': ['error', 2, { SwitchCase: 1 }],
       '@stylistic/comma-dangle': [
         'error',
         {

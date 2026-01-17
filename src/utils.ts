@@ -6,8 +6,8 @@
  * @returns The clamped value
  */
 export const clamp = (value: number, min: number, max: number): number => {
-  return Math.max(min, Math.min(max, value));
-};
+  return Math.max(min, Math.min(max, value))
+}
 
 /**
  * Calculates appropriate zoom scale based on content dimensions
@@ -17,17 +17,17 @@ export const clamp = (value: number, min: number, max: number): number => {
  * @returns Suggested zoom scale
  */
 export const getScaleFromDimensions = (width: number, height: number): number => {
-  if (width <= 0 || height <= 0) return 1;
+  if (width <= 0 || height <= 0) return 1
 
-  const isLandscape = width > height;
-  const aspectRatio = isLandscape ? width / height : height / width;
+  const isLandscape = width > height
+  const aspectRatio = isLandscape ? width / height : height / width
 
   // Scale factor decreases as aspect ratio increases for better UX
   // Max scale of 0.8 for square images, scales down for more extreme ratios
-  const scaleFactor = Math.max(0.5, Math.min(0.8, 1 / Math.sqrt(aspectRatio)));
+  const scaleFactor = Math.max(0.5, Math.min(0.8, 1 / Math.sqrt(aspectRatio)))
 
-  return aspectRatio * scaleFactor;
-};
+  return aspectRatio * scaleFactor
+}
 
 /**
  * Dimensions interface for consistent type usage
@@ -57,8 +57,8 @@ export const calculateMaxOffset = (
   containerSize: Dimensions,
   scale: number
 ): Offset => {
-  const scaledContentWidth = contentSize.width * scale;
-  const scaledContentHeight = contentSize.height * scale;
+  const scaledContentWidth = contentSize.width * scale
+  const scaledContentHeight = contentSize.height * scale
 
   return {
     x: scaledContentWidth < containerSize.width
@@ -67,8 +67,8 @@ export const calculateMaxOffset = (
     y: scaledContentHeight < containerSize.height
       ? 0
       : (scaledContentHeight - containerSize.height) / 2 / scale,
-  };
-};
+  }
+}
 
 /**
  * Resets offset values to zero with optional animation
@@ -85,15 +85,16 @@ export const resetOffsets = (
   translateY: { value: number },
   withAnimation?: (value: number) => number
 ): void => {
-  const newOffset = 0;
-  offsetX.value = newOffset;
-  offsetY.value = newOffset;
+  const newOffset = 0
+  offsetX.value = newOffset
+  offsetY.value = newOffset
 
   if (withAnimation) {
-    translateX.value = withAnimation(newOffset);
-    translateY.value = withAnimation(newOffset);
-  } else {
-    translateX.value = newOffset;
-    translateY.value = newOffset;
+    translateX.value = withAnimation(newOffset)
+    translateY.value = withAnimation(newOffset)
   }
-};
+  else {
+    translateX.value = newOffset
+    translateY.value = newOffset
+  }
+}

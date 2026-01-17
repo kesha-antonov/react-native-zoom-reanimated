@@ -62,16 +62,16 @@ export default function UseZoomGestureExample({ isDarkMode = false }: UseZoomGes
   useAnimatedReaction(
     () => zoomGestureLastTime.value,
     (time) => {
-      if (time > 0) {
+      if (time > 0) 
         runOnJS(setLastInteraction)(new Date(time).toLocaleTimeString())
-      }
+      
     }
   )
 
   const handleResetZoom = () => {
-    if (isZoomedIn.value) {
+    if (isZoomedIn.value) 
       zoomOut()
-    }
+    
   }
 
   return (

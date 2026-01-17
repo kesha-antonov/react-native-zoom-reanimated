@@ -15,9 +15,11 @@ import Zoom from 'react-native-zoom-reanimated'
 import FlatListExample from './FlatListExample'
 import UseZoomGestureExample from './UseZoomGestureExample'
 
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen'
+// Colors from deprecated NewAppScreen - defined locally
+const Colors = {
+  darker: '#121212',
+  lighter: '#F3F3F3',
+}
 
 type ExampleType = 'single' | 'gallery' | 'hook'
 
