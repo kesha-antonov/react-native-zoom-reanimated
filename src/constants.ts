@@ -1,10 +1,13 @@
 /**
  * Default zoom scale constraints
- * MIN_SCALE: minimum zoom level for double-tap (2x is the standard comfortable zoom)
  * MAX_SCALE: maximum allowed zoom level
  */
-export const MIN_SCALE = 2
 export const MAX_SCALE = 4
+
+/**
+ * Double-tap zoom scale (Apple Photos uses 2x)
+ */
+export const DOUBLE_TAP_SCALE = 2
 
 /**
  * Animation configuration constants
@@ -27,8 +30,8 @@ export const MAX_PAN_POINTERS = 2
  * Grouped zoom configuration
  */
 export const ZOOM_CONFIG = {
-  MIN_SCALE,
   MAX_SCALE,
+  DOUBLE_TAP_SCALE,
   ANIMATION_DURATION,
   TAP_MAX_DELTA,
   PAN_DEBOUNCE_MS,
