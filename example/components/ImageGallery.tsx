@@ -1,14 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   FlatList,
-  Image,
   useWindowDimensions,
   View,
   StyleSheet,
   Text,
   ActivityIndicator,
   type ViewStyle,
+  type LayoutChangeEvent,
 } from 'react-native'
+import { Image } from 'expo-image'
+import Animated, { LinearTransition } from 'react-native-reanimated'
 import Zoom from 'react-native-zoom-reanimated'
 
 /**
@@ -33,6 +35,101 @@ export interface ImageGalleryProps {
   minZoomScale?: number
   maxZoomScale?: number
   containerStyle?: ViewStyle
+}
+
+/**
+ * Props for individual gallery image item
+ */
+interface GalleryImageItemProps {
+  item: ImageItem
+  deviceWidth: number
+  deviceHeight: number
+  isDarkMode: boolean
+  showTitles: boolean
+  doubleTapScale: number
+  minZoomScale: number
+  maxZoomScale: number
+}
+
+/**
+ * Individual image item component for the gallery
+ */
+function GalleryImageItem({
+  item,
+  deviceWidth,
+  deviceHeight,
+  isDarkMode,
+  showTitles,
+  doubleTapScale,
+  minZoomScale,
+  maxZoomScale,
+}: GalleryImageItemProps): React.JSX.Element {
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
+
+  // Calculate image dimensions to fit container (aspect fit)
+  const imageAspectRatio = item.width && item.height
+    ? item.width / item.height
+    : 1
+  const containerAspectRatio = deviceWidth / deviceHeight
+
+  // Aspect fit: fit to width or height depending on aspect ratios
+  let imageWidth: number
+  let imageHeight: number
+
+  if (imageAspectRatio > containerAspectRatio) {
+    // Image is wider than container - fit to width
+    imageWidth = deviceWidth
+    imageHeight = deviceWidth / imageAspectRatio
+  }
+  else {
+    // Image is taller than container - fit to height
+    imageHeight = deviceHeight
+    imageWidth = deviceHeight * imageAspectRatio
+  }
+
+  return (
+    <View style={[styles.imageContainer, { width: deviceWidth, height: deviceHeight }]}>
+      <Zoom
+        style={[styles.zoomContainer, { width: deviceWidth, height: deviceHeight }]}
+        doubleTapConfig={{
+          defaultScale: doubleTapScale,
+          minZoomScale,
+          maxZoomScale,
+        }}
+      >
+        <Image
+          source={{ uri: item.uri }}
+          contentFit="contain"
+          style={{
+            width: imageWidth,
+            height: imageHeight,
+          }}
+          onLoadStart={() => {
+            setIsLoading(true)
+            setHasError(false)
+          }}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setIsLoading(false)
+            setHasError(true)
+          }}
+        />
+      </Zoom>
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={isDarkMode ? '#fff' : '#000'} />
+        </View>
+      )}
+      {hasError && (
+        <View style={styles.loadingOverlay}>
+          <Text style={[styles.errorText, { color: isDarkMode ? '#ff6b6b' : '#d32f2f' }]}>
+            Failed to load image
+          </Text>
+        </View>
+      )}
+    </View>
+  )
 }
 
 /**
@@ -62,81 +159,85 @@ export default function ImageGallery({
   maxZoomScale = 5,
   containerStyle,
 }: ImageGalleryProps): React.JSX.Element {
-  const { width: deviceWidth, height: deviceHeight } = useWindowDimensions()
+  const { width: deviceWidth } = useWindowDimensions()
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [containerHeight, setContainerHeight] = useState(0)
 
-  const renderImageItem = ({ item }: { item: ImageItem }) => {
-    const [isLoading, setIsLoading] = useState(true)
-    const [hasError, setHasError] = useState(false)
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    setContainerHeight(event.nativeEvent.layout.height)
+  }, [])
 
-    // Calculate image dimensions to fit screen width while maintaining aspect ratio
-    const imageAspectRatio = item.width && item.height
-      ? item.width / item.height
-      : 1
-    const imageHeight = deviceWidth / imageAspectRatio
+  const renderImageItem = ({ item }: { item: ImageItem }) => (
+    <GalleryImageItem
+      item={item}
+      deviceWidth={deviceWidth}
+      deviceHeight={containerHeight}
+      isDarkMode={isDarkMode}
+      showTitles={showTitles}
+      doubleTapScale={doubleTapScale}
+      minZoomScale={minZoomScale}
+      maxZoomScale={maxZoomScale}
+    />
+  )
 
-    return (
-      <View style={[styles.imageContainer, { width: deviceWidth, height: deviceHeight }]}>
-        <Zoom
-          style={styles.zoomContainer}
-          doubleTapConfig={{
-            defaultScale: doubleTapScale,
-            minZoomScale,
-            maxZoomScale,
-          }}
-        >
-          <Image
-            source={{ uri: item.uri }}
-            resizeMode="contain"
-            style={{
-              width: deviceWidth,
-              height: imageHeight,
-            }}
-            onLoadStart={() => {
-              setIsLoading(true)
-              setHasError(false)
-            }}
-            onLoad={() => setIsLoading(false)}
-            onError={() => {
-              setIsLoading(false)
-              setHasError(true)
-            }}
-          />
-          {isLoading && (
-            <View style={styles.loadingOverlay}>
-              <ActivityIndicator size="large" color={isDarkMode ? '#fff' : '#000'} />
-            </View>
-          )}
-          {hasError && (
-            <View style={styles.loadingOverlay}>
-              <Text style={[styles.errorText, { color: isDarkMode ? '#ff6b6b' : '#d32f2f' }]}>
-                Failed to load image
-              </Text>
-            </View>
-          )}
-        </Zoom>
-        {showTitles && item.title && (
-          <Text style={[styles.imageTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
-            {item.title}
-          </Text>
-        )}
-      </View>
-    )
+  const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
+    const index = Math.round(event.nativeEvent.contentOffset.x / deviceWidth)
+    if (index !== currentIndex && index >= 0 && index < images.length) {
+      setCurrentIndex(index)
+    }
   }
 
   return (
-    <FlatList
-      data={images}
-      renderItem={renderImageItem}
-      keyExtractor={(item) => item.id}
-      horizontal
-      pagingEnabled
-      showsHorizontalScrollIndicator={false}
-      style={[styles.flatList, containerStyle]}
-    />
+    <View style={[styles.container, containerStyle]} onLayout={handleLayout}>
+      {containerHeight > 0 && (
+        <FlatList
+          data={images}
+          renderItem={renderImageItem}
+          keyExtractor={(item) => item.id}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          style={styles.flatList}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        />
+      )}
+      <Animated.View
+        layout={LinearTransition.duration(300)}
+        style={[
+          styles.pageIndicator,
+          { backgroundColor: isDarkMode ? 'rgba(42,42,42,0.7)' : 'rgba(255,255,255,0.7)' },
+        ]}
+      >
+        <Animated.Text
+          layout={LinearTransition.duration(300)}
+          style={[
+            styles.pageIndicatorText,
+            { color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)' },
+          ]}
+        >
+          {currentIndex + 1}/{images.length}
+        </Animated.Text>
+        {showTitles && images[currentIndex]?.title && (
+          <Animated.Text
+            layout={LinearTransition.duration(300)}
+            style={[
+              styles.pageTitleText,
+              { color: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' },
+            ]}
+          >
+            {images[currentIndex].title}
+          </Animated.Text>
+        )}
+      </Animated.View>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   flatList: {
     flex: 1,
   },
@@ -149,28 +250,41 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imageTitle: {
-    position: 'absolute',
-    bottom: 50,
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    color: 'white',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
+
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'transparent',
   },
   errorText: {
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
     paddingHorizontal: 20,
+  },
+  pageIndicator: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  pageIndicatorText: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  pageTitleText: {
+    fontSize: 11,
+    fontWeight: '400',
+    textAlign: 'center',
+    marginTop: 2,
   },
 })
