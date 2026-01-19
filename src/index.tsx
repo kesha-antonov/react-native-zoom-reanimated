@@ -43,7 +43,6 @@ import styles from './styles'
 // Rubber band factor for over-scroll/over-zoom
 const RUBBER_BAND_FACTOR = 0.55
 const MIN_OVER_SCALE = 0.5 // Allow zooming out to 50% for rubber band
-const MAX_OVER_SCALE = MAX_SCALE * 1.5
 
 /**
  * Animation configuration type
@@ -66,6 +65,16 @@ export interface UseZoomGestureProps {
   animationFunction?: typeof withTiming
   animationConfig?: AnimationConfigProps
   doubleTapConfig?: DoubleTapConfig
+  /**
+   * Minimum allowed zoom scale. Default is 1.
+   * Set to 1 to prevent zooming out smaller than initial size.
+   * Set to a value < 1 to allow zooming out (e.g., 0.5 for 50%).
+   */
+  minScale?: number
+  /**
+   * Maximum allowed zoom scale. Default is 4 (MAX_SCALE constant).
+   */
+  maxScale?: number
 }
 
 /**
@@ -96,6 +105,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     animationFunction = withTiming,
     animationConfig,
     doubleTapConfig,
+    minScale = 1,
+    maxScale = MAX_SCALE,
   } = props
 
   // ============== STATE ==============
@@ -256,7 +267,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
   ): void => {
     'worklet'
 
-    const clampedScale = clamp(targetScale, 1, MAX_SCALE)
+    const clampedScale = clamp(targetScale, minScale, maxScale)
     const { x: clampedX, y: clampedY } = clampTranslation(
       translateX.value,
       translateY.value,
@@ -285,8 +296,19 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     savedTranslateX.value = clampedX
     savedTranslateY.value = clampedY
 
-    isZoomedIn.value = clampedScale > 1
-  }, [scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, isZoomedIn, clampTranslation])
+    isZoomedIn.value = clampedScale > minScale
+  }, [
+    scale,
+    translateX,
+    translateY,
+    savedScale,
+    savedTranslateX,
+    savedTranslateY,
+    isZoomedIn,
+    clampTranslation,
+    minScale,
+    maxScale,
+  ])
 
   // ============== ZOOM ACTIONS ==============
 
@@ -304,8 +326,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
     const clampedTargetScale = clamp(
       targetScale,
-      doubleTapConfig?.minZoomScale ?? 1,
-      doubleTapConfig?.maxZoomScale ?? MAX_SCALE
+      doubleTapConfig?.minZoomScale ?? minScale,
+      doubleTapConfig?.maxZoomScale ?? maxScale
     )
 
     // Container center
@@ -357,24 +379,26 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     doubleTapConfig,
     withAnimation,
     clampTranslation,
+    minScale,
+    maxScale,
   ])
 
   /**
-   * Zoom out to 1x scale
+   * Zoom out to minimum scale
    */
   const zoomOut = useCallback((): void => {
     'worklet'
 
-    scale.value = withAnimation(1)
+    scale.value = withAnimation(minScale)
     translateX.value = withAnimation(0)
     translateY.value = withAnimation(0)
 
-    savedScale.value = 1
+    savedScale.value = minScale
     savedTranslateX.value = 0
     savedTranslateY.value = 0
 
     isZoomedIn.value = false
-  }, [scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, isZoomedIn, withAnimation])
+  }, [scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, isZoomedIn, withAnimation, minScale])
 
   /**
    * Handle double tap
@@ -511,7 +535,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         // - 1 finger pan when zoomed in
         // - 2 finger pan always works (for pinch-pan combo)
         if (([State.UNDETERMINED, State.BEGAN] as State[]).includes(e.state)) {
-          const zoomed = scale.value > 1.01 // Small threshold to avoid float issues
+          const zoomed = scale.value > minScale + 0.01 // Small threshold to avoid float issues
           if (zoomed || e.numberOfTouches === 2)
             state.activate()
           else
@@ -549,17 +573,17 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         // New scale with rubber band limits
         let newScale = savedScale.value * event.scale
         // Apply rubber band to scale
-        if (newScale < 1) {
-          // Rubber band for zoom out below 1x
-          const overZoom = 1 - newScale
-          newScale = 1 - overZoom * RUBBER_BAND_FACTOR
-          newScale = Math.max(newScale, MIN_OVER_SCALE)
+        if (newScale < minScale) {
+          // Rubber band for zoom out below minScale
+          const overZoom = minScale - newScale
+          newScale = minScale - overZoom * RUBBER_BAND_FACTOR
+          newScale = Math.max(newScale, minScale * MIN_OVER_SCALE)
         }
-        else if (newScale > MAX_SCALE) {
+        else if (newScale > maxScale) {
           // Rubber band for zoom in above max
-          const overZoom = newScale - MAX_SCALE
-          newScale = MAX_SCALE + overZoom * RUBBER_BAND_FACTOR
-          newScale = Math.min(newScale, MAX_OVER_SCALE)
+          const overZoom = newScale - maxScale
+          newScale = maxScale + overZoom * RUBBER_BAND_FACTOR
+          newScale = Math.min(newScale, maxScale * 1.5)
         }
 
         // Dynamic focal point - Apple Photos updates focal point during gesture
@@ -614,6 +638,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     getTranslateBounds,
     applyBoundaryConstraints,
     applyRubberBandTranslation,
+    minScale,
+    maxScale,
   ])
 
   // ============== ANIMATED STYLE ==============
@@ -649,6 +675,16 @@ export interface ZoomProps {
   contentContainerStyle?: StyleProp<ViewStyle>
   animationConfig?: AnimationConfigProps
   doubleTapConfig?: DoubleTapConfig
+  /**
+   * Minimum allowed zoom scale. Default is 1.
+   * Set to 1 to prevent zooming out smaller than initial size (fixes #29).
+   * Set to a value < 1 to allow zooming out (e.g., 0.5 for 50%).
+   */
+  minScale?: number
+  /**
+   * Maximum allowed zoom scale. Default is 4.
+   */
+  maxScale?: number
 
   animationFunction?: <T extends AnimatableValue>(
     toValue: T,
