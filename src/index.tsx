@@ -34,13 +34,16 @@ import Animated, {
 import {
   ANIMATION_DURATION,
   MAX_SCALE,
-  MIN_PAN_POINTERS,
-  MAX_PAN_POINTERS,
   TAP_MAX_DELTA,
   DOUBLE_TAP_SCALE,
-} from './constants'
+} from './constants' // Allow over-zoom by 50%
 import { clamp, type Dimensions } from './utils'
 import styles from './styles'
+
+// Rubber band factor for over-scroll/over-zoom
+const RUBBER_BAND_FACTOR = 0.55
+const MIN_OVER_SCALE = 0.5 // Allow zooming out to 50% for rubber band
+const MAX_OVER_SCALE = MAX_SCALE * 1.5
 
 /**
  * Animation configuration type
@@ -113,6 +116,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
   // Pinch gesture state
   const pinchFocalX = useSharedValue(0)
   const pinchFocalY = useSharedValue(0)
+  const isPinching = useSharedValue(false)
+
+  // Pan gesture state for rubber band effect
+  const isPanning = useSharedValue(false)
 
   // Tracking state
   const isZoomedIn = useSharedValue(false)
@@ -199,6 +206,46 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
       y: clamp(ty, -bounds.maxY, bounds.maxY),
     }
   }, [getTranslateBounds])
+
+  /**
+   * Apply rubber band effect to a value that's outside bounds
+   * Apple Photos uses this for smooth over-scroll feeling
+   */
+  const rubberBand = useCallback((
+    value: number,
+    min: number,
+    max: number,
+    dimension: number
+  ): number => {
+    'worklet'
+    if (value < min) {
+      const overscroll = min - value
+      return min - (1 - (1 / ((overscroll * RUBBER_BAND_FACTOR / dimension) + 1))) * dimension
+    }
+    if (value > max) {
+      const overscroll = value - max
+      return max + (1 - (1 / ((overscroll * RUBBER_BAND_FACTOR / dimension) + 1))) * dimension
+    }
+    return value
+  }, [])
+
+  /**
+   * Apply rubber band to translation during gesture
+   */
+  const applyRubberBandTranslation = useCallback((
+    tx: number,
+    ty: number,
+    currentScale: number
+  ): { x: number; y: number } => {
+    'worklet'
+    const container = containerDimensions.value
+    const bounds = getTranslateBounds(currentScale)
+
+    return {
+      x: rubberBand(tx, -bounds.maxX, bounds.maxX, container.width),
+      y: rubberBand(ty, -bounds.maxY, bounds.maxY, container.height),
+    }
+  }, [containerDimensions, getTranslateBounds, rubberBand])
 
   /**
    * Apply boundary constraints with spring animation (rubber band effect)
@@ -377,10 +424,12 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
       })
 
     // ========== PAN GESTURE ==========
+    // Apple Photos: 1 finger when zoomed in, 2 fingers when at 1x
     const panGesture = Gesture.Pan()
       .onStart(() => {
         'worklet'
         updateZoomGestureLastTime()
+        isPanning.value = true
         // Save current position
         savedTranslateX.value = translateX.value
         savedTranslateY.value = translateY.value
@@ -388,34 +437,63 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         'worklet'
 
-        // Pan in screen coordinates (not divided by scale - this is Apple's approach)
-        // Content moves 1:1 with finger movement
-        translateX.value = savedTranslateX.value + event.translationX
-        translateY.value = savedTranslateY.value + event.translationY
+        // Calculate new translation
+        const newTx = savedTranslateX.value + event.translationX
+        const newTy = savedTranslateY.value + event.translationY
+
+        // Apply rubber band effect during pan (Apple Photos behavior)
+        const rubber = applyRubberBandTranslation(newTx, newTy, scale.value)
+        translateX.value = rubber.x
+        translateY.value = rubber.y
       })
       .onEnd((event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
         'worklet'
         updateZoomGestureLastTime()
+        isPanning.value = false
 
         const currentScale = scale.value
         const bounds = getTranslateBounds(currentScale)
 
-        // Apply momentum with clamping (decay with rubber band)
-        translateX.value = withDecay({
-          velocity: event.velocityX,
-          clamp: [-bounds.maxX, bounds.maxX],
-          rubberBandEffect: true,
-          rubberBandFactor: 0.6,
-        })
+        // Check if we're outside bounds
+        const currentTx = translateX.value
+        const currentTy = translateY.value
+        const isOutOfBoundsX = currentTx < -bounds.maxX || currentTx > bounds.maxX
+        const isOutOfBoundsY = currentTy < -bounds.maxY || currentTy > bounds.maxY
 
-        translateY.value = withDecay({
-          velocity: event.velocityY,
-          clamp: [-bounds.maxY, bounds.maxY],
-          rubberBandEffect: true,
-          rubberBandFactor: 0.6,
-        })
+        if (isOutOfBoundsX || isOutOfBoundsY) {
+          // Spring back to bounds (no momentum)
+          const springConfig = {
+            damping: 20,
+            stiffness: 300,
+            mass: 0.5,
+          }
+          translateX.value = withSpring(
+            clamp(currentTx, -bounds.maxX, bounds.maxX),
+            springConfig
+          )
+          translateY.value = withSpring(
+            clamp(currentTy, -bounds.maxY, bounds.maxY),
+            springConfig
+          )
+        }
+        else {
+          // Apply momentum with clamping (decay with rubber band)
+          translateX.value = withDecay({
+            velocity: event.velocityX,
+            clamp: [-bounds.maxX, bounds.maxX],
+            rubberBandEffect: true,
+            rubberBandFactor: 0.6,
+          })
 
-        // Update saved values after decay settles
+          translateY.value = withDecay({
+            velocity: event.velocityY,
+            clamp: [-bounds.maxY, bounds.maxY],
+            rubberBandEffect: true,
+            rubberBandFactor: 0.6,
+          })
+        }
+
+        // Update saved values
         savedTranslateX.value = clamp(
           savedTranslateX.value + event.translationX,
           -bounds.maxX,
@@ -429,30 +507,35 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
       })
       .onTouchesMove((e: GestureTouchEvent, state: GestureStateManagerType) => {
         'worklet'
-        // Only allow pan when zoomed in, or with 2 fingers
-        if (([State.UNDETERMINED, State.BEGAN] as State[]).includes(e.state))
-          if (isZoomedIn.value || e.numberOfTouches === 2)
+        // Apple Photos behavior:
+        // - 1 finger pan when zoomed in
+        // - 2 finger pan always works (for pinch-pan combo)
+        if (([State.UNDETERMINED, State.BEGAN] as State[]).includes(e.state)) {
+          const zoomed = scale.value > 1.01 // Small threshold to avoid float issues
+          if (zoomed || e.numberOfTouches === 2)
             state.activate()
-
           else
             state.fail()
+        }
       })
       .minDistance(0)
-      .minPointers(MIN_PAN_POINTERS)
-      .maxPointers(MAX_PAN_POINTERS)
+      .minPointers(1)
+      .maxPointers(2)
 
     // ========== PINCH GESTURE ==========
+    // Apple Photos: dynamic focal point tracking during pinch
     const pinchGesture = Gesture.Pinch()
       .onStart((event: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
         'worklet'
         updateZoomGestureLastTime()
+        isPinching.value = true
 
         // Save current state
         savedScale.value = scale.value
         savedTranslateX.value = translateX.value
         savedTranslateY.value = translateY.value
 
-        // Save focal point
+        // Save initial focal point
         pinchFocalX.value = event.focalX
         pinchFocalY.value = event.focalY
       })
@@ -463,29 +546,43 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         const centerX = container.width / 2
         const centerY = container.height / 2
 
-        // New scale (allow over-zoom for rubber band effect)
-        const newScale = savedScale.value * event.scale
+        // New scale with rubber band limits
+        let newScale = savedScale.value * event.scale
+        // Apply rubber band to scale
+        if (newScale < 1) {
+          // Rubber band for zoom out below 1x
+          const overZoom = 1 - newScale
+          newScale = 1 - overZoom * RUBBER_BAND_FACTOR
+          newScale = Math.max(newScale, MIN_OVER_SCALE)
+        }
+        else if (newScale > MAX_SCALE) {
+          // Rubber band for zoom in above max
+          const overZoom = newScale - MAX_SCALE
+          newScale = MAX_SCALE + overZoom * RUBBER_BAND_FACTOR
+          newScale = Math.min(newScale, MAX_OVER_SCALE)
+        }
+
+        // Dynamic focal point - Apple Photos updates focal point during gesture
+        // This makes the gesture feel more natural when fingers move
+        const currentFocalX = event.focalX
+        const currentFocalY = event.focalY
+
+        // Blend between initial and current focal point
+        // This creates smoother behavior than pure dynamic tracking
+        const focalBlend = 0.3 // 30% tracking of finger movement
+        const effectiveFocalX = pinchFocalX.value + (currentFocalX - pinchFocalX.value) * focalBlend
+        const effectiveFocalY = pinchFocalY.value + (currentFocalY - pinchFocalY.value) * focalBlend
 
         // Focal point offset from container center
-        const focalOffsetX = pinchFocalX.value - centerX
-        const focalOffsetY = pinchFocalY.value - centerY
+        const focalOffsetX = effectiveFocalX - centerX
+        const focalOffsetY = effectiveFocalY - centerY
 
-        // Apple Photos focal point algorithm:
-        // Keep the point under the focal point stationary
-        //
-        // Content point in original coordinates:
-        // contentPoint = (focalOffset - savedTranslate) / savedScale
-        //
-        // New translation to keep this point under focal:
-        // newTranslate = focalOffset - contentPoint * newScale
-        //             = focalOffset - (focalOffset - savedTranslate) / savedScale * newScale
-        //             = focalOffset * (1 - newScale/savedScale) + savedTranslate * newScale/savedScale
-
+        // Apple Photos focal point algorithm
         const scaleRatio = newScale / savedScale.value
         const newTx = focalOffsetX * (1 - scaleRatio) + savedTranslateX.value * scaleRatio
         const newTy = focalOffsetY * (1 - scaleRatio) + savedTranslateY.value * scaleRatio
 
-        // Apply directly (no clamping during gesture for rubber band)
+        // Apply directly (rubber band already applied to scale)
         scale.value = newScale
         translateX.value = newTx
         translateY.value = newTy
@@ -493,6 +590,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
       .onEnd(() => {
         'worklet'
         updateZoomGestureLastTime()
+        isPinching.value = false
 
         // Apply boundary constraints with spring animation
         applyBoundaryConstraints(scale.value, true)
@@ -511,9 +609,11 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     pinchFocalX,
     pinchFocalY,
     containerDimensions,
-    isZoomedIn,
+    isPinching,
+    isPanning,
     getTranslateBounds,
     applyBoundaryConstraints,
+    applyRubberBandTranslation,
   ])
 
   // ============== ANIMATED STYLE ==============

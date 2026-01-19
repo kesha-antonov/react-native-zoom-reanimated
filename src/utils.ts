@@ -14,11 +14,9 @@ export const clamp = (value: number, min: number, max: number): number => {
  * Calculates appropriate zoom scale based on content dimensions
  * Returns a moderate zoom level (2x) as the default for double-tap
  * The scale is consistent regardless of aspect ratio for predictable UX
- * @param width - Content width
- * @param height - Content height
  * @returns Suggested zoom scale (default 2x)
  */
-export const getScaleFromDimensions = (_width: number, _height: number): number => {
+export const getScaleFromDimensions = (): number => {
   // Return a consistent 2x zoom for double-tap
   // This provides a predictable, non-aggressive zoom experience
   // Users can always pinch to zoom further if needed
