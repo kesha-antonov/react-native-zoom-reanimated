@@ -17,6 +17,11 @@ Zoom component on React Native + react-native-reanimated + react-native-gesture-
 
 [Android Preview](https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e8a572b-8130-4aea-88c7-2ca035a155a1)
 
+## Platform Support
+
+- **iOS**: Full support for pinch-to-zoom, pan, and double-tap gestures
+- **Android**: Full support including reliable pinch-to-zoom inside horizontal FlatList (fixed in v2.2.0, see [#50](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/50))
+
 ## Getting started
 
 Install the library using either Yarn:

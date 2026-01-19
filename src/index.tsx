@@ -576,6 +576,13 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     // ========== PINCH GESTURE ==========
     // Apple Photos: dynamic focal point tracking during pinch
     const pinchGesture = Gesture.Pinch()
+      .onTouchesDown((e: GestureTouchEvent, state: GestureStateManagerType) => {
+        'worklet'
+        // Immediately activate pinch when 2 fingers touch
+        // This prevents horizontal FlatList from stealing the gesture on Android
+        if (e.numberOfTouches === 2)
+          state.activate()
+      })
       .onStart((event: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
         'worklet'
         updateZoomGestureLastTime()

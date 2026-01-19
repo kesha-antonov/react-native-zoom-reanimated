@@ -14,6 +14,7 @@ export default [
       'example/**',
       '.eslintrc.js',
       'eslint.config.mjs',
+      'metro.config.js',
     ],
   },
   js.configs.recommended,
