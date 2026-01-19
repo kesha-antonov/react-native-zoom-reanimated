@@ -45,6 +45,16 @@ import styles from './styles'
 const RUBBER_BAND_FACTOR = 0.55
 const MIN_OVER_SCALE = 0.5 // Allow zooming out to 50% for rubber band
 
+// Apple Photos spring animation config
+// Uses critically damped spring (dampingRatio ≈ 1) with fast response
+// Reference: iOS UISpringTimingParameters defaults
+const SPRING_CONFIG = {
+  damping: 20,
+  stiffness: 200,
+  mass: 1,
+  overshootClamping: false,
+}
+
 /**
  * Animation configuration type
  */
@@ -200,8 +210,9 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     const scaledHeight = content.height * currentScale
 
     // How much the scaled content exceeds the container
-    const excessWidth = Math.max(0, scaledWidth - container.width)
-    const excessHeight = Math.max(0, scaledHeight - container.height)
+    // Add 1px buffer to ensure edges align perfectly (avoid subpixel gaps)
+    const excessWidth = Math.max(0, scaledWidth - container.width + 1)
+    const excessHeight = Math.max(0, scaledHeight - container.height + 1)
 
     return {
       maxX: excessWidth / 2,
@@ -283,15 +294,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
     if (animate) {
       // Apple uses spring animation for snap-back
-      const springConfig = {
-        damping: 20,
-        stiffness: 300,
-        mass: 0.5,
-      }
-
-      scale.value = withSpring(clampedScale, springConfig)
-      translateX.value = withSpring(clampedX, springConfig)
-      translateY.value = withSpring(clampedY, springConfig)
+      // Using gentle spring config to avoid excessive bounce (fix for #51)
+      scale.value = withSpring(clampedScale, SPRING_CONFIG)
+      translateX.value = withSpring(clampedX, SPRING_CONFIG)
+      translateY.value = withSpring(clampedY, SPRING_CONFIG)
     }
     else {
       scale.value = clampedScale
@@ -512,19 +518,14 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         const isOutOfBoundsY = currentTy < -bounds.maxY || currentTy > bounds.maxY
 
         if (isOutOfBoundsX || isOutOfBoundsY) {
-          // Spring back to bounds (no momentum)
-          const springConfig = {
-            damping: 20,
-            stiffness: 300,
-            mass: 0.5,
-          }
+          // Spring back to bounds with gentle animation (fix for #51)
           translateX.value = withSpring(
             clamp(currentTx, -bounds.maxX, bounds.maxX),
-            springConfig
+            SPRING_CONFIG
           )
           translateY.value = withSpring(
             clamp(currentTy, -bounds.maxY, bounds.maxY),
-            springConfig
+            SPRING_CONFIG
           )
         }
         else {
@@ -690,10 +691,11 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
   // ============== ANIMATED STYLE ==============
   // Transform order: translate first, then scale
   // This means scale happens around the center after translation
+  // Use Math.round to avoid subpixel gaps at edges
   const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
+      { translateX: Math.round(translateX.value) },
+      { translateY: Math.round(translateY.value) },
       { scale: scale.value },
     ],
   }))

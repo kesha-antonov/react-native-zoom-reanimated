@@ -20,7 +20,9 @@ Zoom component on React Native + react-native-reanimated + react-native-gesture-
 ## Platform Support
 
 - **iOS**: Full support for pinch-to-zoom, pan, and double-tap gestures
-- **Android**: Full support including reliable pinch-to-zoom inside horizontal FlatList (fixed in v2.2.0, see [#50](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/50))
+- **Android**: Full support including:
+  - Reliable pinch-to-zoom inside horizontal FlatList (fixed in v2.2.0, see [#50](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/50))
+  - Smooth spring animations during zoom transitions (fixed in v2.2.0, see [#51](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/51))
 
 ## Getting started
 
