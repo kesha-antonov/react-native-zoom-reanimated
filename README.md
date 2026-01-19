@@ -116,6 +116,22 @@ Use `minScale={1}` to prevent users from zooming out smaller than the initial si
 </Zoom>
 ```
 
+### Using Zoom State Callback
+
+Track when zoom state changes (see [#31](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/31)):
+
+```jsx
+<Zoom
+  onZoomStateChange={(isZoomed: boolean) => {
+    console.log('Zoom state changed:', isZoomed ? 'zoomed in' : 'zoomed out')
+    // Hide UI elements when zoomed in, show when zoomed out
+    setShowControls(!isZoomed)
+  }}
+>
+  <Image source={{ uri: imageUri }} style={styles.image} />
+</Zoom>
+```
+
 > See the `example/` directory for complete working examples, including `FlatListExample.tsx` and `ImageGalleryStandalone.tsx`.
 
 ## Parameters
@@ -128,6 +144,7 @@ Use `minScale={1}` to prevent users from zooming out smaller than the initial si
 | contentContainerStyle | `StyleProp<ViewStyle>` | No       | Content container style |
 | minScale              | `number`               | No       | Minimum allowed zoom scale. Default is `1`. Set to `1` to prevent zooming out smaller than initial size. Set to a value < 1 (e.g., `0.5`) to allow zooming out to 50% |
 | maxScale              | `number`               | No       | Maximum allowed zoom scale. Default is `4` |
+| onZoomStateChange     | `(isZoomed: boolean) => void` | No | Callback fired when zoom state changes. Called with `true` when zoomed in, `false` when zoomed out to initial scale |
 | animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring |
 | animationConfig       | object                 | No       | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
 | doubleTapConfig       | { defaultScale?: number, minZoomScale?: number, maxZoomScale?: number } | No | Config for zoom on double tap. `defaultScale` - if you want to have fixed zoom on double tap, or calculated based on dimensions then leave it as it is. `minZoomScale` and `maxZoomScale` define range with min zoom & max zoom on double tap |
@@ -184,6 +201,7 @@ interface UseZoomGestureProps {
   animationConfig?: object               // Configuration for animation function
   minScale?: number                      // Minimum allowed zoom scale (default: 1)
   maxScale?: number                      // Maximum allowed zoom scale (default: 4)
+  onZoomStateChange?: (isZoomed: boolean) => void  // Callback when zoom state changes
   doubleTapConfig?: {
     defaultScale?: number    // Default zoom scale on double tap
     minZoomScale?: number    // Minimum zoom scale for double tap

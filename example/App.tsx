@@ -67,6 +67,7 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const { width: deviceWidth } = useWindowDimensions()
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [isZoomed, setIsZoomed] = useState(false)
   const imageWidth = 1100
   const imageHeight = 910
   const calculatedHeight = imageHeight * deviceWidth / imageWidth
@@ -80,6 +81,7 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           minZoomScale: 1,
           maxZoomScale: 10,
         }}
+        onZoomStateChange={setIsZoomed}
       >
         <Image
           source={{ uri: 'https://picsum.photos/1100/910' }}
@@ -111,6 +113,11 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           </View>
         )}
       </Zoom>
+      <View style={[styles.zoomIndicator, { backgroundColor: isDarkMode ? 'rgba(42,42,42,0.7)' : 'rgba(255,255,255,0.7)' }]}>
+        <Text style={[styles.zoomIndicatorText, { color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)' }]}>
+          {isZoomed ? '🔍 Zoomed In' : '🖼️ Normal'}
+        </Text>
+      </View>
     </View>
   )
 }
@@ -282,6 +289,23 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     paddingHorizontal: 20,
+  },
+  zoomIndicator: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  zoomIndicatorText: {
+    fontSize: 13,
+    fontWeight: '500',
   },
 })
 

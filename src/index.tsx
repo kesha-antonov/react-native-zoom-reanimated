@@ -24,6 +24,7 @@ import Animated, {
   AnimatableValue,
   AnimationCallback,
   Easing,
+  runOnJS,
   SharedValue,
   useAnimatedStyle,
   useSharedValue,
@@ -75,6 +76,11 @@ export interface UseZoomGestureProps {
    * Maximum allowed zoom scale. Default is 4 (MAX_SCALE constant).
    */
   maxScale?: number
+  /**
+   * Callback fired when zoom state changes (zoomed in or out).
+   * Called with true when zoomed in, false when zoomed out to initial scale.
+   */
+  onZoomStateChange?: (isZoomed: boolean) => void
 }
 
 /**
@@ -107,6 +113,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     doubleTapConfig,
     minScale = 1,
     maxScale = MAX_SCALE,
+    onZoomStateChange,
   } = props
 
   // ============== STATE ==============
@@ -366,6 +373,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     savedTranslateX.value = newTx
     savedTranslateY.value = newTy
 
+    // Fire callback if state changed (was not zoomed, now zoomed)
+    if (!isZoomedIn.value && onZoomStateChange)
+      runOnJS(onZoomStateChange)(true)
+
     isZoomedIn.value = true
   }, [
     containerDimensions,
@@ -381,6 +392,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     clampTranslation,
     minScale,
     maxScale,
+    onZoomStateChange,
   ])
 
   /**
@@ -397,8 +409,23 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     savedTranslateX.value = 0
     savedTranslateY.value = 0
 
+    // Fire callback if state changed (was zoomed, now not zoomed)
+    if (isZoomedIn.value && onZoomStateChange)
+      runOnJS(onZoomStateChange)(false)
+
     isZoomedIn.value = false
-  }, [scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, isZoomedIn, withAnimation, minScale])
+  }, [
+    scale,
+    translateX,
+    translateY,
+    savedScale,
+    savedTranslateX,
+    savedTranslateY,
+    isZoomedIn,
+    withAnimation,
+    minScale,
+    onZoomStateChange,
+  ])
 
   /**
    * Handle double tap
@@ -616,8 +643,17 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         updateZoomGestureLastTime()
         isPinching.value = false
 
+        // Check previous zoom state before applying constraints
+        const wasZoomed = isZoomedIn.value
+
         // Apply boundary constraints with spring animation
         applyBoundaryConstraints(scale.value, true)
+
+        // Fire callback if zoom state changed
+        const finalScale = clamp(scale.value, minScale, maxScale)
+        const isNowZoomed = finalScale > minScale
+        if (wasZoomed !== isNowZoomed && onZoomStateChange)
+          runOnJS(onZoomStateChange)(isNowZoomed)
       })
 
     return Gesture.Simultaneous(tapGesture, panGesture, pinchGesture)
@@ -640,6 +676,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     applyRubberBandTranslation,
     minScale,
     maxScale,
+    onZoomStateChange,
+    isZoomedIn,
   ])
 
   // ============== ANIMATED STYLE ==============
@@ -685,6 +723,11 @@ export interface ZoomProps {
    * Maximum allowed zoom scale. Default is 4.
    */
   maxScale?: number
+  /**
+   * Callback fired when zoom state changes (zoomed in or out).
+   * Called with true when zoomed in, false when zoomed out to initial scale.
+   */
+  onZoomStateChange?: (isZoomed: boolean) => void
 
   animationFunction?: <T extends AnimatableValue>(
     toValue: T,
