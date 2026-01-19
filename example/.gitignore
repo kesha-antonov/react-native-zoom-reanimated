@@ -1,13 +1,14 @@
-# OSX
-#
-.DS_Store
+# dependencies
+node_modules/
 
 # Expo
 .expo/
 dist/
 web-build/
+expo-env.d.ts
 
 # Native
+.kotlin/
 *.orig.*
 *.jks
 *.p8
@@ -18,19 +19,21 @@ web-build/
 # Metro
 .metro-health-check*
 
-# node.js
-#
-node_modules/
-npm-debug.log
-yarn-error.log
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
-# Testing
-/coverage
+# macOS
+.DS_Store
+*.pem
 
-# Temporary files
-*.log
-*.tmp
-*.temp
+# local env files
+.env*.local
 
-ios
-android
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android

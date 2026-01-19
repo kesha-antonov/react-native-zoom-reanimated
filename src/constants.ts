@@ -1,7 +1,9 @@
 /**
  * Default zoom scale constraints
+ * MIN_SCALE: minimum zoom level for double-tap (2x is the standard comfortable zoom)
+ * MAX_SCALE: maximum allowed zoom level
  */
-export const MIN_SCALE = 1.4
+export const MIN_SCALE = 2
 export const MAX_SCALE = 4
 
 /**

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   FlatList,
   Image,
@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Text,
+  ActivityIndicator,
   type ViewStyle,
 } from 'react-native'
 import Zoom from 'react-native-zoom-reanimated'
@@ -64,6 +65,9 @@ export default function ImageGallery({
   const { width: deviceWidth, height: deviceHeight } = useWindowDimensions()
 
   const renderImageItem = ({ item }: { item: ImageItem }) => {
+    const [isLoading, setIsLoading] = useState(true)
+    const [hasError, setHasError] = useState(false)
+
     // Calculate image dimensions to fit screen width while maintaining aspect ratio
     const imageAspectRatio = item.width && item.height
       ? item.width / item.height
@@ -87,7 +91,28 @@ export default function ImageGallery({
               width: deviceWidth,
               height: imageHeight,
             }}
+            onLoadStart={() => {
+              setIsLoading(true)
+              setHasError(false)
+            }}
+            onLoad={() => setIsLoading(false)}
+            onError={() => {
+              setIsLoading(false)
+              setHasError(true)
+            }}
           />
+          {isLoading && (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color={isDarkMode ? '#fff' : '#000'} />
+            </View>
+          )}
+          {hasError && (
+            <View style={styles.loadingOverlay}>
+              <Text style={[styles.errorText, { color: isDarkMode ? '#ff6b6b' : '#d32f2f' }]}>
+                Failed to load image
+              </Text>
+            </View>
+          )}
         </Zoom>
         {showTitles && item.title && (
           <Text style={[styles.imageTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
@@ -135,5 +160,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
 })

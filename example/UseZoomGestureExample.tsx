@@ -62,16 +62,16 @@ export default function UseZoomGestureExample({ isDarkMode = false }: UseZoomGes
   useAnimatedReaction(
     () => zoomGestureLastTime.value,
     (time) => {
-      if (time > 0) 
+      if (time > 0)
         runOnJS(setLastInteraction)(new Date(time).toLocaleTimeString())
-      
+
     }
   )
 
   const handleResetZoom = () => {
-    if (isZoomedIn.value) 
+    if (isZoomedIn.value)
       zoomOut()
-    
+
   }
 
   return (
@@ -90,7 +90,8 @@ export default function UseZoomGestureExample({ isDarkMode = false }: UseZoomGes
 
       {/* Zoomable Image using useZoomGesture hook */}
       <View style={styles.zoomableContainer}>
-        <GestureDetector gesture={zoomGesture}>
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <GestureDetector gesture={zoomGesture as any}>
           <View style={styles.gestureContainer} onLayout={onLayout}>
             <Animated.View
               style={[styles.animatedContent, contentContainerAnimatedStyle]}

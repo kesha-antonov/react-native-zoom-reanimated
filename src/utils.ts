@@ -6,27 +6,23 @@
  * @returns The clamped value
  */
 export const clamp = (value: number, min: number, max: number): number => {
+  'worklet'
   return Math.max(min, Math.min(max, value))
 }
 
 /**
  * Calculates appropriate zoom scale based on content dimensions
- * Uses a heuristic to provide a comfortable default zoom level
+ * Returns a moderate zoom level (2x) as the default for double-tap
+ * The scale is consistent regardless of aspect ratio for predictable UX
  * @param width - Content width
  * @param height - Content height
- * @returns Suggested zoom scale
+ * @returns Suggested zoom scale (default 2x)
  */
-export const getScaleFromDimensions = (width: number, height: number): number => {
-  if (width <= 0 || height <= 0) return 1
-
-  const isLandscape = width > height
-  const aspectRatio = isLandscape ? width / height : height / width
-
-  // Scale factor decreases as aspect ratio increases for better UX
-  // Max scale of 0.8 for square images, scales down for more extreme ratios
-  const scaleFactor = Math.max(0.5, Math.min(0.8, 1 / Math.sqrt(aspectRatio)))
-
-  return aspectRatio * scaleFactor
+export const getScaleFromDimensions = (_width: number, _height: number): number => {
+  // Return a consistent 2x zoom for double-tap
+  // This provides a predictable, non-aggressive zoom experience
+  // Users can always pinch to zoom further if needed
+  return 2
 }
 
 /**
@@ -57,6 +53,7 @@ export const calculateMaxOffset = (
   containerSize: Dimensions,
   scale: number
 ): Offset => {
+  'worklet'
   const scaledContentWidth = contentSize.width * scale
   const scaledContentHeight = contentSize.height * scale
 
@@ -85,6 +82,7 @@ export const resetOffsets = (
   translateY: { value: number },
   withAnimation?: (value: number) => number
 ): void => {
+  'worklet'
   const newOffset = 0
   offsetX.value = newOffset
   offsetY.value = newOffset
