@@ -41,6 +41,15 @@ import {
 import { clamp, type Dimensions } from './utils'
 import styles from './styles'
 
+// Debug logging helper
+const DEBUG = true
+const log = (tag: string, data: Record<string, unknown>) => {
+  'worklet'
+  if (DEBUG) {
+    console.log(`[ZOOM ${tag}]`, JSON.stringify(data))
+  }
+}
+
 // Rubber band factor for over-scroll/over-zoom
 const RUBBER_BAND_FACTOR = 0.55
 const MIN_OVER_SCALE = 0.5 // Allow zooming out to 50% for rubber band
@@ -50,8 +59,8 @@ const MIN_OVER_SCALE = 0.5 // Allow zooming out to 50% for rubber band
 // Reference: iOS UISpringTimingParameters defaults
 const SPRING_CONFIG = {
   damping: 20,
-  stiffness: 200,
-  mass: 1,
+  stiffness: 250,
+  mass: 0.5,
   overshootClamping: false,
 }
 
@@ -169,56 +178,52 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
   )
 
   /**
-   * Get content size scaled to container width (aspect fit)
-   */
-  const getContentContainerSize = useCallback((): Dimensions => {
-    'worklet'
-    const { width: containerWidth, height: containerHeight } = containerDimensions.value
-    const { width: contentWidth, height: contentHeight } = contentDimensions.value
-
-    if (contentWidth <= 0 || contentHeight <= 0)
-      return { width: containerWidth, height: containerHeight }
-
-    const contentAspect = contentWidth / contentHeight
-    const containerAspect = containerWidth / containerHeight
-
-    if (contentAspect > containerAspect)
-      // Content is wider - fit to width
-      return {
-        width: containerWidth,
-        height: containerWidth / contentAspect,
-      }
-
-    else
-      // Content is taller - fit to height
-      return {
-        width: containerHeight * contentAspect,
-        height: containerHeight,
-      }
-  }, [containerDimensions, contentDimensions])
-
-  /**
    * Calculate the maximum translation bounds for a given scale
    * This ensures the content edges don't go past the container edges
+   *
+   * Apple Photos algorithm:
+   * - Content is centered in container
+   * - Translation bounds = half of how much scaled content exceeds container
+   * - When content fits inside container, bounds = 0 (no panning allowed)
+   *
+   * IMPORTANT: Use actual contentDimensions from onLayoutContent, not calculated
+   * aspect-fit size. Layout system may round dimensions differently than our math.
    */
   const getTranslateBounds = useCallback((currentScale: number): { maxX: number; maxY: number } => {
     'worklet'
     const container = containerDimensions.value
-    const content = getContentContainerSize()
+    // Use actual measured content dimensions, not calculated aspect-fit size
+    // This ensures bounds match exactly what's rendered on screen
+    const content = contentDimensions.value
 
+    // Scaled content dimensions
     const scaledWidth = content.width * currentScale
     const scaledHeight = content.height * currentScale
 
     // How much the scaled content exceeds the container
-    // Add 1px buffer to ensure edges align perfectly (avoid subpixel gaps)
-    const excessWidth = Math.max(0, scaledWidth - container.width + 1)
-    const excessHeight = Math.max(0, scaledHeight - container.height + 1)
+    // When scaledSize <= containerSize, excess = 0 (content fits, no panning)
+    // When scaledSize > containerSize, excess = scaledSize - containerSize
+    const excessWidth = Math.max(0, scaledWidth - container.width)
+    const excessHeight = Math.max(0, scaledHeight - container.height)
 
-    return {
-      maxX: excessWidth / 2,
-      maxY: excessHeight / 2,
+    // Max translation = half the excess (content can pan from edge to edge)
+    // Subtract small padding to ensure content always overlaps edges
+    // This prevents subpixel gaps from floating-point rounding
+    const safetyPadding = 1
+    const result = {
+      maxX: Math.max(0, Math.floor(excessWidth / 2) - safetyPadding),
+      maxY: Math.max(0, Math.floor(excessHeight / 2) - safetyPadding),
     }
-  }, [containerDimensions, getContentContainerSize])
+    log('getTranslateBounds', {
+      scale: currentScale,
+      container: { w: container.width, h: container.height },
+      content: { w: content.width, h: content.height },
+      scaled: { w: scaledWidth, h: scaledHeight },
+      excess: { w: excessWidth, h: excessHeight },
+      bounds: result,
+    })
+    return result
+  }, [containerDimensions, contentDimensions])
 
   /**
    * Clamp translation to valid bounds
@@ -286,11 +291,18 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     'worklet'
 
     const clampedScale = clamp(targetScale, minScale, maxScale)
+    log('applyBoundaryConstraints START', {
+      targetScale,
+      clampedScale,
+      currentTx: translateX.value,
+      currentTy: translateY.value,
+    })
     const { x: clampedX, y: clampedY } = clampTranslation(
       translateX.value,
       translateY.value,
       clampedScale
     )
+    log('applyBoundaryConstraints CLAMPED', { clampedX, clampedY, clampedScale })
 
     if (animate) {
       // Apple uses spring animation for snap-back
@@ -449,6 +461,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
   const onLayout = useCallback(
     ({ nativeEvent: { layout: { width, height } } }: LayoutChangeEvent): void => {
+      log('onLayout CONTAINER', { width, height })
       containerDimensions.value = { width, height }
     },
     [containerDimensions]
@@ -456,6 +469,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
   const onLayoutContent = useCallback(
     ({ nativeEvent: { layout: { width, height } } }: LayoutChangeEvent): void => {
+      log('onLayout CONTENT', { width, height })
       contentDimensions.value = { width, height }
     },
     [contentDimensions]
@@ -651,6 +665,12 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         updateZoomGestureLastTime()
         isPinching.value = false
 
+        log('PINCH_END', {
+          scale: scale.value,
+          translateX: translateX.value,
+          translateY: translateY.value,
+        })
+
         // Check previous zoom state before applying constraints
         const wasZoomed = isZoomedIn.value
 
@@ -690,15 +710,36 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
   // ============== ANIMATED STYLE ==============
   // Transform order: translate first, then scale
-  // This means scale happens around the center after translation
-  // Use Math.round to avoid subpixel gaps at edges
-  const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: Math.round(translateX.value) },
-      { translateY: Math.round(translateY.value) },
-      { scale: scale.value },
-    ],
-  }))
+  // This means scale happens around the center of the View
+  //
+  // Apple Photos rendering approach:
+  // - Use exact floating-point values for smooth animations
+  // - The content View should have explicit dimensions matching aspect ratio
+  // - overflow: hidden on container clips any subpixel overflow
+  const contentContainerAnimatedStyle = useAnimatedStyle(() => {
+    const tx = translateX.value
+    const ty = translateY.value
+    const s = scale.value
+    
+    // Log only when values change significantly (avoid spam)
+    if (Math.abs(s - 1) > 0.01 || Math.abs(tx) > 0.1 || Math.abs(ty) > 0.1) {
+      log('ANIMATED_STYLE', {
+        translateX: tx,
+        translateY: ty,
+        scale: s,
+        container: containerDimensions.value,
+        content: contentDimensions.value,
+      })
+    }
+    
+    return {
+      transform: [
+        { translateX: tx },
+        { translateY: ty },
+        { scale: s },
+      ],
+    }
+  })
 
   return {
     zoomGesture,
