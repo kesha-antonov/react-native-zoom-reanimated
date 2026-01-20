@@ -29,7 +29,7 @@ Apple Photos-style zoom component for React Native with pinch, pan, and double-t
   <tr>
     <td>
 
-https://user-images.githubusercontent.com/11584712/174407015-2cd13692-a32e-4591-8cce-b47f6edb3cb9.mp4
+https://github.com/user-attachments/assets/9da40463-7b70-46bb-bfe3-eb0ab4f8feb7
 
 </td>
     <td>
