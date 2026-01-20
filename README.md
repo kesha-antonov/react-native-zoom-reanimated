@@ -12,12 +12,6 @@
   Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures. Built with React Native Reanimated and Gesture Handler for buttery smooth 120fps animations.
 </p>
 
-<p align="center">
-  <a href="https://snack.expo.dev/@kesha-antonov/gifted-chat-playground" target="_blank">
-    <img src="https://img.shields.io/badge/▶️_Try_in_Browser-4630EB?style=for-the-badge&logo=expo&logoColor=white" alt="Try GiftedChat on Expo Snack"/>
-  </a>
-</p>
-
 ---
 
 ## ✨ Features
