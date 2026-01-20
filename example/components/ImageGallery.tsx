@@ -1,6 +1,5 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import {
-  FlatList,
   useWindowDimensions,
   View,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
   type ViewStyle,
   type LayoutChangeEvent,
 } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import { Image } from 'expo-image'
 import Animated, { LinearTransition } from 'react-native-reanimated'
 import Zoom from 'react-native-zoom-reanimated'
@@ -42,12 +42,14 @@ export interface ImageGalleryProps {
  */
 interface GalleryImageItemProps {
   item: ImageItem
+  index: number
   deviceWidth: number
   deviceHeight: number
   isDarkMode: boolean
   doubleTapScale: number
   minZoomScale: number
   maxZoomScale: number
+  flatListRef: React.RefObject<FlatList<ImageItem> | null>
 }
 
 /**
@@ -55,12 +57,14 @@ interface GalleryImageItemProps {
  */
 function GalleryImageItem({
   item,
+  index,
   deviceWidth,
   deviceHeight,
   isDarkMode,
   doubleTapScale,
   minZoomScale,
   maxZoomScale,
+  flatListRef,
 }: GalleryImageItemProps): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
@@ -95,6 +99,10 @@ function GalleryImageItem({
           minZoomScale,
           maxZoomScale,
         }}
+        enableSwipeToClose
+        parentScrollRef={flatListRef}
+        currentIndex={index}
+        itemWidth={deviceWidth}
       >
         <Image
           source={{ uri: item.uri }}
@@ -160,20 +168,23 @@ export default function ImageGallery({
   const { width: deviceWidth } = useWindowDimensions()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [containerHeight, setContainerHeight] = useState(0)
+  const flatListRef = useRef<FlatList<ImageItem> | null>(null)
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setContainerHeight(event.nativeEvent.layout.height)
   }, [])
 
-  const renderImageItem = ({ item }: { item: ImageItem }) => (
+  const renderImageItem = ({ item, index }: { item: ImageItem; index: number }) => (
     <GalleryImageItem
       item={item}
+      index={index}
       deviceWidth={deviceWidth}
       deviceHeight={containerHeight}
       isDarkMode={isDarkMode}
       doubleTapScale={doubleTapScale}
       minZoomScale={minZoomScale}
       maxZoomScale={maxZoomScale}
+      flatListRef={flatListRef}
     />
   )
 
@@ -188,6 +199,7 @@ export default function ImageGallery({
     <View style={[styles.container, containerStyle]} onLayout={handleLayout}>
       {containerHeight > 0 && (
         <FlatList
+          ref={flatListRef}
           data={images}
           renderItem={renderImageItem}
           keyExtractor={(item) => item.id}
