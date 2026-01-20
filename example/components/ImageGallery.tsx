@@ -35,6 +35,12 @@ export interface ImageGalleryProps {
   minZoomScale?: number
   maxZoomScale?: number
   containerStyle?: ViewStyle
+  /**
+   * Gap between images in the gallery (Apple Photos style).
+   * Creates black spacing between images while swiping.
+   * Default is 20.
+   */
+  imageGap?: number
 }
 
 /**
@@ -50,6 +56,8 @@ interface GalleryImageItemProps {
   minZoomScale: number
   maxZoomScale: number
   flatListRef: React.RefObject<FlatList<ImageItem> | null>
+  imageGap: number
+  itemWidth: number
 }
 
 /**
@@ -65,6 +73,8 @@ function GalleryImageItem({
   minZoomScale,
   maxZoomScale,
   flatListRef,
+  imageGap,
+  itemWidth,
 }: GalleryImageItemProps): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
@@ -90,10 +100,11 @@ function GalleryImageItem({
     imageWidth = deviceHeight * imageAspectRatio
   }
 
+  // Item container includes gap, but image displays at deviceWidth
   return (
-    <View style={[styles.imageContainer, { width: deviceWidth, height: deviceHeight }]}>
+    <View style={[styles.imageContainer, { width: itemWidth, height: deviceHeight }]}>
       <Zoom
-        style={[styles.zoomContainer, { width: deviceWidth, height: deviceHeight }]}
+        style={[styles.zoomContainer, { width: deviceWidth, height: deviceHeight, marginRight: imageGap }]}
         doubleTapConfig={{
           defaultScale: doubleTapScale,
           minZoomScale,
@@ -102,7 +113,7 @@ function GalleryImageItem({
         enableSwipeToClose
         parentScrollRef={flatListRef}
         currentIndex={index}
-        itemWidth={deviceWidth}
+        itemWidth={itemWidth}
       >
         <Image
           source={{ uri: item.uri }}
@@ -164,11 +175,15 @@ export default function ImageGallery({
   minZoomScale = 1,
   maxZoomScale = 5,
   containerStyle,
+  imageGap = 20,
 }: ImageGalleryProps): React.JSX.Element {
   const { width: deviceWidth } = useWindowDimensions()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [containerHeight, setContainerHeight] = useState(0)
   const flatListRef = useRef<FlatList<ImageItem> | null>(null)
+
+  // Item width includes gap for proper snapping
+  const itemWidth = deviceWidth + imageGap
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setContainerHeight(event.nativeEvent.layout.height)
@@ -185,14 +200,15 @@ export default function ImageGallery({
       minZoomScale={minZoomScale}
       maxZoomScale={maxZoomScale}
       flatListRef={flatListRef}
+      imageGap={imageGap}
+      itemWidth={itemWidth}
     />
   )
 
   const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
-    const index = Math.round(event.nativeEvent.contentOffset.x / deviceWidth)
+    const index = Math.round(event.nativeEvent.contentOffset.x / itemWidth)
     if (index !== currentIndex && index >= 0 && index < images.length)
       setCurrentIndex(index)
-
   }
 
   return (
@@ -209,6 +225,9 @@ export default function ImageGallery({
           style={styles.flatList}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          snapToInterval={itemWidth}
+          decelerationRate="fast"
+          contentContainerStyle={{ paddingRight: imageGap }}
         />
       )}
       <Animated.View
@@ -246,6 +265,7 @@ export default function ImageGallery({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   flatList: {
     flex: 1,
@@ -253,11 +273,13 @@ const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
   zoomContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
 
   loadingOverlay: {
