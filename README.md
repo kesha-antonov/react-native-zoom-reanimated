@@ -72,7 +72,7 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
 | Dependency | Version |
 |:----------:|:-------:|
 | react-native-reanimated | >= 2.0.0 |
-| react-native-gesture-handler | >= * |
+| react-native-gesture-handler | >= 2.0.0 |
 
 ## Installation
 
