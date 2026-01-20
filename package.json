@@ -36,8 +36,8 @@
     "bump": "npm version patch",
     "lint": "eslint .",
     "publish": "npm publish",
-    "prepublishOnly": "jest && npm run lint",
-    "test": "jest",
+    "prepublishOnly": "yarn test && npm run lint",
+    "test": "cd example && jest",
     "prepare": "husky"
   },
   "devDependencies": {
