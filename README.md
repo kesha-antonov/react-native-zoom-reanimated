@@ -9,7 +9,7 @@
 <h1 align="center">React Native Zoom Reanimated</h1>
 
 <p align="center">
-  Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures. Built with React Native Reanimated 2 and Gesture Handler for buttery smooth 120fps animations.
+  Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures. Built with React Native Reanimated and Gesture Handler for buttery smooth 120fps animations.
 </p>
 
 <p align="center">
