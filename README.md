@@ -1,11 +1,23 @@
-# react-native-zoom-reanimated
+# React Native Zoom Reanimated
 
-Zoom component on React Native + react-native-reanimated + react-native-gesture-handler
+Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures.
 
-* You can zoom any View, Image or whatever
-* Can be used in FlatList (see Preview below)
-* Double tap to zoom in or zoom out
-* Automatically bounces to borders when paning outside of container and leaving the touch
+[![npm version](https://badge.fury.io/js/react-native-zoom-reanimated.svg)](https://badge.fury.io/js/react-native-zoom-reanimated)
+[![npm downloads](https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg)](https://www.npmjs.com/package/react-native-zoom-reanimated)
+[![license](https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg)](https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE)
+[![platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg)](https://reactnative.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+
+## ✨ Features
+
+- 🔍 **Pinch to Zoom** — Smooth pinch gesture with rubber band effect
+- 👆 **Double Tap** — Tap twice to zoom in/out with configurable scale
+- 🖐️ **Pan Gesture** — Drag zoomed content with momentum and boundary bounce
+- 📱 **Apple Photos Gallery** — Seamless swipe between zoomed images in FlatList
+- 🔄 **Rubber Band Effect** — Natural over-scroll/over-zoom feeling
+- 🎯 **Focal Point Zoom** — Zoom centers on pinch/tap location
+- ⚡ **Reanimated 2+** — 60fps animations running on UI thread
+- 📝 **TypeScript** — Complete type definitions included
 
 ## Preview
 
@@ -28,14 +40,41 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
   </tr>
 </table>
 
-## Platform Support
+## Table of Contents
 
-- **iOS**: Full support for pinch-to-zoom, pan, and double-tap gestures
-- **Android**: Full support including:
-  - Reliable pinch-to-zoom inside horizontal FlatList (fixed in v2.2.0, see [#50](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/50))
-  - Smooth spring animations during zoom transitions (fixed in v2.2.0, see [#51](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/51))
+- [React Native Zoom Reanimated](#react-native-zoom-reanimated)
+  - [✨ Features](#-features)
+  - [Preview](#preview)
+  - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Examples](#examples)
+    - [Basic Usage](#basic-usage)
+    - [Image Gallery with FlatList](#image-gallery-with-flatlist)
+    - [Apple Photos-Style Gallery](#apple-photos-style-gallery)
+    - [Using the Hook Directly](#using-the-hook-directly)
+  - [API Reference](#api-reference)
+    - [Zoom Component Props](#zoom-component-props)
+    - [DoubleTapConfig](#doubletapconfig)
+    - [ScrollableRef](#scrollableref)
+  - [Advanced Usage: useZoomGesture Hook](#advanced-usage-usezoomgesture-hook)
+    - [Hook API](#hook-api)
+    - [Basic Hook Usage](#basic-hook-usage)
+  - [Example App](#example-app)
+  - [Platform Support](#platform-support)
+  - [Contributing](#contributing)
+  - [Author](#author)
+  - [License](#license)
 
-## Getting started
+## Requirements
+
+| Dependency | Version |
+|:----------:|:-------:|
+| react-native-reanimated | >= 2.0.0 |
+| react-native-gesture-handler | >= * |
+
+## Installation
 
 Install the library using either Yarn:
 
@@ -49,13 +88,7 @@ or npm:
 npm install --save react-native-zoom-reanimated
 ```
 
-## Required peer dependencies
-
-|          dependency          | required version |
-|:----------------------------:|:----------------:|
-|   react-native-reanimated    |    \>= 2.0.0     |
-| react-native-gesture-handler |      \>= *       |
-
+Make sure you have [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) and [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation) installed and configured.
 
 ## Usage
 
@@ -121,10 +154,10 @@ For seamless swipe navigation while zoomed — just like Apple Photos:
 ```
 
 Features:
-- Swipe between images even while zoomed in
-- Smooth edge-to-scroll transition
-- Auto zoom reset when changing images
-- Gap between images
+- ✅ Swipe between images even while zoomed in
+- ✅ Smooth edge-to-scroll transition
+- ✅ Auto zoom reset when changing images
+- ✅ Gap between images
 
 > 📄 Full example: [`example/FlatListExample.tsx`](./example/FlatListExample.tsx) — complete implementation with all features
 
@@ -144,7 +177,7 @@ const { zoomGesture, contentContainerAnimatedStyle, onLayout, onLayoutContent, z
 
 > 📄 Full example: [`example/UseZoomGestureExample.tsx`](./example/UseZoomGestureExample.tsx)
 
-## Parameters
+## API Reference
 
 ### Zoom Component Props
 
@@ -246,11 +279,47 @@ function MyCustomZoomComponent() {
 }
 ```
 
+## Example App
+
+```bash
+cd example
+yarn install
+yarn ios     # or yarn android
+```
+
+The example app demonstrates:
+- Basic zoom functionality
+- Image gallery with FlatList
+- Apple Photos-style seamless navigation
+- Using the hook directly
+
+## Platform Support
+
+| Platform | Status |
+|----------|--------|
+| **iOS** | ✅ Full support |
+| **Android** | ✅ Full support |
+
+**Android fixes in v2.2.0:**
+- Reliable pinch-to-zoom inside horizontal FlatList ([#50](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/50))
+- Smooth spring animations during zoom transitions ([#51](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/51))
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run validation (`yarn tsc --noEmit && yarn eslint src/`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## Author
+
+Maintained by [Kesha Antonov](https://github.com/kesha-antonov)
 
 ## License
 
-The library is released under the MIT licence. For more information see [`LICENSE`](/LICENSE).
-
-## TODO
-
-- make list component with https://github.com/callstack/react-native-pager-view and export it for galleries usecase
+[MIT](./LICENSE)
