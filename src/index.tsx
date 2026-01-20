@@ -41,15 +41,6 @@ import {
 import { clamp, type Dimensions } from './utils'
 import styles from './styles'
 
-// Debug logging helper
-const DEBUG = true
-const log = (tag: string, data: Record<string, unknown>) => {
-  'worklet'
-  if (DEBUG) {
-    console.log(`[ZOOM ${tag}]`, JSON.stringify(data))
-  }
-}
-
 // Rubber band factor for over-scroll/over-zoom
 const RUBBER_BAND_FACTOR = 0.55
 const MIN_OVER_SCALE = 0.5 // Allow zooming out to 50% for rubber band
@@ -210,19 +201,10 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     // Subtract small padding to ensure content always overlaps edges
     // This prevents subpixel gaps from floating-point rounding
     const safetyPadding = 1
-    const result = {
+    return {
       maxX: Math.max(0, Math.floor(excessWidth / 2) - safetyPadding),
       maxY: Math.max(0, Math.floor(excessHeight / 2) - safetyPadding),
     }
-    log('getTranslateBounds', {
-      scale: currentScale,
-      container: { w: container.width, h: container.height },
-      content: { w: content.width, h: content.height },
-      scaled: { w: scaledWidth, h: scaledHeight },
-      excess: { w: excessWidth, h: excessHeight },
-      bounds: result,
-    })
-    return result
   }, [containerDimensions, contentDimensions])
 
   /**
@@ -291,18 +273,11 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     'worklet'
 
     const clampedScale = clamp(targetScale, minScale, maxScale)
-    log('applyBoundaryConstraints START', {
-      targetScale,
-      clampedScale,
-      currentTx: translateX.value,
-      currentTy: translateY.value,
-    })
     const { x: clampedX, y: clampedY } = clampTranslation(
       translateX.value,
       translateY.value,
       clampedScale
     )
-    log('applyBoundaryConstraints CLAMPED', { clampedX, clampedY, clampedScale })
 
     if (animate) {
       // Apple uses spring animation for snap-back
@@ -461,7 +436,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
   const onLayout = useCallback(
     ({ nativeEvent: { layout: { width, height } } }: LayoutChangeEvent): void => {
-      log('onLayout CONTAINER', { width, height })
       containerDimensions.value = { width, height }
     },
     [containerDimensions]
@@ -469,7 +443,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
   const onLayoutContent = useCallback(
     ({ nativeEvent: { layout: { width, height } } }: LayoutChangeEvent): void => {
-      log('onLayout CONTENT', { width, height })
       contentDimensions.value = { width, height }
     },
     [contentDimensions]
@@ -665,12 +638,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         updateZoomGestureLastTime()
         isPinching.value = false
 
-        log('PINCH_END', {
-          scale: scale.value,
-          translateX: translateX.value,
-          translateY: translateY.value,
-        })
-
         // Check previous zoom state before applying constraints
         const wasZoomed = isZoomedIn.value
 
@@ -716,30 +683,13 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
   // - Use exact floating-point values for smooth animations
   // - The content View should have explicit dimensions matching aspect ratio
   // - overflow: hidden on container clips any subpixel overflow
-  const contentContainerAnimatedStyle = useAnimatedStyle(() => {
-    const tx = translateX.value
-    const ty = translateY.value
-    const s = scale.value
-    
-    // Log only when values change significantly (avoid spam)
-    if (Math.abs(s - 1) > 0.01 || Math.abs(tx) > 0.1 || Math.abs(ty) > 0.1) {
-      log('ANIMATED_STYLE', {
-        translateX: tx,
-        translateY: ty,
-        scale: s,
-        container: containerDimensions.value,
-        content: contentDimensions.value,
-      })
-    }
-    
-    return {
-      transform: [
-        { translateX: tx },
-        { translateY: ty },
-        { scale: s },
-      ],
-    }
-  })
+  const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
+  }))
 
   return {
     zoomGesture,
