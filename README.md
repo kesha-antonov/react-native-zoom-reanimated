@@ -1,5 +1,3 @@
-# React Native Zoom Reanimated
-
 Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures.
 
 [![npm version](https://badge.fury.io/js/react-native-zoom-reanimated.svg)](https://badge.fury.io/js/react-native-zoom-reanimated)
@@ -42,31 +40,30 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
 
 ## Table of Contents
 
-- [React Native Zoom Reanimated](#react-native-zoom-reanimated)
-  - [✨ Features](#-features)
-  - [Preview](#preview)
-  - [Table of Contents](#table-of-contents)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Examples](#examples)
-    - [Basic Usage](#basic-usage)
-    - [Image Gallery with FlatList](#image-gallery-with-flatlist)
-    - [Apple Photos-Style Gallery](#apple-photos-style-gallery)
-    - [Using the Hook Directly](#using-the-hook-directly)
-  - [API Reference](#api-reference)
-    - [Zoom Component Props](#zoom-component-props)
-    - [DoubleTapConfig](#doubletapconfig)
-    - [ScrollableRef](#scrollableref)
-  - [Advanced Usage: useZoomGesture Hook](#advanced-usage-usezoomgesture-hook)
-    - [Zoom Component vs useZoomGesture Hook](#zoom-component-vs-usezoomgesture-hook)
-    - [Hook API](#hook-api)
-    - [Basic Hook Usage](#basic-hook-usage)
-  - [Example App](#example-app)
-  - [Platform Support](#platform-support)
-  - [Contributing](#contributing)
-  - [Author](#author)
-  - [License](#license)
+- [✨ Features](#-features)
+- [Preview](#preview)
+- [Table of Contents](#table-of-contents)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Examples](#examples)
+  - [Basic Usage](#basic-usage)
+  - [Image Gallery with FlatList](#image-gallery-with-flatlist)
+  - [Apple Photos-Style Gallery](#apple-photos-style-gallery)
+  - [Using the Hook Directly](#using-the-hook-directly)
+- [API Reference](#api-reference)
+  - [Zoom Component Props](#zoom-component-props)
+  - [DoubleTapConfig](#doubletapconfig)
+  - [ScrollableRef](#scrollableref)
+- [Advanced Usage: useZoomGesture Hook](#advanced-usage-usezoomgesture-hook)
+  - [Zoom Component vs useZoomGesture Hook](#zoom-component-vs-usezoomgesture-hook)
+  - [Hook API](#hook-api)
+  - [Basic Hook Usage](#basic-hook-usage)
+- [Example App](#example-app)
+- [Platform Support](#platform-support)
+- [Contributing](#contributing)
+- [Author](#author)
+- [License](#license)
 
 ## Requirements
 
