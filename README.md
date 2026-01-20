@@ -284,7 +284,7 @@ function MyCustomZoomComponent() {
 ```bash
 cd example
 yarn install
-yarn ios     # or yarn android
+yarn start:ios     # or yarn start:android
 ```
 
 The example app demonstrates:
@@ -299,10 +299,6 @@ The example app demonstrates:
 |----------|--------|
 | **iOS** | ✅ Full support |
 | **Android** | ✅ Full support |
-
-**Android fixes in v2.2.0:**
-- Reliable pinch-to-zoom inside horizontal FlatList ([#50](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/50))
-- Smooth spring animations during zoom transitions ([#51](https://github.com/kesha-antonov/react-native-zoom-reanimated/issues/51))
 
 ## Contributing
 
