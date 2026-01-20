@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.5.2
+
+### ✨ New Features
+- **`onZoomChange` callback** — Real-time scale updates during zoom gesture (e.g., for showing zoom percentage)
+- **`onZoomStateChange` callback** — Get notified when zoom state changes (zoomed in/out)
+- **`scale` SharedValue** — Exposed from `useZoomGesture` hook for efficient worklet-based tracking
+- **`isZoomedIn` SharedValue** — Track zoom state without JS bridge overhead
+
+### 🔧 Improvements
+- **Performance optimization** — Callbacks in `Zoom` component use `useAnimatedReaction` for efficient bridge communication
+- **Cleaner hook API** — `useZoomGesture` now returns SharedValues instead of accepting callbacks, enabling 120fps animations without JS bridge
+
+### 📦 Other Changes
+- Updated README with comparison table (Zoom component vs useZoomGesture hook)
+- Basic example now demonstrates both `onZoomChange` and `onZoomStateChange` usage
+
 ## v1.5.1
 
 ### ✨ New Features
