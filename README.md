@@ -1,8 +1,10 @@
-[![npm version](https://badge.fury.io/js/react-native-zoom-reanimated.svg)](https://badge.fury.io/js/react-native-zoom-reanimated)
-[![npm downloads](https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg)](https://www.npmjs.com/package/react-native-zoom-reanimated)
-[![license](https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg)](https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE)
-[![platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg)](https://reactnative.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+<p align="center">
+  [![npm version](https://badge.fury.io/js/react-native-zoom-reanimated.svg)](https://badge.fury.io/js/react-native-zoom-reanimated)
+  [![npm downloads](https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg)](https://www.npmjs.com/package/react-native-zoom-reanimated)
+  [![license](https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg)](https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE)
+  [![platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg)](https://reactnative.dev/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+</p>
 
 <h1 align="center">React Native Zoom Reanimated</h1>
 
