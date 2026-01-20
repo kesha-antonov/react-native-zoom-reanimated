@@ -25,7 +25,7 @@
 - ⚡ **120fps** — Silky smooth animations on ProMotion displays
 - 📝 **TypeScript** — Complete type definitions included
 
-## Preview
+## 📸 Preview
 
 <table>
   <tr>
@@ -46,41 +46,41 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
   </tr>
 </table>
 
-## Table of Contents
+## 📖 Table of Contents
 
 - [✨ Features](#-features)
-- [Preview](#preview)
-- [Table of Contents](#table-of-contents)
+- [📸 Preview](#-preview)
+- [📖 Table of Contents](#-table-of-contents)
 - [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Examples](#examples)
+- [📦 Installation](#-installation)
+- [🚀 Usage](#-usage)
+- [💡 Examples](#-examples)
   - [Basic Usage](#basic-usage)
   - [Image Gallery with FlatList](#image-gallery-with-flatlist)
   - [Apple Photos-Style Gallery](#apple-photos-style-gallery)
   - [Using the Hook Directly](#using-the-hook-directly)
-- [API Reference](#api-reference)
+- [📖 API Reference](#-api-reference)
   - [Zoom Component Props](#zoom-component-props)
   - [DoubleTapConfig](#doubletapconfig)
   - [ScrollableRef](#scrollableref)
-- [Advanced Usage: useZoomGesture Hook](#advanced-usage-usezoomgesture-hook)
+- [🔧 Advanced Usage: useZoomGesture Hook](#-advanced-usage-usezoomgesture-hook)
   - [Zoom Component vs useZoomGesture Hook](#zoom-component-vs-usezoomgesture-hook)
   - [Hook API](#hook-api)
   - [Basic Hook Usage](#basic-hook-usage)
-- [Example App](#example-app)
-- [Platform Support](#platform-support)
-- [Contributing](#contributing)
-- [Author](#author)
-- [License](#license)
+- [📦 Example App](#-example-app)
+- [📱 Platform Support](#-platform-support)
+- [🤝 Contributing](#-contributing)
+- [👥 Author](#-author)
+- [📄 License](#-license)
 
-## Requirements
+## 📋 Requirements
 
 | Dependency | Version |
 |:----------:|:-------:|
 | react-native-reanimated | >= 2.0.0 |
 | react-native-gesture-handler | >= 2.0.0 |
 
-## Installation
+## 📦 Installation
 
 Install the library using either Yarn:
 
@@ -96,7 +96,7 @@ npm install --save react-native-zoom-reanimated
 
 Make sure you have [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) and [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation) installed and configured.
 
-## Usage
+## 🚀 Usage
 
 ```javascript
 import Zoom from 'react-native-zoom-reanimated'
@@ -105,7 +105,7 @@ import Zoom from 'react-native-zoom-reanimated'
 import Zoom, { ScrollableRef } from 'react-native-zoom-reanimated'
 ```
 
-## Examples
+## 💡 Examples
 
 > 📁 See the [`example/`](./example) directory for complete working examples.
 
@@ -199,7 +199,7 @@ useAnimatedReaction(
 
 > 📄 Full example: [`example/UseZoomGestureExample.tsx`](./example/UseZoomGestureExample.tsx)
 
-## API Reference
+## 📖 API Reference
 
 ### Zoom Component Props
 
@@ -238,7 +238,7 @@ interface ScrollableRef {
 }
 ```
 
-## Advanced Usage: useZoomGesture Hook
+## 🔧 Advanced Usage: useZoomGesture Hook
 
 For advanced use cases, use the `useZoomGesture` hook directly for full control.
 
@@ -313,7 +313,7 @@ function MyCustomZoomComponent() {
 }
 ```
 
-## Example App
+## 📦 Example App
 
 ```bash
 cd example
@@ -327,14 +327,14 @@ The example app demonstrates:
 - Apple Photos-style seamless navigation
 - Using the hook directly
 
-## Platform Support
+## 📱 Platform Support
 
 | Platform | Status |
 |----------|--------|
 | **iOS** | ✅ Full support |
 | **Android** | ✅ Full support |
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -346,10 +346,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
-## Author
+## 👥 Author
 
 Maintained by [Kesha Antonov](https://github.com/kesha-antonov)
 
-## License
+> Please note that this project is maintained in free time. If you find it helpful, please consider [becoming a sponsor](https://github.com/sponsors/kesha-antonov).
+
+## 📄 License
 
 [MIT](./LICENSE)
