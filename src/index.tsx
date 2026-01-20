@@ -26,6 +26,7 @@ import Animated, {
   Easing,
   runOnJS,
   SharedValue,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -97,11 +98,6 @@ export interface UseZoomGestureProps {
    */
   maxScale?: number
   /**
-   * Callback fired when zoom state changes (zoomed in or out).
-   * Called with true when zoomed in, false when zoomed out to initial scale.
-   */
-  onZoomStateChange?: (isZoomed: boolean) => void
-  /**
    * Enable seamless gallery swipe navigation to parent (e.g., FlatList) when at edge.
    * Apple Photos behavior: when zoomed and panning hits horizontal boundary,
    * continued swipe in same direction allows parent scroll to take over.
@@ -137,6 +133,12 @@ export interface UseZoomGestureReturn {
   zoomOut: () => void
   isZoomedIn: SharedValue<boolean>
   zoomGestureLastTime: SharedValue<number>
+  /**
+   * Current zoom scale as SharedValue.
+   * Use with useAnimatedReaction or useDerivedValue for efficient worklet-based tracking.
+   * Updated in real-time during pinch gestures without JS bridge overhead.
+   */
+  scale: SharedValue<number>
 }
 
 /**
@@ -156,7 +158,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     doubleTapConfig,
     minScale = 1,
     maxScale = MAX_SCALE,
-    onZoomStateChange,
     enableGallerySwipe = false,
     parentScrollRef,
     currentIndex = 0,
@@ -412,10 +413,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     savedTranslateX.value = newTx
     savedTranslateY.value = newTy
 
-    // Fire callback if state changed (was not zoomed, now zoomed)
-    if (!isZoomedIn.value && onZoomStateChange)
-      runOnJS(onZoomStateChange)(true)
-
     isZoomedIn.value = true
   }, [
     containerDimensions,
@@ -431,7 +428,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     clampTranslation,
     minScale,
     maxScale,
-    onZoomStateChange,
   ])
 
   /**
@@ -448,10 +444,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     savedTranslateX.value = 0
     savedTranslateY.value = 0
 
-    // Fire callback if state changed (was zoomed, now not zoomed)
-    if (isZoomedIn.value && onZoomStateChange)
-      runOnJS(onZoomStateChange)(false)
-
     isZoomedIn.value = false
   }, [
     scale,
@@ -463,7 +455,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     isZoomedIn,
     withAnimation,
     minScale,
-    onZoomStateChange,
   ])
 
   /**
@@ -527,9 +518,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
       savedTranslateX.value = 0
       savedTranslateY.value = 0
       isZoomedIn.value = false
-
-      if (onZoomStateChange)
-        onZoomStateChange(false)
     }, delay)
   }, [
     scale,
@@ -540,7 +528,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     savedTranslateY,
     isZoomedIn,
     minScale,
-    onZoomStateChange,
   ])
 
   const zoomGesture = useMemo(() => {
@@ -879,11 +866,11 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         // Apply boundary constraints with spring animation
         applyBoundaryConstraints(scale.value, true)
 
-        // Fire callback if zoom state changed
+        // Update isZoomedIn state
         const finalScale = clamp(scale.value, minScale, maxScale)
         const isNowZoomed = finalScale > minScale
-        if (wasZoomed !== isNowZoomed && onZoomStateChange)
-          runOnJS(onZoomStateChange)(isNowZoomed)
+        if (wasZoomed !== isNowZoomed)
+          isZoomedIn.value = isNowZoomed
       })
 
     return Gesture.Simultaneous(tapGesture, panGesture, pinchGesture)
@@ -906,7 +893,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     applyRubberBandTranslation,
     minScale,
     maxScale,
-    onZoomStateChange,
     isZoomedIn,
     enableGallerySwipe,
     isAtLeftEdge,
@@ -947,6 +933,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     },
     isZoomedIn,
     zoomGestureLastTime,
+    scale,
   }
 }
 
@@ -973,6 +960,12 @@ export interface ZoomProps {
    * Called with true when zoomed in, false when zoomed out to initial scale.
    */
   onZoomStateChange?: (isZoomed: boolean) => void
+  /**
+   * Callback fired during zoom gesture with current scale value.
+   * Called continuously while pinching, useful for UI updates (e.g., showing zoom percentage).
+   * Note: For performance-critical use cases, use useZoomGesture hook with scale SharedValue instead.
+   */
+  onZoomChange?: (scale: number) => void
   /**
    * Enable seamless gallery swipe navigation to parent (e.g., FlatList) when at edge.
    * Apple Photos behavior: when zoomed and panning hits horizontal boundary,
@@ -1024,14 +1017,36 @@ export interface ZoomProps {
 export default function Zoom(
   props: PropsWithChildren<ZoomProps>
 ): React.JSX.Element {
-  const { style, contentContainerStyle, children, ...rest } = props
+  const { style, contentContainerStyle, children, onZoomChange, onZoomStateChange, ...rest } = props
 
   const {
     zoomGesture,
     onLayout,
     onLayoutContent,
     contentContainerAnimatedStyle,
+    scale,
+    isZoomedIn,
   } = useZoomGesture({ ...rest })
+
+  // Bridge scale changes to JS callback if provided
+  useAnimatedReaction(
+    () => scale.value,
+    (currentScale, previousScale) => {
+      if (onZoomChange && currentScale !== previousScale)
+        runOnJS(onZoomChange)(currentScale)
+    },
+    [onZoomChange]
+  )
+
+  // Bridge zoom state changes to JS callback if provided
+  useAnimatedReaction(
+    () => isZoomedIn.value,
+    (currentIsZoomed, previousIsZoomed) => {
+      if (onZoomStateChange && currentIsZoomed !== previousIsZoomed)
+        runOnJS(onZoomStateChange)(currentIsZoomed)
+    },
+    [onZoomStateChange]
+  )
 
   return (
     <GestureHandlerRootView style={[styles.container, style]}>

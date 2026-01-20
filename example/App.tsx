@@ -67,6 +67,7 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const { width: deviceWidth } = useWindowDimensions()
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [currentScale, setCurrentScale] = useState(1)
   const [isZoomed, setIsZoomed] = useState(false)
   const imageWidth = 1100
   const imageHeight = 910
@@ -81,6 +82,7 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           minZoomScale: 1,
           maxZoomScale: 10,
         }}
+        onZoomChange={setCurrentScale}
         onZoomStateChange={setIsZoomed}
       >
         <Image
@@ -113,9 +115,9 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           </View>
         )}
       </Zoom>
-      <View style={[styles.zoomIndicator, { backgroundColor: isDarkMode ? 'rgba(42,42,42,0.7)' : 'rgba(255,255,255,0.7)' }]}>
-        <Text style={[styles.zoomIndicatorText, { color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)' }]}>
-          {isZoomed ? '🔍 Zoomed In' : '🖼️ Normal'}
+      <View style={[styles.zoomIndicator, { backgroundColor: isDarkMode ? 'rgba(42,42,42,0.9)' : 'rgba(255,255,255,0.9)' }]}>
+        <Text style={[styles.zoomIndicatorText, { color: isDarkMode ? '#fff' : '#000' }]}>
+          {isZoomed ? '🔍' : '🖼️'}{' '}{currentScale.toFixed(1)}x
         </Text>
       </View>
     </View>

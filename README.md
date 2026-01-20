@@ -59,6 +59,7 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
     - [DoubleTapConfig](#doubletapconfig)
     - [ScrollableRef](#scrollableref)
   - [Advanced Usage: useZoomGesture Hook](#advanced-usage-usezoomgesture-hook)
+    - [Zoom Component vs useZoomGesture Hook](#zoom-component-vs-usezoomgesture-hook)
     - [Hook API](#hook-api)
     - [Basic Hook Usage](#basic-hook-usage)
   - [Example App](#example-app)
@@ -167,12 +168,28 @@ For advanced control, use `useZoomGesture` hook:
 
 ```jsx
 import { useZoomGesture } from 'react-native-zoom-reanimated'
+import { useAnimatedReaction } from 'react-native-reanimated'
 
-const { zoomGesture, contentContainerAnimatedStyle, onLayout, onLayoutContent, zoomOut, isZoomedIn } = useZoomGesture({
+const { zoomGesture, contentContainerAnimatedStyle, onLayout, onLayoutContent, zoomOut, isZoomedIn, scale } = useZoomGesture({
   minScale: 1,
   maxScale: 5,
-  onZoomStateChange: (isZoomed) => console.log('Zoomed:', isZoomed),
 })
+
+// React to scale changes efficiently in worklet (no JS bridge overhead)
+useAnimatedReaction(
+  () => scale.value,
+  (currentScale) => {
+    console.log('Current scale:', currentScale)
+  }
+)
+
+// React to zoom state changes
+useAnimatedReaction(
+  () => isZoomedIn.value,
+  (isZoomed) => {
+    console.log('Is zoomed:', isZoomed)
+  }
+)
 ```
 
 > 📄 Full example: [`example/UseZoomGestureExample.tsx`](./example/UseZoomGestureExample.tsx)
@@ -188,6 +205,7 @@ const { zoomGesture, contentContainerAnimatedStyle, onLayout, onLayoutContent, z
 | minScale              | `number`               | No       | Minimum allowed zoom scale. Default is `1`. Set to `1` to prevent zooming out smaller than initial size. Set to a value < 1 (e.g., `0.5`) to allow zooming out to 50% |
 | maxScale              | `number`               | No       | Maximum allowed zoom scale. Default is `4` |
 | onZoomStateChange     | `(isZoomed: boolean) => void` | No | Callback fired when zoom state changes. Called with `true` when zoomed in, `false` when zoomed out to initial scale |
+| onZoomChange          | `(scale: number) => void` | No | Callback fired during zoom gesture with current scale value. Called continuously while pinching, useful for UI updates (e.g., showing zoom percentage). For performance-critical use cases, use `useZoomGesture` hook with `scale` SharedValue instead |
 | enableGallerySwipe    | `boolean`              | No       | Enable Apple Photos-style seamless gallery navigation. When zoomed and panning hits horizontal boundary, continued swipe allows scrolling to adjacent images. Default is `false` |
 | parentScrollRef       | `RefObject<ScrollableRef>` | No   | Reference to parent FlatList/ScrollView for seamless edge scrolling. When provided with `enableGallerySwipe`, enables Apple Photos-style continuous swipe: zoomed image pans to edge, then seamlessly scrolls parent list. Compatible with FlatList/ScrollView from `react-native`, `react-native-gesture-handler`, and `react-native-reanimated` |
 | currentIndex          | `number`               | No       | Current index in the parent list (for calculating scroll offset). Required when using `parentScrollRef` |
@@ -221,6 +239,17 @@ For advanced use cases, use the `useZoomGesture` hook directly for full control.
 
 > 📄 See [`example/UseZoomGestureExample.tsx`](./example/UseZoomGestureExample.tsx) for a complete example.
 
+### Zoom Component vs useZoomGesture Hook
+
+| Approach | Simplicity | Performance | When to use |
+|----------|------------|-------------|-------------|
+| `Zoom` + `onZoomStateChange`/`onZoomChange` | ✅ Simple | ⚠️ Via JS bridge | Most use cases |
+| `useZoomGesture` + `useAnimatedReaction` | ⚠️ More complex | ✅ 120fps, no bridge | Performance-critical apps |
+
+**Zoom component** uses callbacks (`onZoomChange`, `onZoomStateChange`) that communicate via the JS bridge. This is simple to use but may have slight delays on rapid updates.
+
+**useZoomGesture hook** returns `SharedValue` objects (`scale`, `isZoomedIn`) that update directly in the UI thread. Use `useAnimatedReaction` to respond to changes without JS bridge overhead — ideal for 120fps animations.
+
 ### Hook API
 
 ```typescript
@@ -229,7 +258,6 @@ interface UseZoomGestureProps {
   animationConfig?: object               // Configuration for animation function
   minScale?: number                      // Minimum allowed zoom scale (default: 1)
   maxScale?: number                      // Maximum allowed zoom scale (default: 4)
-  onZoomStateChange?: (isZoomed: boolean) => void  // Callback when zoom state changes
   enableGallerySwipe?: boolean           // Enable Apple Photos-style gallery swipe (default: false)
   parentScrollRef?: RefObject<ScrollableRef>  // Parent FlatList/ScrollView ref for seamless scrolling
   currentIndex?: number                  // Current index in parent list
@@ -245,6 +273,7 @@ interface UseZoomGestureReturn {
   zoomOut: () => void                       // Programmatically zoom out
   isZoomedIn: SharedValue<boolean>          // Shared value indicating zoom state
   zoomGestureLastTime: SharedValue<number>  // Timestamp of last gesture interaction
+  scale: SharedValue<number>                // Current zoom scale (use with useAnimatedReaction)
 }
 ```
 
