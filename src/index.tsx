@@ -4,8 +4,6 @@ import {
   StyleProp,
   View,
   type ViewStyle,
-  FlatList as RNFlatList,
-  ScrollView as RNScrollView,
 } from 'react-native'
 import {
   ComposedGesture,
@@ -72,6 +70,16 @@ export interface DoubleTapConfig {
 }
 
 /**
+ * Scrollable ref interface for parent FlatList/ScrollView.
+ * Compatible with FlatList/ScrollView from react-native, react-native-gesture-handler,
+ * and react-native-reanimated (Animated.FlatList/ScrollView).
+ */
+export interface ScrollableRef {
+  scrollToOffset?: (params: { offset: number; animated?: boolean }) => void
+  scrollTo?: (params: { x?: number; y?: number; animated?: boolean }) => void
+}
+
+/**
  * Hook props for useZoomGesture
  */
 export interface UseZoomGestureProps {
@@ -105,8 +113,7 @@ export interface UseZoomGestureProps {
    * When provided, enables Apple Photos-style continuous swipe:
    * zoomed image pans to edge, then seamlessly scrolls parent list.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parentScrollRef?: RefObject<any>
+  parentScrollRef?: RefObject<ScrollableRef | null>
   /**
    * Current index in the parent list (for calculating scroll offset).
    * Required when using parentScrollRef.
@@ -495,22 +502,19 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
   }, [zoomGestureLastTime])
 
   // Callback for scrolling parent from worklet
+  // Compatible with FlatList/ScrollView from react-native, react-native-gesture-handler,
+  // and react-native-reanimated (Animated.FlatList/ScrollView)
   const scrollParent = useCallback((offset: number, animated: boolean = false): void => {
-    if (parentScrollRef?.current) {
-      // Works for both FlatList and ScrollView
-      if ('scrollToOffset' in parentScrollRef.current) {
-        (parentScrollRef.current as RNFlatList<unknown>).scrollToOffset({
-          offset,
-          animated,
-        })
-      }
-      else if ('scrollTo' in parentScrollRef.current) {
-        (parentScrollRef.current as RNScrollView).scrollTo({
-          x: offset,
-          animated,
-        })
-      }
-    }
+    if (!parentScrollRef?.current)
+      return
+
+    const ref = parentScrollRef.current
+
+    // Duck-typing to support all FlatList/ScrollView implementations
+    if (ref.scrollToOffset)
+      ref.scrollToOffset({ offset, animated })
+    else if (ref.scrollTo)
+      ref.scrollTo({ x: offset, animated })
   }, [parentScrollRef])
 
   // Delayed zoom reset after snap animation completes
@@ -556,7 +560,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     // With enableSwipeToClose + parentScrollRef: seamless edge scrolling
     const panGesture = Gesture.Pan()
       .manualActivation(true)
-      .onTouchesDown((e: GestureTouchEvent, _state: GestureStateManagerType) => {
+      .onTouchesDown((e: GestureTouchEvent) => {
         'worklet'
         // Store initial touch position and edge state
         if (e.numberOfTouches >= 1) {
@@ -569,16 +573,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
           isAtLeftEdge.value = translateX.value >= bounds.maxX - edgeThreshold
           isAtRightEdge.value = translateX.value <= -bounds.maxX + edgeThreshold
           panStartX.value = e.allTouches[0].x
-
-          console.log('[ZOOM PAN] onTouchesDown', JSON.stringify({
-            translateX: translateX.value,
-            bounds,
-            isAtLeftEdge: isAtLeftEdge.value,
-            isAtRightEdge: isAtRightEdge.value,
-            panStartX: panStartX.value,
-            scale: scale.value,
-            enableSwipeToClose,
-          }))
         }
       })
       .onTouchesMove((e: GestureTouchEvent, state: GestureStateManagerType) => {
@@ -591,14 +585,12 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
           // 2 finger pan always works (for pinch-pan combo)
           if (e.numberOfTouches === 2) {
-            console.log('[ZOOM PAN] activate: 2 fingers')
             state.activate()
             return
           }
 
           // Not zoomed - don't activate (let parent handle)
           if (!zoomed) {
-            console.log('[ZOOM PAN] fail: not zoomed')
             state.fail()
             return
           }
@@ -606,7 +598,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
           // Zoomed with 1 finger
           // If we have parentScrollRef - always activate, we'll handle scrolling ourselves
           if (enableSwipeToClose && hasParentScroll) {
-            console.log('[ZOOM PAN] activate: parentScrollRef mode')
             state.activate()
             return
           }
@@ -614,51 +605,35 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
           // Legacy mode: check for edge swipe
           if (enableSwipeToClose && e.numberOfTouches === 1) {
             const touch = e.allTouches[0]
-            if (touch) {
-              const deltaX = touch.x - panStartX.value
-              const bounds = getTranslateBounds(scale.value)
-              const absDeltaX = Math.abs(deltaX)
+            const deltaX = touch.x - panStartX.value
+            const bounds = getTranslateBounds(scale.value)
+            const absDeltaX = Math.abs(deltaX)
 
-              console.log('[ZOOM PAN] edge check', JSON.stringify({
-                deltaX,
-                absDeltaX,
-                isAtLeftEdge: isAtLeftEdge.value,
-                isAtRightEdge: isAtRightEdge.value,
-                bounds,
-              }))
+            // If no horizontal panning is possible, let parent handle
+            if (bounds.maxX === 0) {
+              state.fail()
+              return
+            }
 
-              // If no horizontal panning is possible, let parent handle
-              if (bounds.maxX === 0) {
-                console.log('[ZOOM PAN] fail: bounds.maxX === 0')
-                state.fail()
-                return
-              }
+            // Wait for sufficient movement before deciding
+            const decisionThreshold = 5
+            if (absDeltaX < decisionThreshold)
+              return // Not enough movement yet, don't decide
 
-              // Wait for sufficient movement before deciding
-              const decisionThreshold = 5
-              if (absDeltaX < decisionThreshold) {
-                // Not enough movement yet, don't decide
-                return
-              }
-
-              // Check if swiping beyond edge
-              // At left edge (showing left of image) and swiping right (deltaX > 0) -> let parent handle (go to prev image)
-              // At right edge (showing right of image) and swiping left (deltaX < 0) -> let parent handle (go to next image)
-              if (isAtLeftEdge.value && deltaX > 0) {
-                console.log('[ZOOM PAN] fail: at left edge, swiping right')
-                state.fail()
-                return
-              }
-              if (isAtRightEdge.value && deltaX < 0) {
-                console.log('[ZOOM PAN] fail: at right edge, swiping left')
-                state.fail()
-                return
-              }
+            // Check if swiping beyond edge
+            // At left edge and swiping right -> let parent handle (go to prev image)
+            // At right edge and swiping left -> let parent handle (go to next image)
+            if (isAtLeftEdge.value && deltaX > 0) {
+              state.fail()
+              return
+            }
+            if (isAtRightEdge.value && deltaX < 0) {
+              state.fail()
+              return
             }
           }
 
           // Activate for normal zoomed panning
-          console.log('[ZOOM PAN] activate: normal pan')
           state.activate()
         }
       })
@@ -700,12 +675,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
           if (overflow !== 0) {
             accumulatedOverflow.value = overflow
             const targetOffset = currentIndex * itemWidth - overflow
-            console.log('[ZOOM PAN] scrolling parent', JSON.stringify({
-              overflow,
-              currentIndex,
-              itemWidth,
-              targetOffset,
-            }))
 
             // Scroll parent without animation for smooth tracking
             runOnJS(scrollParent)(targetOffset, false)
@@ -746,15 +715,6 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
           // Snap to next/prev if: overflow > threshold OR high velocity in same direction
           const shouldSnapToNext = overflow < -snapThreshold || (overflow < 0 && velocity < -500)
           const shouldSnapToPrev = overflow > snapThreshold || (overflow > 0 && velocity > 500)
-
-          console.log('[ZOOM PAN] snap decision', JSON.stringify({
-            overflow,
-            velocity,
-            snapThreshold,
-            shouldSnapToNext,
-            shouldSnapToPrev,
-            currentIndex,
-          }))
 
           if (shouldSnapToNext) {
             // Snap to next image - scroll to next index
@@ -1025,8 +985,7 @@ export interface ZoomProps {
    * When provided, enables Apple Photos-style continuous swipe:
    * zoomed image pans to edge, then seamlessly scrolls parent list.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parentScrollRef?: RefObject<any>
+  parentScrollRef?: RefObject<ScrollableRef | null>
   /**
    * Current index in the parent list (for calculating scroll offset).
    * Required when using parentScrollRef.
