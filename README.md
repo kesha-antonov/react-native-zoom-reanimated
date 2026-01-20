@@ -16,7 +16,7 @@ Apple Photos-style zoom component for React Native with pinch, pan, and double-t
 - 📱 **Apple Photos Gallery** — Seamless swipe between zoomed images in FlatList
 - 🔄 **Rubber Band Effect** — Natural over-scroll/over-zoom feeling
 - 🎯 **Focal Point Zoom** — Zoom centers on pinch/tap location
-- ⚡ **Reanimated 2+** — 60fps animations running on UI thread
+- ⚡ **120fps** — Silky smooth animations on ProMotion displays
 - 📝 **TypeScript** — Complete type definitions included
 
 ## Preview
