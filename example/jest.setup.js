@@ -1,13 +1,15 @@
 // Jest setup file for react-native-zoom-reanimated example app
 
-// Mock react-native-gesture-handler
-jest.mock('react-native-gesture-handler', () => {
-  const React = require('react')
-  const RN = require('react-native')
+// Import gesture handler's official jest setup (mocks internal native modules)
+require('react-native-gesture-handler/jestSetup')
 
+// Mock gesture handler's public API components
+// The jestSetup only mocks internals, we need to mock the public exports
+jest.mock('react-native-gesture-handler', () => {
+  const View = require('react-native').View
   return {
-    GestureHandlerRootView: ({ children, style }) =>
-      React.createElement(RN.View, { style, testID: 'gesture-handler-root' }, children),
+    ...jest.requireActual('react-native-gesture-handler/lib/commonjs/mocks/mocks'),
+    GestureHandlerRootView: View,
     GestureDetector: ({ children }) => children,
     Gesture: {
       Tap: () => ({
@@ -35,40 +37,33 @@ jest.mock('react-native-gesture-handler', () => {
       }),
       Simultaneous: () => ({}),
     },
-    State: { UNDETERMINED: 0, BEGAN: 1, ACTIVE: 2 },
   }
 })
 
-// Mock react-native-reanimated with comprehensive mock
+// Mock react-native-reanimated
+// Note: Official mock (react-native-reanimated/mock) doesn't work with v4+ due to
+// react-native-worklets native dependency. Using manual mock based on their API.
 jest.mock('react-native-reanimated', () => {
   const RN = require('react-native')
   const React = require('react')
 
-  const View = RN.View
-  const Text = RN.Text
-  const Image = RN.Image
-  const ScrollView = RN.ScrollView
-  const FlatList = RN.FlatList
-
-  const hook = (init) => ({ value: init })
-
   return {
     __esModule: true,
     default: {
-      View,
-      Text,
-      Image,
-      ScrollView,
-      FlatList,
+      View: RN.View,
+      Text: RN.Text,
+      Image: RN.Image,
+      ScrollView: RN.ScrollView,
+      FlatList: RN.FlatList,
       createAnimatedComponent: (comp) => comp,
     },
-    View,
-    Text,
-    Image,
-    ScrollView,
-    FlatList,
+    View: RN.View,
+    Text: RN.Text,
+    Image: RN.Image,
+    ScrollView: RN.ScrollView,
+    FlatList: RN.FlatList,
     createAnimatedComponent: (comp) => comp,
-    useSharedValue: hook,
+    useSharedValue: (init) => ({ value: init }),
     useAnimatedStyle: () => ({}),
     useDerivedValue: (fn) => ({ value: typeof fn === 'function' ? fn() : fn }),
     useAnimatedGestureHandler: () => ({}),
@@ -103,6 +98,8 @@ jest.mock('react-native-reanimated', () => {
 })
 
 // Mock react-native-safe-area-context
+// Note: Official mock (react-native-safe-area-context/jest/mock) uses requireActual
+// which tries to load native modules. Using manual mock.
 jest.mock('react-native-safe-area-context', () => {
   const React = require('react')
   const RN = require('react-native')
@@ -112,6 +109,11 @@ jest.mock('react-native-safe-area-context', () => {
     SafeAreaView: ({ children, style }) =>
       React.createElement(RN.View, { style, testID: 'safe-area-view' }, children),
     useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+    useSafeAreaFrame: () => ({ width: 320, height: 640, x: 0, y: 0 }),
+    initialWindowMetrics: {
+      frame: { width: 320, height: 640, x: 0, y: 0 },
+      insets: { top: 0, right: 0, bottom: 0, left: 0 },
+    },
   }
 })
 
