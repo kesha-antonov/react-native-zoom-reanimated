@@ -45,7 +45,6 @@ interface GalleryImageItemProps {
   deviceWidth: number
   deviceHeight: number
   isDarkMode: boolean
-  showTitles: boolean
   doubleTapScale: number
   minZoomScale: number
   maxZoomScale: number
@@ -59,7 +58,6 @@ function GalleryImageItem({
   deviceWidth,
   deviceHeight,
   isDarkMode,
-  showTitles,
   doubleTapScale,
   minZoomScale,
   maxZoomScale,
@@ -173,7 +171,6 @@ export default function ImageGallery({
       deviceWidth={deviceWidth}
       deviceHeight={containerHeight}
       isDarkMode={isDarkMode}
-      showTitles={showTitles}
       doubleTapScale={doubleTapScale}
       minZoomScale={minZoomScale}
       maxZoomScale={maxZoomScale}
@@ -182,9 +179,9 @@ export default function ImageGallery({
 
   const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / deviceWidth)
-    if (index !== currentIndex && index >= 0 && index < images.length) {
+    if (index !== currentIndex && index >= 0 && index < images.length)
       setCurrentIndex(index)
-    }
+
   }
 
   return (
