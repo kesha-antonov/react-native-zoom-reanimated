@@ -51,7 +51,7 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
 - [✨ Features](#-features)
 - [📸 Preview](#-preview)
 - [📖 Table of Contents](#-table-of-contents)
-- [Requirements](#requirements)
+- [📋 Requirements](#-requirements)
 - [📦 Installation](#-installation)
 - [🚀 Usage](#-usage)
 - [💡 Examples](#-examples)
