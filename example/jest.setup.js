@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // Jest setup file for react-native-zoom-reanimated example app
 
 // Mock react-native-gesture-handler
