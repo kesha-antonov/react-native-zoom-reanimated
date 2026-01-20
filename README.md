@@ -1,9 +1,9 @@
 <p align="center">
-  [![npm version](https://badge.fury.io/js/react-native-zoom-reanimated.svg)](https://badge.fury.io/js/react-native-zoom-reanimated)
-  [![npm downloads](https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg)](https://www.npmjs.com/package/react-native-zoom-reanimated)
-  [![license](https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg)](https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE)
-  [![platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg)](https://reactnative.dev/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+  <a href="https://badge.fury.io/js/react-native-zoom-reanimated"><img src="https://badge.fury.io/js/react-native-zoom-reanimated.svg" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/react-native-zoom-reanimated"><img src="https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg" alt="npm downloads" /></a>
+  <a href="https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE"><img src="https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg" alt="license" /></a>
+  <a href="https://reactnative.dev/"><img src="https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg" alt="platforms" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-blue.svg" alt="TypeScript" /></a>
 </p>
 
 <h1 align="center">React Native Zoom Reanimated</h1>
