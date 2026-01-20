@@ -102,12 +102,12 @@ export interface UseZoomGestureProps {
    */
   onZoomStateChange?: (isZoomed: boolean) => void
   /**
-   * Enable horizontal swipe to pass through to parent (e.g., FlatList) when at edge.
+   * Enable seamless gallery swipe navigation to parent (e.g., FlatList) when at edge.
    * Apple Photos behavior: when zoomed and panning hits horizontal boundary,
    * continued swipe in same direction allows parent scroll to take over.
    * Default is false.
    */
-  enableSwipeToClose?: boolean
+  enableGallerySwipe?: boolean
   /**
    * Reference to parent FlatList/ScrollView for seamless edge scrolling.
    * When provided, enables Apple Photos-style continuous swipe:
@@ -157,7 +157,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     minScale = 1,
     maxScale = MAX_SCALE,
     onZoomStateChange,
-    enableSwipeToClose = false,
+    enableGallerySwipe = false,
     parentScrollRef,
     currentIndex = 0,
     itemWidth = 0,
@@ -557,7 +557,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
     // ========== PAN GESTURE ==========
     // Apple Photos: 1 finger when zoomed in, 2 fingers when at 1x
-    // With enableSwipeToClose + parentScrollRef: seamless edge scrolling
+    // With enableGallerySwipe + parentScrollRef: seamless edge scrolling
     const panGesture = Gesture.Pan()
       .manualActivation(true)
       .onTouchesDown((e: GestureTouchEvent) => {
@@ -597,13 +597,13 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
 
           // Zoomed with 1 finger
           // If we have parentScrollRef - always activate, we'll handle scrolling ourselves
-          if (enableSwipeToClose && hasParentScroll) {
+          if (enableGallerySwipe && hasParentScroll) {
             state.activate()
             return
           }
 
           // Legacy mode: check for edge swipe
-          if (enableSwipeToClose && e.numberOfTouches === 1) {
+          if (enableGallerySwipe && e.numberOfTouches === 1) {
             const touch = e.allTouches[0]
             const deltaX = touch.x - panStartX.value
             const bounds = getTranslateBounds(scale.value)
@@ -656,7 +656,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         const newTy = savedTranslateY.value + event.translationY
 
         // Apple Photos seamless scrolling with parentScrollRef
-        if (enableSwipeToClose && hasParentScroll) {
+        if (enableGallerySwipe && hasParentScroll) {
           // Calculate overflow (how much we're trying to go past the edge)
           let overflow = 0
 
@@ -706,7 +706,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
         const bounds = getTranslateBounds(currentScale)
 
         // Handle snap for parent scroll (Apple Photos behavior)
-        if (enableSwipeToClose && hasParentScroll && accumulatedOverflow.value !== 0) {
+        if (enableGallerySwipe && hasParentScroll && accumulatedOverflow.value !== 0) {
           const overflow = accumulatedOverflow.value
           const velocity = event.velocityX
           const snapThreshold = itemWidth * 0.3 // 30% of item width
@@ -908,7 +908,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     maxScale,
     onZoomStateChange,
     isZoomedIn,
-    enableSwipeToClose,
+    enableGallerySwipe,
     isAtLeftEdge,
     isAtRightEdge,
     panStartX,
@@ -974,12 +974,12 @@ export interface ZoomProps {
    */
   onZoomStateChange?: (isZoomed: boolean) => void
   /**
-   * Enable horizontal swipe to pass through to parent (e.g., FlatList) when at edge.
+   * Enable seamless gallery swipe navigation to parent (e.g., FlatList) when at edge.
    * Apple Photos behavior: when zoomed and panning hits horizontal boundary,
    * continued swipe in same direction allows parent scroll to take over.
    * Default is false.
    */
-  enableSwipeToClose?: boolean
+  enableGallerySwipe?: boolean
   /**
    * Reference to parent FlatList/ScrollView for seamless edge scrolling.
    * When provided, enables Apple Photos-style continuous swipe:

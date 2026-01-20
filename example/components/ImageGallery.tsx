@@ -110,7 +110,7 @@ function GalleryImageItem({
           minZoomScale,
           maxZoomScale,
         }}
-        enableSwipeToClose
+        enableGallerySwipe
         parentScrollRef={flatListRef}
         currentIndex={index}
         itemWidth={itemWidth}

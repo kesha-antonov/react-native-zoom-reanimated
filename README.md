@@ -144,7 +144,7 @@ For seamless swipe navigation while zoomed — just like Apple Photos:
 
 ```jsx
 <Zoom
-  enableSwipeToClose
+  enableGallerySwipe
   parentScrollRef={flatListRef}
   currentIndex={index}
   itemWidth={deviceWidth + IMAGE_GAP}
@@ -188,8 +188,8 @@ const { zoomGesture, contentContainerAnimatedStyle, onLayout, onLayoutContent, z
 | minScale              | `number`               | No       | Minimum allowed zoom scale. Default is `1`. Set to `1` to prevent zooming out smaller than initial size. Set to a value < 1 (e.g., `0.5`) to allow zooming out to 50% |
 | maxScale              | `number`               | No       | Maximum allowed zoom scale. Default is `4` |
 | onZoomStateChange     | `(isZoomed: boolean) => void` | No | Callback fired when zoom state changes. Called with `true` when zoomed in, `false` when zoomed out to initial scale |
-| enableSwipeToClose    | `boolean`              | No       | Enable Apple Photos-style horizontal swipe to pass through to parent (e.g., FlatList) when at edge. When zoomed and panning hits horizontal boundary, continued swipe in same direction allows parent scroll to take over. Default is `false` |
-| parentScrollRef       | `RefObject<ScrollableRef>` | No   | Reference to parent FlatList/ScrollView for seamless edge scrolling. When provided with `enableSwipeToClose`, enables Apple Photos-style continuous swipe: zoomed image pans to edge, then seamlessly scrolls parent list. Compatible with FlatList/ScrollView from `react-native`, `react-native-gesture-handler`, and `react-native-reanimated` |
+| enableGallerySwipe    | `boolean`              | No       | Enable Apple Photos-style seamless gallery navigation. When zoomed and panning hits horizontal boundary, continued swipe allows scrolling to adjacent images. Default is `false` |
+| parentScrollRef       | `RefObject<ScrollableRef>` | No   | Reference to parent FlatList/ScrollView for seamless edge scrolling. When provided with `enableGallerySwipe`, enables Apple Photos-style continuous swipe: zoomed image pans to edge, then seamlessly scrolls parent list. Compatible with FlatList/ScrollView from `react-native`, `react-native-gesture-handler`, and `react-native-reanimated` |
 | currentIndex          | `number`               | No       | Current index in the parent list (for calculating scroll offset). Required when using `parentScrollRef` |
 | itemWidth             | `number`               | No       | Width of each item in the parent list (for calculating scroll offset). Required when using `parentScrollRef`. Usually equals `deviceWidth + imageGap` |
 | animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring |
@@ -230,7 +230,7 @@ interface UseZoomGestureProps {
   minScale?: number                      // Minimum allowed zoom scale (default: 1)
   maxScale?: number                      // Maximum allowed zoom scale (default: 4)
   onZoomStateChange?: (isZoomed: boolean) => void  // Callback when zoom state changes
-  enableSwipeToClose?: boolean           // Enable Apple Photos-style swipe (default: false)
+  enableGallerySwipe?: boolean           // Enable Apple Photos-style gallery swipe (default: false)
   parentScrollRef?: RefObject<ScrollableRef>  // Parent FlatList/ScrollView ref for seamless scrolling
   currentIndex?: number                  // Current index in parent list
   itemWidth?: number                     // Width of each item in parent list

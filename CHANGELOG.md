@@ -1,10 +1,10 @@
 # Changelog
 
-## v1.5.0
+## v1.5.1
 
 ### ✨ New Features
 - **Apple Photos-style gallery navigation** — Seamless swipe between images while zoomed in, just like Apple Photos
-- **`enableSwipeToClose`** — Enable horizontal swipe to pass through to parent FlatList/ScrollView at edge
+- **`enableGallerySwipe`** — Enable seamless swipe navigation to adjacent images when at edge
 - **`parentScrollRef`** — Connect to parent FlatList for seamless edge-to-scroll transition
 - **`currentIndex` / `itemWidth`** — Support for calculating scroll offset in galleries
 - **`minScale` / `maxScale`** props — Configure zoom limits (fixes #29 & #34)
