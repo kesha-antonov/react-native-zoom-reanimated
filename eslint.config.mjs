@@ -15,6 +15,7 @@ export default [
       '.eslintrc.js',
       'eslint.config.mjs',
       'metro.config.js',
+      'jest.config.cjs',
     ],
   },
   js.configs.recommended,
