@@ -1,6 +1,6 @@
 {
   "name": "react-native-zoom-reanimated",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "type": "module",
   "description": "Smooth pinch-to-zoom component for React Native with Apple Photos-style gestures and rubber-band physics",
   "keywords": [
