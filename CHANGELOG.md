@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.5.4
+
+### ✨ New Features
+- **react-native-gesture-handler v3 support** — The library now works with both Gesture Handler v2 and v3 (peer `>= 2.0.0`)
+- **react-native-reanimated v4 support** — Compatible with both Reanimated v3 and v4 (peer `>= 3.0.0`)
+- **Ships compiled code + type declarations** — The package now publishes transpiled CommonJS + ESM builds and `.d.ts` files (built with `react-native-builder-bob`) with proper `main` / `module` / `types` / `exports`, instead of raw TypeScript source
+
+### 🔧 Improvements
+- Dropped a private gesture-handler internal import so types stay stable across major versions
+- Bumped toolchain dependencies (TypeScript 6, ESLint, etc.)
+
+### 📦 Other Changes
+- Example app upgraded to Expo SDK 56 / React Native 0.85 and restructured as a yarn workspace
+
 ## v1.5.2
 
 ### ✨ New Features
