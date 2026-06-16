@@ -1,33 +1,16 @@
-const { getDefaultConfig } = require('expo/metro-config')
 const path = require('path')
+const { getDefaultConfig } = require('expo/metro-config')
+const { getConfig } = require('react-native-builder-bob/metro-config')
+const pkg = require('../package.json')
 
-// Get the root directory of the library
-const libraryRoot = path.resolve(__dirname, '..')
+const root = path.resolve(__dirname, '..')
 
-const config = getDefaultConfig(__dirname)
-
-// Watch both the example and the library source
-config.watchFolders = [libraryRoot]
-
-// Make sure Metro can resolve modules from both the example and the library
-config.resolver.nodeModulesPaths = [
-  path.resolve(__dirname, 'node_modules'),
-  path.resolve(libraryRoot, 'node_modules'),
-]
-
-// Extra node_modules to look for
-config.resolver.extraNodeModules = {
-  'react-native-zoom-reanimated': libraryRoot,
-}
-
-// Exclude react-native and related modules from the library root to avoid duplicate module issues
-const escapedLibraryRoot = libraryRoot.replace(/[/\\]/g, '[/\\\\]')
-config.resolver.blockList = [
-  ...(config.resolver.blockList || []),
-  new RegExp(`${escapedLibraryRoot}/node_modules/react-native/.*`),
-  new RegExp(`${escapedLibraryRoot}/node_modules/react-native-gesture-handler/.*`),
-  new RegExp(`${escapedLibraryRoot}/node_modules/react-native-reanimated/.*`),
-  new RegExp(`${escapedLibraryRoot}/node_modules/react/.*`),
-]
-
-module.exports = config
+// react-native-builder-bob's metro helper wires up watching + resolving the
+// library workspace from its source (so edits to ../src hot-reload here), while
+// de-duplicating shared deps (react / react-native / reanimated / gesture-handler)
+// against this example's copies.
+module.exports = getConfig(getDefaultConfig(__dirname), {
+  root,
+  pkg,
+  project: __dirname,
+})

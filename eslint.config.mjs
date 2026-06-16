@@ -11,6 +11,7 @@ export default [
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',
+      '**/lib/**',
       'example/**',
       '.eslintrc.js',
       'eslint.config.mjs',

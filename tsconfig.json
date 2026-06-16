@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
+    "rootDir": "./src",
     "lib": [
       "esnext"
     ],
     "paths": {
       "react": ["./node_modules/@types/react"]
     },
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react-native",
     "allowJs": true,
     "skipLibCheck": true,
@@ -26,7 +27,6 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "downlevelIteration": true,
     "types": ["node"]
   },
   "include": [

@@ -1,3 +1,13 @@
 node_modules
 .idea
 package-lock.json
+lib
+
+# Yarn (Berry) - keep config, ignore caches/artifacts
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

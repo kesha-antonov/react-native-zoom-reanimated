@@ -6,7 +6,6 @@ import {
   type ViewStyle,
 } from 'react-native'
 import {
-  ComposedGesture,
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
@@ -17,9 +16,6 @@ import {
   PinchGestureHandlerEventPayload,
   State,
 } from 'react-native-gesture-handler'
-import type {
-  GestureStateManagerType,
-} from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager'
 import Animated, {
   AnimatableValue,
   AnimationCallback,
@@ -126,7 +122,10 @@ export interface UseZoomGestureProps {
  * Return type for useZoomGesture hook
  */
 export interface UseZoomGestureReturn {
-  zoomGesture: ComposedGesture
+  // Use the version's own return type for Gesture.Simultaneous so the public
+  // API stays compatible across react-native-gesture-handler v2 (ComposedGesture)
+  // and v3 (SimultaneousGesture).
+  zoomGesture: ReturnType<typeof Gesture.Simultaneous>
   contentContainerAnimatedStyle: ReturnType<typeof useAnimatedStyle>
   onLayout: (event: LayoutChangeEvent) => void
   onLayoutContent: (event: LayoutChangeEvent) => void
@@ -562,7 +561,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
           panStartX.value = e.allTouches[0].x
         }
       })
-      .onTouchesMove((e: GestureTouchEvent, state: GestureStateManagerType) => {
+      .onTouchesMove((e: GestureTouchEvent, state) => {
         'worklet'
         if (e.state === State.ACTIVE)
           return // Already activated
@@ -786,7 +785,7 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
     // ========== PINCH GESTURE ==========
     // Apple Photos: dynamic focal point tracking during pinch
     const pinchGesture = Gesture.Pinch()
-      .onTouchesDown((e: GestureTouchEvent, state: GestureStateManagerType) => {
+      .onTouchesDown((e: GestureTouchEvent, state) => {
         'worklet'
         // Immediately activate pinch when 2 fingers touch
         // This prevents horizontal FlatList from stealing the gesture on Android

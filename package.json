@@ -3,6 +3,9 @@
   "version": "1.5.3",
   "type": "module",
   "description": "Smooth pinch-to-zoom component for React Native with Apple Photos-style gestures and rubber-band physics",
+  "workspaces": [
+    "example"
+  ],
   "keywords": [
     "react-native",
     "zoom",
@@ -24,27 +27,54 @@
   },
   "license": "MIT",
   "author": "Kesha Antonov",
-  "main": "src/index.tsx",
+  "source": "./src/index.tsx",
+  "main": "./lib/commonjs/index.js",
+  "module": "./lib/module/index.js",
+  "types": "./lib/typescript/commonjs/index.d.ts",
+  "react-native": "./src/index.tsx",
+  "exports": {
+    ".": {
+      "source": "./src/index.tsx",
+      "import": {
+        "types": "./lib/typescript/module/index.d.ts",
+        "default": "./lib/module/index.js"
+      },
+      "require": {
+        "types": "./lib/typescript/commonjs/index.d.ts",
+        "default": "./lib/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
   "files": [
     "README.md",
     "LICENSE",
     "package.json",
-    "src/"
+    "src/",
+    "lib/",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
   ],
   "scripts": {
     "autofix": "eslint --fix .",
     "bump": "npm version patch",
+    "clean": "del-cli lib",
+    "build": "bob build",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "test": "cd example && jest",
     "publish": "npm publish",
     "prepublishOnly": "yarn test && npm run lint",
-    "test": "cd example && jest",
-    "prepare": "husky"
+    "prepare": "husky && bob build"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@stylistic/eslint-plugin": "^5.7.0",
     "@types/react": "^19.2.8",
-    "react-native": ">=0.73.0",
+    "del-cli": "^7.0.0",
     "eslint": "^9.39.2",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
@@ -52,14 +82,39 @@
     "husky": "^9.1.7",
     "jest": "^30.2.0",
     "lint-staged": "^16.2.7",
-    "react-native-gesture-handler": "^2.30.0",
-    "react-native-reanimated": "^3.19.5",
-    "typescript": "^5.9.3",
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-builder-bob": "^0.42.1",
+    "react-native-gesture-handler": "^3.0.1",
+    "react-native-reanimated": "^4.4.1",
+    "react-native-worklets": "^0.8.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.53.1"
   },
   "peerDependencies": {
-    "react-native-gesture-handler": ">= 2.0.0",
+    "react": "*",
+    "react-native": "*",
+    "react-native-gesture-handler": ">=2.0.0",
     "react-native-reanimated": ">=3.0.0"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      "typescript"
+    ]
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix"
