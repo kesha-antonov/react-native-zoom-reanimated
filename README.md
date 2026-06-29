@@ -1,6 +1,7 @@
 <p align="center">
   <a href="https://badge.fury.io/js/react-native-zoom-reanimated"><img src="https://badge.fury.io/js/react-native-zoom-reanimated.svg" alt="npm version" /></a>
   <a href="https://www.npmjs.com/package/react-native-zoom-reanimated"><img src="https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg" alt="npm downloads" /></a>
+  <a href="https://www.npmjs.com/package/react-native-zoom-reanimated"><img src="https://img.shields.io/npm/dt/react-native-zoom-reanimated.svg" alt="npm total downloads" /></a>
   <a href="https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE"><img src="https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg" alt="license" /></a>
   <a href="https://reactnative.dev/"><img src="https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg" alt="platforms" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-blue.svg" alt="TypeScript" /></a>
