@@ -11,7 +11,7 @@ import ImageGallery, { type ImageItem } from './components/ImageGallery'
 const IMAGES: ImageItem[] = [
   {
     id: '1',
-    uri: 'https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg',
+    uri: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200',
   },
   {
     id: '2',
