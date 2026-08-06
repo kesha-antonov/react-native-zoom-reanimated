@@ -8,25 +8,37 @@
   ],
   "keywords": [
     "react-native",
+    "expo",
     "zoom",
+    "zoomable",
+    "pinch",
     "pinch-to-zoom",
+    "double-tap",
     "pan",
     "gesture",
+    "image",
     "image-viewer",
     "photo-viewer",
+    "lightbox",
     "gallery",
     "reanimated",
     "gesture-handler",
+    "new-architecture",
+    "typescript",
     "ios",
     "android"
   ],
-  "homepage": "https://github.com/kesha-antonov/react-native-zoom-reanimated",
+  "homepage": "https://github.com/kesha-antonov/react-native-zoom-reanimated#readme",
   "repository": {
     "type": "git",
-    "url": "react-native-zoom-reanimated"
+    "url": "git+https://github.com/kesha-antonov/react-native-zoom-reanimated.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kesha-antonov/react-native-zoom-reanimated/issues"
   },
   "license": "MIT",
-  "author": "Kesha Antonov",
+  "author": "Kesha Antonov <innokenty.longway@gmail.com>",
+  "packageManager": "yarn@3.4.1",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
