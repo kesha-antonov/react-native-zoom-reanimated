@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.5.6
+
+No runtime changes to the library - `src/` is identical to v1.5.5. This release refreshes the
+build toolchain and the example app.
+
+### 🔧 Improvements
+- Verified against the latest React Native 0.86 / Reanimated 4.5 / Worklets 0.11 / Gesture Handler 3.1 toolchain
+- Build toolchain updated: `react-native-builder-bob` 0.43, ESLint 10, typescript-eslint 8.66
+
+### 📦 Other Changes
+- Example app upgraded to Expo SDK 57 (React Native 0.86.2, Reanimated 4.5.1, Gesture Handler 2.32, Worklets 0.10.1)
+- Example Metro config migrated from the removed `react-native-builder-bob/metro-config` export to `react-native-monorepo-config`
+- Example app config updated for the SDK 57 schema - splash configuration moved to the `expo-splash-screen` plugin
+- Example tests migrated to React Native Testing Library 14 (async `render` / `fireEvent`) and now run from the example workspace
+- Replaced a dead sample image url in the custom hook and standalone gallery examples
+
+### 🧪 Notes
+- TypeScript stays on 6.x (typescript-eslint 8 peers `typescript <6.1.0`) and `@babel/core` on 7.x (the Expo/RN toolchain is not Babel 8 ready)
+
 ## v1.5.5
 
 ### 🔧 Improvements
