@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "test": "jest",
     "start": "npx expo start --dev-client --clear",
     "start:android": "npx expo start --android --dev-client --clear",
     "start:ios": "npx expo start --ios --dev-client --clear",
@@ -19,40 +20,41 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "expo": "^56.0.0",
-    "expo-image": "~56.0.11",
-    "expo-status-bar": "~56.0.4",
-    "expo-system-ui": "~56.0.5",
+    "expo": "^57.0.10",
+    "expo-image": "~57.0.2",
+    "expo-splash-screen": "~57.0.5",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.2",
     "react": "19.2.3",
-    "react-native": "0.85.3",
-    "react-native-gesture-handler": "~2.31.1",
-    "react-native-reanimated": "4.3.1",
+    "react-native": "0.86.2",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
-    "react-native-worklets": "0.8.3",
+    "react-native-worklets": "0.10.1",
     "react-native-zoom-reanimated": "workspace:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@eslint/js": "^9.39.2",
-    "@react-native-community/cli": "^20.1.0",
-    "@react-native/jest-preset": "^0.85.3",
-    "@react-native/metro-config": "^0.85.3",
-    "@stylistic/eslint-plugin": "^5.7.0",
-    "@testing-library/react-native": "^13.3.3",
-    "@types/react": "~19.2.14",
-    "@types/react-test-renderer": "^19.1.0",
-    "eslint": "^9.39.2",
+    "@babel/core": "^7.29.7",
+    "@eslint/js": "^10.0.1",
+    "@react-native-community/cli": "^20.2.0",
+    "@react-native/jest-preset": "^0.86.2",
+    "@react-native/metro-config": "^0.86.2",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/react": "~19.2.18",
+    "eslint": "^10.8.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "jest": "~29.7.0",
-    "jest-expo": "~56.0.5",
-    "prettier": "^3.8.0",
-    "react-test-renderer": "19.2.3",
+    "jest-expo": "~57.0.3",
+    "prettier": "^3.9.6",
+    "react-native-monorepo-config": "^0.4.0",
+    "test-renderer": "^1.2.0",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.53.0"
+    "typescript-eslint": "^8.66.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": "^22.13.0 || >=24"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"

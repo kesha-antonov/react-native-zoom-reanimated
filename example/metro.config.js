@@ -1,16 +1,14 @@
 const path = require('path')
 const { getDefaultConfig } = require('expo/metro-config')
-const { getConfig } = require('react-native-builder-bob/metro-config')
-const pkg = require('../package.json')
+const { withMetroConfig } = require('react-native-monorepo-config')
 
-const root = path.resolve(__dirname, '..')
-
-// react-native-builder-bob's metro helper wires up watching + resolving the
-// library workspace from its source (so edits to ../src hot-reload here), while
-// de-duplicating shared deps (react / react-native / reanimated / gesture-handler)
-// against this example's copies.
-module.exports = getConfig(getDefaultConfig(__dirname), {
-  root,
-  pkg,
-  project: __dirname,
+// Watches + resolves the library workspace from its source (so edits to ../src
+// hot-reload here) via the `source` export condition in the library's
+// package.json, while de-duplicating shared deps (react / react-native /
+// reanimated / gesture-handler) against this example's copies.
+// Formerly `react-native-builder-bob/metro-config`, extracted into its own
+// package in builder-bob 0.43.
+module.exports = withMetroConfig(getDefaultConfig(__dirname), {
+  root: path.resolve(__dirname, '..'),
+  dirname: __dirname,
 })
