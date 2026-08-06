@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Required for npm provenance - lets the job mint the OIDC token that
+      # npm records as a signed, verifiable link back to this workflow run.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - run: yarn install --immutable
+
+      - run: yarn lint
+
+      - run: yarn typecheck
+
+      - run: yarn test
+
+      - name: Build
+        run: yarn build
+
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
