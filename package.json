@@ -28,7 +28,7 @@
     "ios",
     "android"
   ],
-  "homepage": "https://github.com/kesha-antonov/react-native-zoom-reanimated#readme",
+  "homepage": "https://github.com/kesha-antonov/react-native-zoom-reanimated",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kesha-antonov/react-native-zoom-reanimated.git"
