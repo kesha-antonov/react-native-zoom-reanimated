@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.5.5
+
+### 🔧 Improvements
+- **Signed npm releases** — Packages are now published from CI with npm provenance, so every release links back to a verifiable workflow run
+- **CI on every push and PR** — Lint, typecheck and tests run automatically
+- Fixed a recursive double `npm publish` in the release script
+
+### 📦 Other Changes
+- Corrected the malformed `repository` url and added an explicit `bugs` url and `homepage` in `package.json`
+- Upgraded the repo to Yarn 4 with the linker pinned to `node-modules`
+- Added `CONTRIBUTING.md` and `SECURITY.md`
+- Added npm downloads badges to the README
+
 ## v1.5.4
 
 ### ✨ New Features
