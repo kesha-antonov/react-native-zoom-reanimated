@@ -39,7 +39,8 @@ jobs:
       - name: Build
         run: yarn build
 
+      # Authenticated by npm trusted publishing: the id-token permission above
+      # lets npm exchange this run's OIDC token for a short-lived credential,
+      # so there is no NPM_TOKEN secret to store, leak or rotate.
       - name: Publish
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
