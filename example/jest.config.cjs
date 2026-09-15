@@ -11,6 +11,14 @@ module.exports = {
   // it straight to source, mirroring Metro's resolver.extraNodeModules mapping.
   moduleNameMapper: {
     '^react-native-zoom-reanimated$': '<rootDir>/../src/index.tsx',
+    // The library source lives outside <rootDir>, so it would otherwise resolve these from
+    // the workspace root instead of the example. Pin them to one copy each so the
+    // `jest.mock(...)` calls in jest.setup.js apply to the library too.
+    '^react-native-gesture-handler$': '<rootDir>/node_modules/react-native-gesture-handler',
+    '^react-native-reanimated$': '<rootDir>/node_modules/react-native-reanimated',
+    '^react$': '<rootDir>/node_modules/react',
+    '^react/(.*)$': '<rootDir>/node_modules/react/$1',
+    '^react-native$': '<rootDir>/node_modules/react-native',
   },
   testTimeout: 30000,
 }

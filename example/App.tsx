@@ -14,6 +14,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Zoom from 'react-native-zoom-reanimated'
 import FlatListExample from './FlatListExample'
 import UseZoomGestureExample from './UseZoomGestureExample'
+import GestureApiExample from './GestureApiExample'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
 const Colors = {
@@ -21,7 +22,7 @@ const Colors = {
   lighter: '#F3F3F3',
 }
 
-type Screen = 'menu' | 'basic' | 'gallery' | 'hook'
+type Screen = 'menu' | 'basic' | 'gallery' | 'hook' | 'gestureApi'
 
 interface MenuButtonProps {
   title: string
@@ -155,6 +156,12 @@ const MainMenu: React.FC<{ onSelect: (screen: Screen) => void, isDarkMode: boole
         onPress={() => onSelect('hook')}
         isDarkMode={isDarkMode}
       />
+      <MenuButton
+        title="Gesture API Example"
+        subtitle="Choose react-native-gesture-handler v2 or v3 gestures"
+        onPress={() => onSelect('gestureApi')}
+        isDarkMode={isDarkMode}
+      />
     </View>
   </View>
 )
@@ -172,6 +179,7 @@ const Content: React.FC = () => {
       case 'basic': return 'Basic Example'
       case 'gallery': return 'Gallery Example'
       case 'hook': return 'Custom Hook'
+      case 'gestureApi': return 'Gesture API'
       default: return ''
     }
   }
@@ -195,6 +203,7 @@ const Content: React.FC = () => {
           {currentScreen === 'basic' && <BasicExample isDarkMode={isDarkMode} />}
           {currentScreen === 'gallery' && <FlatListExample isDarkMode={isDarkMode} />}
           {currentScreen === 'hook' && <UseZoomGestureExample isDarkMode={isDarkMode} />}
+          {currentScreen === 'gestureApi' && <GestureApiExample isDarkMode={isDarkMode} />}
         </>
       )}
     </SafeAreaView>

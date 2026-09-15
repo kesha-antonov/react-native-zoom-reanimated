@@ -14,6 +14,25 @@
   Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures. Built with React Native Reanimated and Gesture Handler for buttery smooth 120fps animations.
 </p>
 
+<hr />
+
+<h3 align="center">Support my work</h3>
+
+<p align="center">
+  <a href="https://cryptoc-app.web.app/"><img src="https://cryptoc-app.web.app/img/icon.png" width="88" height="88" alt="cryptoc app icon" /></a>
+</p>
+
+<p align="center">
+  <strong>cryptoc</strong> - your crypto portfolio on the home screen, lock screen and Apple&nbsp;Watch.<br />
+  No account, no exchange API keys, no ads. Downloading it is what pays for the time that goes into these libraries.
+</p>
+
+<p align="center">
+  <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://cryptoc-app.web.app/img/appstore.svg" alt="Download on the App Store" /></a>&nbsp;&nbsp;<a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://cryptoc-app.web.app/img/googleplay.png" alt="Get it on Google Play" /></a>
+</p>
+
+<hr />
+
 ---
 
 ## ✨ Features
@@ -69,6 +88,11 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
   - [Zoom Component vs useZoomGesture Hook](#zoom-component-vs-usezoomgesture-hook)
   - [Hook API](#hook-api)
   - [Basic Hook Usage](#basic-hook-usage)
+- [🎛 Gesture Handler v2 / v3 API](#-gesture-handler-v2--v3-api)
+  - [Choosing per component](#choosing-per-component)
+  - [Choosing app-wide](#choosing-app-wide)
+  - [Choosing in the hook API](#choosing-in-the-hook-api)
+  - [Capability check](#capability-check)
 - [📦 Example App](#-example-app)
 - [📱 Platform Support](#-platform-support)
 - [🤝 Contributing](#-contributing)
@@ -220,6 +244,7 @@ useAnimatedReaction(
 | animationFunction     | function               | No       | Animation function from `react-native-reanimated`. Default: `withTiming`. For example, you can use `withSpring` instead: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring |
 | animationConfig       | object                 | No       | Config for animation function from `react-native-reanimated`. For example, avaiable options for `withSpring` animation: https://docs.swmansion.com/react-native-reanimated/docs/api/animations/withSpring#options-object |
 | doubleTapConfig       | `DoubleTapConfig`      | No       | Config for zoom on double tap. See below for details |
+| gestureApi            | `'v2' \| 'v3' \| 'auto'` | No    | Which `react-native-gesture-handler` API to build the gesture with. Default is `'auto'`, or whatever was passed to `setGestureApiVersion()`. See [Gesture Handler v2 / v3 API](#-gesture-handler-v2--v3-api) |
 
 ### DoubleTapConfig
 
@@ -315,6 +340,81 @@ function MyCustomZoomComponent() {
 }
 ```
 
+## 🎛 Gesture Handler v2 / v3 API
+
+`react-native-gesture-handler` 3.x ships a new hooks-based gestures API (`usePanGesture`,
+`usePinchGesture`, ...) next to the 2.x builder API (`Gesture.Pan()`, `Gesture.Pinch()`).
+This library builds its zoom gesture with either one.
+
+**You do not have to configure anything.** By default the API is detected from the
+`react-native-gesture-handler` version installed in your app:
+
+| Installed gesture handler | API used |
+|---------------------------|----------|
+| 3.x                       | v3 hooks API |
+| 2.x                       | v2 builder API |
+
+Detection happens at both levels: `useZoomGesture` and `<Zoom />` pick the right one at runtime,
+and the type of `zoomGesture` resolves to the matching gesture type at compile time, so it is
+always accepted by the `GestureDetector` of your installed version.
+
+Override it only if you need to - for example to stay on the v2 API after upgrading to
+`react-native-gesture-handler` 3.x.
+
+### Choosing per component
+
+```jsx
+import Zoom from 'react-native-zoom-reanimated'
+
+<Zoom gestureApi="v2">
+  <Image source={{ uri: 'https://example.com/image.jpg' }} />
+</Zoom>
+```
+
+`gestureApi` accepts `'auto'` (default), `'v2'` or `'v3'`. Changing it on a mounted `Zoom`
+remounts its gesture tree.
+
+### Choosing app-wide
+
+Call `setGestureApiVersion` once at startup, before rendering any `Zoom`. It sets the default
+used by `useZoomGesture` and by every `Zoom` that does not pass `gestureApi` itself.
+
+```javascript
+import { setGestureApiVersion } from 'react-native-zoom-reanimated'
+
+setGestureApiVersion('v2') // or 'v3', or 'auto' (the default)
+```
+
+A component keeps the version it resolved on its first render, so calling this later only
+affects new mounts.
+
+### Choosing in the hook API
+
+`useZoomGesture` follows the same auto-detection. To pin a version at a single call site,
+import the version-specific hook instead:
+
+```jsx
+import { useZoomGestureV2, useZoomGestureV3 } from 'react-native-zoom-reanimated'
+
+// react-native-gesture-handler v2 builder API - works on 2.x and 3.x
+const zoom = useZoomGestureV2({ maxScale: 6 })
+
+// react-native-gesture-handler v3 hooks API - requires 3.x, throws otherwise
+const zoom = useZoomGestureV3({ maxScale: 6 })
+```
+
+All three return the same shape; only the type of `zoomGesture` differs.
+
+### Capability check
+
+```javascript
+import { isGestureApiV3Supported } from 'react-native-zoom-reanimated'
+
+if (isGestureApiV3Supported()) {
+  // react-native-gesture-handler >= 3 is installed
+}
+```
+
 ## 📦 Example App
 
 ```bash
@@ -351,6 +451,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 👥 Author
 
 Maintained by [Kesha Antonov](https://github.com/kesha-antonov)
+
+I also build **[cryptoc](https://cryptoc-app.web.app/)** - a crypto portfolio app with home screen, lock screen and Watch widgets, no account and no exchange API keys.
 
 > Please note that this project is maintained in free time. If you find it helpful, please consider [becoming a sponsor](https://github.com/sponsors/kesha-antonov).
 

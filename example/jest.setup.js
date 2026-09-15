@@ -139,6 +139,12 @@ jest.mock('react-native-zoom-reanimated', () => {
     __esModule: true,
     default: Zoom,
     useZoomGesture,
+    useZoomGestureV2: useZoomGesture,
+    useZoomGestureV3: useZoomGesture,
+    isGestureApiV3Supported: () => false,
+    getGestureApiVersion: () => 'v2',
+    resolveGestureApiVersion: (version) => (version === 'v3' ? 'v3' : 'v2'),
+    setGestureApiVersion: () => {},
   }
 })
 

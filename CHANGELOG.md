@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+### ✨ New Features
+- Support for both `react-native-gesture-handler` gestures APIs: the 2.x builder API (`Gesture.Pan()`/`Gesture.Pinch()`) and the 3.x hooks API (`usePanGesture`/`usePinchGesture`)
+- The API is auto-detected from the gesture-handler version installed in the app - no configuration needed. Detection is both runtime and compile time, so `zoomGesture` is always typed as the gesture the installed `GestureDetector` accepts
+- `<Zoom gestureApi="auto" | "v2" | "v3" />` overrides the choice per component
+- `setGestureApiVersion('auto' | 'v2' | 'v3')` overrides the app-wide default
+- New `useZoomGestureV2` and `useZoomGestureV3` hooks pin a version at a single call site
+- New `isGestureApiV3Supported()` / `getGestureApiVersion()` / `resolveGestureApiVersion()` helpers, and an `IsGestureApiV3Supported` compile-time type
+- New `useZoomGestureCore` hook exposing the API-agnostic zoom worklets, for building the gesture yourself
+
+### 🔧 Improvements
+- Gesture logic extracted into `useZoomGestureCore`, shared by both gesture-handler API adapters
+
+### ⚠️ Behaviour Changes
+- On `react-native-gesture-handler` 3.x, `useZoomGesture` and `<Zoom />` now build the gesture with the v3 hooks API instead of the v2 builder API. Behaviour is the same, but to keep the previous implementation call `setGestureApiVersion('v2')` at startup or use `useZoomGestureV2`
+- On `react-native-gesture-handler` 2.x nothing changes
+- `UseZoomGestureReturn` now follows the detected version. The always-v2 shape is available as the new `UseZoomGestureReturnV2`
+
+### 📦 Other Changes
+- Example app gained a "Gesture API Example" screen
+
 ## v1.5.6
 
 No runtime changes to the library - `src/` is identical to v1.5.5. This release refreshes the
