@@ -16,24 +16,38 @@
 
 <hr />
 
-<h3 align="center">Support my work</h3>
+<table align="center">
+<tr>
+<td align="center" valign="top" width="190">
+  <a href="https://cryptoc-app.web.app/"><img src="https://cryptoc-app.web.app/img/icon.png?v=3" width="76" height="76" alt="cryptoc app icon" /></a>
+  <br /><br />
+  <img src="https://cryptoc-app.web.app/img/qr-get.png?v=2" width="124" height="124" alt="QR code that installs cryptoc" />
+  <br />
+  <sub>Scan to install</sub>
+  <br /><br />
+  <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://cryptoc-app.web.app/img/appstore.svg?v=2" alt="Download on the App Store" /></a>
+  <br />
+  <a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://cryptoc-app.web.app/img/googleplay.png?v=2" alt="Get it on Google Play" /></a>
+</td>
+<td valign="top">
 
-<p align="center">
-  <a href="https://cryptoc-app.web.app/"><img src="https://cryptoc-app.web.app/img/icon.png" width="88" height="88" alt="cryptoc app icon" /></a>
-</p>
+### Support my work
 
-<p align="center">
-  <strong>cryptoc</strong> - your crypto portfolio on the home screen, lock screen and Apple&nbsp;Watch.<br />
-  No account, no exchange API keys, no ads. Downloading it is what pays for the time that goes into these libraries.
-</p>
+**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.
 
-<p align="center">
-  <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://cryptoc-app.web.app/img/appstore.svg" alt="Download on the App Store" /></a>&nbsp;&nbsp;<a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://cryptoc-app.web.app/img/googleplay.png" alt="Get it on Google Play" /></a>
-</p>
+- Portfolio with average buy price and 24h / 180-day / all-time P&L
+- Widgets in three sizes, refreshed in the background - most days you never open the app
+- Price alerts on 5,000+ coins, delivered while the app is closed
+- **No account, no email, no exchange API keys, no ads.** Your holdings never reach a server - they sync through your own iCloud or Google Drive
+- Free for 3 holdings, and that is not a trial timer
+
+<sub>Downloading it is what pays for the time that goes into these libraries.</sub>
+
+</td>
+</tr>
+</table>
 
 <hr />
-
----
 
 ## ✨ Features
 
