@@ -30,6 +30,12 @@ jobs:
 
       - run: yarn install --immutable
 
+      # npm trusted publishing (OIDC) needs npm >= 11.5.1. The runner's bundled
+      # npm is new enough today, but node-version: 24 floats, so this pins the
+      # requirement explicitly rather than relying on what ships with it.
+      - name: Use an npm that supports trusted publishing
+        run: npm install -g npm@^11.5.1
+
       - run: yarn lint
 
       - run: yarn typecheck
