@@ -1,0 +1,16 @@
+# Generated from README.md by scripts/sync-docs.mjs
+/docs
+
+# Docusaurus
+/.docusaurus
+/build
+/node_modules
+
+# Yarn - website/ is its own Yarn project, so it grows its own .yarn directory.
+# Mirrors the rules in the repository root .gitignore.
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

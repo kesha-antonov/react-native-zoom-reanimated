@@ -15,6 +15,14 @@
 </p>
 
 <p align="center">
+  <strong><a href="https://kesha-antonov.github.io/react-native-zoom-reanimated/">📖 Documentation</a></strong> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-zoom-reanimated/installation">Installation</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-zoom-reanimated/usage">Usage</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-zoom-reanimated/api">API reference</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-zoom-reanimated/gesture-api">Gesture Handler v2 / v3</a>
+</p>
+
+<p align="center">
   <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
 </p>
 

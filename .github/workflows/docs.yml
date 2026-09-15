@@ -1,0 +1,67 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - website/**
+      - .github/workflows/docs.yml
+  pull_request:
+    paths:
+      - README.md
+      - website/**
+      - .github/workflows/docs.yml
+  workflow_dispatch:
+
+# Allow one concurrent deployment, without cancelling a run that is mid-deploy
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build the docs site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # website/ is a separate Yarn project, so it installs on its own. The
+      # pages themselves are generated from README.md by
+      # website/scripts/sync-docs.mjs, which `yarn build` runs first.
+      - name: Install dependencies
+        run: corepack enable && yarn install --immutable
+        working-directory: website
+
+      - name: Build
+        run: yarn build
+        working-directory: website
+
+      - name: Upload the site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,29 @@
+:root {
+  --ifm-color-primary: #1f6feb;
+  --ifm-color-primary-dark: #1c64d4;
+  --ifm-color-primary-darker: #1a5ec8;
+  --ifm-color-primary-darkest: #164ea5;
+  --ifm-color-primary-light: #367ded;
+  --ifm-color-primary-lighter: #4285ee;
+  --ifm-color-primary-lightest: #689df1;
+  --ifm-code-font-size: 93%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #6fa8ff;
+  --ifm-color-primary-dark: #4d93ff;
+  --ifm-color-primary-darker: #3c88ff;
+  --ifm-color-primary-darkest: #0a68ff;
+  --ifm-color-primary-light: #91bdff;
+  --ifm-color-primary-lighter: #a2c8ff;
+  --ifm-color-primary-lightest: #d5e5ff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* The comparison table is wide; let it scroll rather than squash the page. */
+.markdown table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
