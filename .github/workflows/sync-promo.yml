@@ -1,0 +1,44 @@
+name: Sync promo block
+
+# The cryptoc block in README.md is shared with several other repositories and
+# lives canonically at https://cryptoc-app.web.app/promo/readme-block.md.
+# This pulls any change to it back into this README.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: sync-promo
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Pull the canonical promo block
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # The script is dependency-free and uses the runner's own Node, so there
+      # is no setup-node here: it would trip over this repo's packageManager pin.
+      - name: Sync
+        run: node scripts/sync-promo.mjs
+
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "promo block already in step, nothing to push"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: sync the cryptoc promo block"
+          git push origin HEAD:${BRANCH}
+        env:
+          BRANCH: ${{ github.ref_name }}
