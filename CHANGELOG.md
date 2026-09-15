@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.6.0
 
 ### ✨ New Features
 - Support for both `react-native-gesture-handler` gestures APIs: the 2.x builder API (`Gesture.Pan()`/`Gesture.Pinch()`) and the 3.x hooks API (`usePanGesture`/`usePinchGesture`)
@@ -21,6 +21,7 @@
 
 ### 📦 Other Changes
 - Example app gained a "Gesture API Example" screen
+- New documentation site at https://kesha-antonov.github.io/react-native-zoom-reanimated/, generated from this README so the two cannot drift apart
 
 ## v1.5.6
 
