@@ -14,6 +14,10 @@
   Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures. Built with React Native Reanimated and Gesture Handler for buttery smooth 120fps animations.
 </p>
 
+<p align="center">
+  <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
+</p>
+
 <hr />
 
 <table align="center">
