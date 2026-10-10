@@ -82,8 +82,9 @@ export interface ZoomPanGestureConfig {
  * the public hook result that do not depend on the gesture-handler API version.
  */
 export interface ZoomGestureCore extends Omit<UseZoomGestureReturnBase<never>, 'zoomGesture'> {
-  tapConfig: ZoomTapGestureConfig
+  doubleTapGestureConfig: ZoomTapGestureConfig
   panConfig: ZoomPanGestureConfig
+  handleDoubleTapEnd: (event: ZoomTapEvent) => void
   handleTapEnd: (event: ZoomTapEvent) => void
   handlePanTouchesDown: (event: GestureTouchEvent) => void
   decidePanActivation: (event: GestureTouchEvent) => PanActivationDecision
@@ -118,6 +119,7 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
     parentScrollRef,
     currentIndex = 0,
     itemWidth = 0,
+    onTap,
   } = props
 
   // Boolean flag for worklet (refs can't be passed to worklets)
@@ -489,11 +491,17 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   // ============== GESTURE LOGIC (API-AGNOSTIC) ==============
 
   // ========== DOUBLE TAP ==========
-  const handleTapEnd = useCallback((event: ZoomTapEvent): void => {
+  const handleDoubleTapEnd = useCallback((event: ZoomTapEvent): void => {
     'worklet'
     updateZoomGestureLastTime()
     onDoubleTap(event.x, event.y)
   }, [updateZoomGestureLastTime, onDoubleTap])
+
+  // ========== SINGLE TAP ==========
+  const handleTapEnd = useCallback((event: ZoomTapEvent): void => {
+    'worklet'
+    onTap?.(event)
+  }, [onTap])
 
   // ========== PAN GESTURE ==========
   // Apple Photos: 1 finger when zoomed in, 2 fingers when at 1x
@@ -897,7 +905,7 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
 
   // ============== GESTURE CONFIG ==============
 
-  const tapConfig = useMemo<ZoomTapGestureConfig>(() => ({
+  const doubleTapGestureConfig = useMemo<ZoomTapGestureConfig>(() => ({
     numberOfTaps: 2,
     maxDeltaX: TAP_MAX_DELTA,
     maxDeltaY: TAP_MAX_DELTA,
@@ -931,8 +939,9 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   }, [zoomOut])
 
   return useMemo(() => ({
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,
@@ -952,8 +961,9 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
     zoomGestureLastTime,
     scale,
   }), [
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,

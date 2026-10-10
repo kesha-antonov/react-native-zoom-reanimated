@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { GestureTouchEvent } from 'react-native-gesture-handler'
+import { type GestureTouchEvent } from 'react-native-gesture-handler'
 import {
   requireGestureApiV3,
   type V3PanConfig,
@@ -26,12 +26,14 @@ export function useZoomGestureV3(props: UseZoomGestureProps = {}): UseZoomGestur
     usePanGesture,
     usePinchGesture,
     useSimultaneousGestures,
+    useExclusiveGestures,
     GestureStateManager,
   } = requireGestureApiV3()
 
   const {
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,
@@ -47,15 +49,23 @@ export function useZoomGestureV3(props: UseZoomGestureProps = {}): UseZoomGestur
   } = useZoomGestureCore(props)
 
   // ========== DOUBLE TAP ==========
+  const doubleTapGestureConfigExtend = useMemo<V3TapConfig>(() => ({
+    numberOfTaps: doubleTapGestureConfig.numberOfTaps,
+    maxDeltaX: doubleTapGestureConfig.maxDeltaX,
+    maxDeltaY: doubleTapGestureConfig.maxDeltaY,
+    onDeactivate: (event: V3TapEvent) => {
+      'worklet'
+      handleDoubleTapEnd(event)
+    },
+  }), [doubleTapGestureConfig, handleDoubleTapEnd])
+
+  // ========== SINGLE TAP ==========
   const tapGestureConfig = useMemo<V3TapConfig>(() => ({
-    numberOfTaps: tapConfig.numberOfTaps,
-    maxDeltaX: tapConfig.maxDeltaX,
-    maxDeltaY: tapConfig.maxDeltaY,
     onDeactivate: (event: V3TapEvent) => {
       'worklet'
       handleTapEnd(event)
     },
-  }), [tapConfig, handleTapEnd])
+  }), [handleTapEnd])
 
   // ========== PAN GESTURE ==========
   const panGestureConfig = useMemo<V3PanConfig>(() => ({
@@ -130,7 +140,9 @@ export function useZoomGestureV3(props: UseZoomGestureProps = {}): UseZoomGestur
     handlePinchEnd,
   ])
 
-  const tapGesture = useTapGesture(tapGestureConfig)
+  const doubleTapGesture = useTapGesture(doubleTapGestureConfigExtend)
+  const singleTapGesture = useTapGesture(tapGestureConfig)
+  const tapGesture = useExclusiveGestures(doubleTapGesture, singleTapGesture)
   const panGesture = usePanGesture(panGestureConfig)
   const pinchGesture = usePinchGesture(pinchGestureConfig)
 

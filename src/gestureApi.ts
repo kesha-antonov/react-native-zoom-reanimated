@@ -77,6 +77,7 @@ export interface GestureApiV3 {
   usePanGesture: (config: V3PanConfig) => V3Gesture
   usePinchGesture: (config: V3PinchConfig) => V3Gesture
   useSimultaneousGestures: (...gestures: V3Gesture[]) => ZoomGestureV3
+  useExclusiveGestures: (...gestures: V3Gesture[]) => ZoomGestureV3
   GestureStateManager: V3GestureStateManager
 }
 
@@ -94,6 +95,7 @@ export function isGestureApiV3Supported(): boolean {
     && typeof maybeV3.usePanGesture === 'function'
     && typeof maybeV3.usePinchGesture === 'function'
     && typeof maybeV3.useSimultaneousGestures === 'function'
+    && typeof maybeV3.useExclusiveGestures === 'function'
     && typeof maybeV3.GestureStateManager === 'object'
   )
 }
@@ -136,8 +138,7 @@ export function setGestureApiVersion(version: GestureApiVersionSetting): void {
 export function resolveGestureApiVersion(
   version: GestureApiVersionSetting = configuredVersion
 ): GestureApiVersion {
-  if (version === 'auto')
-    return isGestureApiV3Supported() ? 'v3' : 'v2'
+  if (version === 'auto') return isGestureApiV3Supported() ? 'v3' : 'v2'
 
   return version
 }
