@@ -8,7 +8,7 @@ import type {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated'
-import { ZoomTapEvent } from './useZoomGestureCore'
+import type { ZoomTapEvent } from './useZoomGestureCore'
 
 /**
  * Which react-native-gesture-handler API the zoom gesture is built with.
@@ -30,9 +30,7 @@ export type GestureApiVersionSetting = GestureApiVersion | 'auto'
 /**
  * Gesture object produced when building with the react-native-gesture-handler v2 API.
  */
-export type ZoomGestureV2 = ReturnType<
-  typeof GestureHandler.Gesture.Simultaneous
->
+export type ZoomGestureV2 = ReturnType<typeof GestureHandler.Gesture.Simultaneous>
 
 /**
  * Gesture object produced when building with the react-native-gesture-handler v3 hooks API.
@@ -54,9 +52,7 @@ export type IsGestureApiV3Supported
  * The gesture object produced by the auto-selected gesture-handler API: the v3 one when the
  * installed react-native-gesture-handler provides it, the v2 one otherwise.
  */
-export type ZoomGestureAuto = IsGestureApiV3Supported extends true
-  ? ZoomGestureV3
-  : ZoomGestureV2
+export type ZoomGestureAuto = IsGestureApiV3Supported extends true ? ZoomGestureV3 : ZoomGestureV2
 
 /**
  * Animation configuration type
@@ -122,7 +118,11 @@ export interface UseZoomGestureProps {
    * Required when using parentScrollRef. Usually equals device width.
    */
   itemWidth?: number
-  onTap?: ZoomProps['onTap']
+  /**
+   * Callback fired when the content is single-tapped (i.e. not part of a double tap).
+   * Receives the tap position relative to the zoomed content.
+   */
+  onTap?: (event: ZoomTapEvent) => void
 }
 
 /**
@@ -190,7 +190,18 @@ export interface ZoomProps {
    */
   onZoomChange?: (scale: number) => void
   /**
-   * Callback fired when single tap
+   * Callback fired when the content is single-tapped. A double tap does not trigger it,
+   * because the single-tap gesture is composed exclusively with the double-tap one.
+   *
+   * The callback runs on the JS thread and receives the tap position only, so the payload
+   * is the same whichever react-native-gesture-handler API built the gesture.
+   *
+   * @example
+   * ```tsx
+   * <Zoom onTap={({ x, y }) => console.log('tapped at', x, y)}>
+   *   <Image source={{ uri: imageUri }} />
+   * </Zoom>
+   * ```
    */
   onTap?: (event: ZoomTapEvent) => void
   /**

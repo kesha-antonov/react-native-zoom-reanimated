@@ -38,8 +38,11 @@ const SPRING_CONFIG = {
 }
 
 /**
- * Gesture payloads, described structurally so the same worklets can be fed by both the
- * react-native-gesture-handler v2 and v3 event shapes.
+ * Position of a tap, relative to the zoomed content.
+ *
+ * Gesture payloads are described structurally, so the same worklets can be fed by both the
+ * react-native-gesture-handler v2 and v3 event shapes. For the same reason `onTap` receives
+ * this plain `{ x, y }` instead of the raw, version-dependent gesture event.
  */
 export interface ZoomTapEvent {
   x: number
@@ -84,6 +87,8 @@ export interface ZoomPanGestureConfig {
 export interface ZoomGestureCore extends Omit<UseZoomGestureReturnBase<never>, 'zoomGesture'> {
   doubleTapGestureConfig: ZoomTapGestureConfig
   panConfig: ZoomPanGestureConfig
+  /** Whether an `onTap` callback was passed, i.e. whether a single-tap recognizer is needed. */
+  hasOnTap: boolean
   handleDoubleTapEnd: (event: ZoomTapEvent) => void
   handleTapEnd: (event: ZoomTapEvent) => void
   handlePanTouchesDown: (event: GestureTouchEvent) => void
@@ -498,9 +503,12 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   }, [updateZoomGestureLastTime, onDoubleTap])
 
   // ========== SINGLE TAP ==========
+  // Runs inside a gesture callback, so the JS callback has to be scheduled with runOnJS.
+  // Only the position is forwarded: the gesture event shape differs between the
+  // react-native-gesture-handler v2 and v3 APIs, and that should not leak into the public API.
   const handleTapEnd = useCallback((event: ZoomTapEvent): void => {
     'worklet'
-    onTap?.(event)
+    if (onTap) runOnJS(onTap)({ x: event.x, y: event.y })
   }, [onTap])
 
   // ========== PAN GESTURE ==========
@@ -917,6 +925,11 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
     maxPointers: 2,
   }), [])
 
+  // A tap recognizer with nothing to call is not harmless: it still takes part in gesture
+  // arbitration and can swallow taps aimed at pressables inside the content (mostly on
+  // Android), so the adapters only attach the single-tap gesture when this is true.
+  const hasOnTap = !!onTap
+
   // ============== ANIMATED STYLE ==============
   // Transform order: translate first, then scale
   // This means scale happens around the center of the View
@@ -941,6 +954,7 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   return useMemo(() => ({
     doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
     handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
@@ -963,6 +977,7 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   }), [
     doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
     handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,

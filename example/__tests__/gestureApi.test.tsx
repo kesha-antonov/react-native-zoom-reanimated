@@ -29,11 +29,17 @@ const mockV3Calls: {
   pan: V3Config[]
   pinch: V3Config[]
   simultaneous: unknown[][]
-} = { tap: [], pan: [], pinch: [], simultaneous: [] }
+  exclusive: unknown[][]
+} = { tap: [], pan: [], pinch: [], simultaneous: [], exclusive: [] }
 
 const mockStateManagerCalls: { activate: number[], fail: number[] } = { activate: [], fail: [] }
 
-const mockV2Calls: { methods: string[], simultaneous: unknown[][] } = { methods: [], simultaneous: [] }
+const mockV2Calls: {
+  methods: string[]
+  simultaneous: unknown[][]
+  exclusive: unknown[][]
+  enabled: unknown[]
+} = { methods: [], simultaneous: [], exclusive: [], enabled: [] }
 
 // Chainable recorder standing in for the v2 `Gesture.Pan()` builder API.
 function mockCreateV2Builder(name: string) {
@@ -46,6 +52,8 @@ function mockCreateV2Builder(name: string) {
 
       return (...args: unknown[]) => {
         mockV2Calls.methods.push(`${name}.${prop}`)
+        if (prop === 'enabled')
+          mockV2Calls.enabled.push(args[0])
         if (typeof args[0] === 'function')
           handlers[prop] = args[0]
 
@@ -79,6 +87,10 @@ jest.mock('react-native-gesture-handler', () => {
         mockV2Calls.simultaneous.push(gestures)
         return { __composed: gestures }
       },
+      Exclusive: (...gestures: unknown[]) => {
+        mockV2Calls.exclusive.push(gestures)
+        return { __exclusive: gestures }
+      },
     },
     // react-native-gesture-handler v3 gestures API
     useTapGesture: (config: V3Config) => {
@@ -96,6 +108,10 @@ jest.mock('react-native-gesture-handler', () => {
     useSimultaneousGestures: (...gestures: unknown[]) => {
       mockV3Calls.simultaneous.push(gestures)
       return { handlerTags: [101, 102, 103], gestures }
+    },
+    useExclusiveGestures: (...gestures: unknown[]) => {
+      mockV3Calls.exclusive.push(gestures)
+      return { handlerTags: [101, 104], gestures }
     },
     GestureStateManager: {
       activate: (tag: number) => mockStateManagerCalls.activate.push(tag),
@@ -146,8 +162,11 @@ describe('gesture handler API selection', () => {
     mockV3Calls.pan = []
     mockV3Calls.pinch = []
     mockV3Calls.simultaneous = []
+    mockV3Calls.exclusive = []
     mockV2Calls.methods = []
     mockV2Calls.simultaneous = []
+    mockV2Calls.exclusive = []
+    mockV2Calls.enabled = []
     mockStateManagerCalls.activate = []
     mockStateManagerCalls.fail = []
   })
@@ -162,6 +181,9 @@ describe('gesture handler API selection', () => {
     expect(result.zoomGesture).toBeTruthy()
     expect(mockV2Calls.simultaneous).toHaveLength(1)
     expect(mockV2Calls.simultaneous[0]).toHaveLength(3)
+    // Double tap and single tap are composed exclusively, inside the simultaneous group
+    expect(mockV2Calls.exclusive).toHaveLength(1)
+    expect(mockV2Calls.exclusive[0]).toHaveLength(2)
     expect(mockV2Calls.methods).toContain('Pan.manualActivation')
     expect(mockV2Calls.methods).toContain('Pinch.onUpdate')
     expect(mockV2Calls.methods).toContain('Tap.numberOfTaps')
@@ -190,6 +212,10 @@ describe('gesture handler API selection', () => {
     expect(tapConfig.numberOfTaps).toBe(2)
     expect(typeof tapConfig.onDeactivate).toBe('function')
 
+    // The single tap is composed exclusively with the double tap, so a double tap wins
+    expect(mockV3Calls.exclusive).toHaveLength(1)
+    expect(mockV3Calls.exclusive[0]).toHaveLength(2)
+
     const pinchConfig = mockV3Calls.pinch[0]
     expect(typeof pinchConfig.onActivate).toBe('function')
     expect(typeof pinchConfig.onUpdate).toBe('function')
@@ -212,6 +238,35 @@ describe('gesture handler API selection', () => {
     // Nothing to decide once the gesture is already active
     onTouchesMove(touchEvent({ numberOfTouches: 2, state: mockState.ACTIVE }))
     expect(mockStateManagerCalls.activate).toEqual([102])
+  })
+
+  it('only enables the v3 single-tap gesture when onTap is passed', async () => {
+    await renderHookResult<UseZoomGestureReturnV3>(() => useZoomGestureV3())
+    expect(mockV3Calls.tap[1].enabled).toBe(false)
+
+    mockV3Calls.tap = []
+    await renderHookResult<UseZoomGestureReturnV3>(() => useZoomGestureV3({ onTap: () => {} }))
+    expect(mockV3Calls.tap[1].enabled).toBe(true)
+  })
+
+  it('only enables the v2 single-tap gesture when onTap is passed', async () => {
+    await renderHookResult<UseZoomGestureReturnV2>(() => useZoomGestureV2())
+    expect(mockV2Calls.enabled).toEqual([false])
+
+    mockV2Calls.enabled = []
+    await renderHookResult<UseZoomGestureReturnV2>(() => useZoomGestureV2({ onTap: () => {} }))
+    expect(mockV2Calls.enabled).toEqual([true])
+  })
+
+  it('forwards the tap position to onTap as a plain { x, y } payload', async () => {
+    const onTap = jest.fn()
+    await renderHookResult<UseZoomGestureReturnV3>(() => useZoomGestureV3({ onTap }))
+
+    const onDeactivate = mockV3Calls.tap[1].onDeactivate as (event: unknown) => void
+    onDeactivate({ x: 12, y: 34, absoluteX: 12, absoluteY: 34, handlerTag: 101 })
+
+    expect(onTap).toHaveBeenCalledTimes(1)
+    expect(onTap).toHaveBeenCalledWith({ x: 12, y: 34 })
   })
 
   it('activates the v3 pinch gesture on a second finger', async () => {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { type GestureTouchEvent } from 'react-native-gesture-handler'
+import type { GestureTouchEvent } from 'react-native-gesture-handler'
 import {
   requireGestureApiV3,
   type V3PanConfig,
@@ -33,6 +33,7 @@ export function useZoomGestureV3(props: UseZoomGestureProps = {}): UseZoomGestur
   const {
     doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
     handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
@@ -61,11 +62,12 @@ export function useZoomGestureV3(props: UseZoomGestureProps = {}): UseZoomGestur
 
   // ========== SINGLE TAP ==========
   const tapGestureConfig = useMemo<V3TapConfig>(() => ({
+    enabled: hasOnTap,
     onDeactivate: (event: V3TapEvent) => {
       'worklet'
       handleTapEnd(event)
     },
-  }), [handleTapEnd])
+  }), [hasOnTap, handleTapEnd])
 
   // ========== PAN GESTURE ==========
   const panGestureConfig = useMemo<V3PanConfig>(() => ({

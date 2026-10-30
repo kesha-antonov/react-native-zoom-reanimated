@@ -35,6 +35,7 @@ export interface V3PinchEvent {
 type V3TouchCallback = (event: GestureTouchEvent) => void
 
 interface V3CommonConfig {
+  enabled?: boolean
   manualActivation?: boolean
   onTouchesDown?: V3TouchCallback
   onTouchesMove?: V3TouchCallback
@@ -138,7 +139,8 @@ export function setGestureApiVersion(version: GestureApiVersionSetting): void {
 export function resolveGestureApiVersion(
   version: GestureApiVersionSetting = configuredVersion
 ): GestureApiVersion {
-  if (version === 'auto') return isGestureApiV3Supported() ? 'v3' : 'v2'
+  if (version === 'auto')
+    return isGestureApiV3Supported() ? 'v3' : 'v2'
 
   return version
 }

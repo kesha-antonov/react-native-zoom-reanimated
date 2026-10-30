@@ -22,6 +22,7 @@ export function useZoomGestureV2(props: UseZoomGestureProps = {}): UseZoomGestur
   const {
     doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
     handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
@@ -50,6 +51,7 @@ export function useZoomGestureV2(props: UseZoomGestureProps = {}): UseZoomGestur
 
     // ========== SINGLE TAP ==========
     const tapGesture = Gesture.Tap()
+      .enabled(hasOnTap)
       .onEnd((event) => {
         'worklet'
         handleTapEnd(event)
@@ -115,6 +117,7 @@ export function useZoomGestureV2(props: UseZoomGestureProps = {}): UseZoomGestur
   }, [
     doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
     handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,

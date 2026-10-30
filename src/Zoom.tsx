@@ -23,7 +23,6 @@ interface ZoomViewProps extends PropsWithChildren {
   contentContainerStyle?: ZoomProps['contentContainerStyle']
   onZoomChange?: ZoomProps['onZoomChange']
   onZoomStateChange?: ZoomProps['onZoomStateChange']
-  onTap?: ZoomProps['onTap']
   zoom: UseZoomGestureReturnBase<ZoomGestureV2 | ZoomGestureV3>
 }
 
