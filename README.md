@@ -103,6 +103,7 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
 - [🚀 Usage](#-usage)
 - [💡 Examples](#-examples)
   - [Basic Usage](#basic-usage)
+  - [Single Tap Callback](#single-tap-callback)
   - [Image Gallery with FlatList](#image-gallery-with-flatlist)
   - [Apple Photos-Style Gallery](#apple-photos-style-gallery)
   - [Using the Hook Directly](#using-the-hook-directly)
@@ -174,6 +175,24 @@ import Zoom from 'react-native-zoom-reanimated'
   />
 </Zoom>
 ```
+
+### Single Tap Callback
+
+`onTap` fires when the content is tapped once. The single-tap recognizer is composed
+exclusively with the double-tap one, so a double tap zooms and does not call `onTap`.
+
+```jsx
+<Zoom onTap={({ x, y }) => console.log('single tap at', x, y)}>
+  <Image source={{ uri: imageUri }} resizeMode="contain" />
+</Zoom>
+```
+
+The callback runs on the JS thread and receives the tap position only (`{ x, y }`, relative to
+the zoomed content), so the payload is identical whichever `react-native-gesture-handler` API
+built the gesture. When `onTap` is not passed, no single-tap recognizer is attached at all,
+which leaves taps for pressables inside the content untouched.
+
+> 📄 Full example: [`example/App.tsx`](./example/App.tsx) — the basic example shows the last tap position
 
 ### Image Gallery with FlatList
 
@@ -263,6 +282,7 @@ useAnimatedReaction(
 | maxScale              | `number`               | No       | Maximum allowed zoom scale. Default is `4` |
 | onZoomStateChange     | `(isZoomed: boolean) => void` | No | Callback fired when zoom state changes. Called with `true` when zoomed in, `false` when zoomed out to initial scale |
 | onZoomChange          | `(scale: number) => void` | No | Callback fired during zoom gesture with current scale value. Called continuously while pinching, useful for UI updates (e.g., showing zoom percentage). For performance-critical use cases, use `useZoomGesture` hook with `scale` SharedValue instead |
+| onTap                 | `(event: { x: number; y: number }) => void` | No | Callback fired when the content is single-tapped. A double tap does not trigger it. Runs on the JS thread and receives the tap position relative to the zoomed content. When omitted, no single-tap recognizer is attached |
 | enableGallerySwipe    | `boolean`              | No       | Enable Apple Photos-style seamless gallery navigation. When zoomed and panning hits horizontal boundary, continued swipe allows scrolling to adjacent images. Default is `false` |
 | parentScrollRef       | `RefObject<ScrollableRef>` | No   | Reference to parent FlatList/ScrollView for seamless edge scrolling. When provided with `enableGallerySwipe`, enables Apple Photos-style continuous swipe: zoomed image pans to edge, then seamlessly scrolls parent list. Compatible with FlatList/ScrollView from `react-native`, `react-native-gesture-handler`, and `react-native-reanimated` |
 | currentIndex          | `number`               | No       | Current index in the parent list (for calculating scroll offset). Required when using `parentScrollRef` |
@@ -320,6 +340,7 @@ interface UseZoomGestureProps {
   parentScrollRef?: RefObject<ScrollableRef>  // Parent FlatList/ScrollView ref for seamless scrolling
   currentIndex?: number                  // Current index in parent list
   itemWidth?: number                     // Width of each item in parent list
+  onTap?: (event: { x: number; y: number }) => void  // Single tap callback (not fired by double taps)
   doubleTapConfig?: DoubleTapConfig      // Double tap zoom configuration
 }
 

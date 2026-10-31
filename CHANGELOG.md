@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+### ✨ New Features
+- New `onTap` prop / hook option, called when the content is single-tapped with the tap position as `{ x, y }`
+- The single-tap gesture is composed exclusively with the double-tap one, so a double tap still zooms and never fires `onTap`
+- Available on `<Zoom />`, `useZoomGesture`, `useZoomGestureV2` and `useZoomGestureV3`, with both gesture-handler APIs
+
+### 🔧 Improvements
+- The single-tap recognizer is only attached when `onTap` is passed. A tap handler with no callback would otherwise take part in gesture arbitration and could swallow taps meant for pressables inside the content, mostly on Android
+- `onTap` receives a plain `{ x, y }` payload instead of the raw gesture-handler event, so its shape no longer depends on the gesture-handler API version in use
+
+### 📦 Other Changes
+- Example app's basic screen shows the position of the last single tap
+- README and docs site document `onTap`, with a usage example
+
 ## v1.6.0
 
 ### ✨ New Features
