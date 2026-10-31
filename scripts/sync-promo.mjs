@@ -6,7 +6,8 @@
 // Only the region between the markers is touched. {{INTRO}} and {{NOTE}} in the
 // canonical block are filled from .github/promo.json when present, so a repo can
 // keep its own wording without forking the whole block. {{REPO}} is this
-// repository's name, used to tell the sponsor links apart.
+// repository's name, used to tell the sponsor links apart. "sponsors": false
+// there leaves the Sponsors section out.
 //
 // Usage: node scripts/sync-promo.mjs [--check]
 
@@ -18,6 +19,7 @@ const README = 'README.md'
 const CONFIG = '.github/promo.json'
 const START = '<!-- cryptoc-promo:start -->'
 const END = '<!-- cryptoc-promo:end -->'
+const SPONSORS = /<!-- sponsors:start -->\n([\s\S]*?)<!-- sponsors:end -->\n/
 
 const DEFAULTS = {
   intro: [
@@ -43,6 +45,7 @@ block = block
   .replaceAll('{{INTRO}}', config.intro ?? DEFAULTS.intro)
   .replaceAll('{{NOTE}}', config.note ?? DEFAULTS.note)
   .replaceAll('{{REPO}}', repo)
+  .replace(SPONSORS, (_, sponsors) => (config.sponsors === false ? '' : sponsors))
 
 if (block.includes('{{')) throw new Error('canonical block still has an unfilled placeholder')
 
