@@ -1,14 +1,17 @@
-// Keeps the cryptoc promo block in this README in step with the canonical copy
-// at https://cryptoc-app.web.app/promo/readme-block.md, so the block is written
-// once rather than separately in every repository that carries it.
+// Keeps the Sponsors section and the cryptoc promo block in this README in step
+// with the canonical copy at https://cryptoc-app.web.app/promo/readme-block.md,
+// so they are written once rather than separately in every repository that
+// carries them.
 //
 // Only the region between the markers is touched. {{INTRO}} and {{NOTE}} in the
 // canonical block are filled from .github/promo.json when present, so a repo can
-// keep its own wording without forking the whole block.
+// keep its own wording without forking the whole block. {{REPO}} is this
+// repository's name, used to tell the sponsor links apart.
 //
 // Usage: node scripts/sync-promo.mjs [--check]
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { basename } from 'node:path'
 
 const SOURCE = 'https://cryptoc-app.web.app/promo/readme-block.md'
 const README = 'README.md'
@@ -17,11 +20,19 @@ const START = '<!-- cryptoc-promo:start -->'
 const END = '<!-- cryptoc-promo:end -->'
 
 const DEFAULTS = {
-  intro: '**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.',
+  intro: [
+    '### Support my work',
+    '',
+    '**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.',
+  ].join('\n'),
   note: 'Downloading it is what pays for the time that goes into these libraries.',
 }
 
 const check = process.argv.includes('--check')
+
+// GitHub Actions names the repository; locally, and in the clones cryptoc's
+// sync-promo-block.sh makes, the checkout directory is named after it
+const repo = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? basename(process.cwd())
 
 const response = await fetch(SOURCE)
 if (!response.ok) throw new Error(`${SOURCE} returned ${response.status}`)
@@ -31,6 +42,7 @@ const config = existsSync(CONFIG) ? JSON.parse(readFileSync(CONFIG, 'utf8')) : {
 block = block
   .replaceAll('{{INTRO}}', config.intro ?? DEFAULTS.intro)
   .replaceAll('{{NOTE}}', config.note ?? DEFAULTS.note)
+  .replaceAll('{{REPO}}', repo)
 
 if (block.includes('{{')) throw new Error('canonical block still has an unfilled placeholder')
 
