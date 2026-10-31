@@ -44,8 +44,6 @@
 </td>
 <td valign="top">
 
-### Support my work
-
 **[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.
 
 - Portfolio with average buy price and 24h / 180-day / all-time P&L

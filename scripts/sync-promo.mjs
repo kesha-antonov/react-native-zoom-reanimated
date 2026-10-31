@@ -17,11 +17,7 @@ const START = '<!-- cryptoc-promo:start -->'
 const END = '<!-- cryptoc-promo:end -->'
 
 const DEFAULTS = {
-  intro: [
-    '### Support my work',
-    '',
-    '**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.',
-  ].join('\n'),
+  intro: '**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.',
   note: 'Downloading it is what pays for the time that goes into these libraries.',
 }
 
