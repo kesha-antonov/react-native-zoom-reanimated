@@ -7791,6 +7791,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lucide-react@npm:0.468.0":
+  version: 0.468.0
+  resolution: "lucide-react@npm:0.468.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
+  checksum: 10/b61907e20c529a6040e43901ba3e4dbcae226b7f9faf9a3c03ccbd3acab1b8241d309e481d6103eca584ed21fb1471204d6d729539079c09ab3313174bf40efc
+  languageName: node
+  linkType: hard
+
 "markdown-extensions@npm:^2.0.0":
   version: 2.0.0
   resolution: "markdown-extensions@npm:2.0.0"
@@ -10474,6 +10483,7 @@ __metadata:
     "@docusaurus/preset-classic": "npm:^3.9.2"
     "@mdx-js/react": "npm:^3.1.0"
     clsx: "npm:^2.1.1"
+    lucide-react: "npm:0.468.0"
     prism-react-renderer: "npm:^2.4.1"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"

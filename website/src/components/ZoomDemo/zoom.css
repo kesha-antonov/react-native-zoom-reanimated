@@ -1,0 +1,381 @@
+/* react-native-zoom-reanimated: a photo viewer on a phone beside the feature
+   list. Everything is nested under .zr. Inside the phone, 1px is 1pt. */
+.zr {
+  --zr-accent: #1f6feb;
+  --zr-accent-soft: rgba(31, 111, 235, 0.13);
+  --zr-ui: cubic-bezier(0.3, 0.75, 0.1, 1);
+  --zr-view: #fff;
+  --zr-ink: #111;
+  --zr-faint: rgba(60, 60, 67, 0.6);
+  --zr-glass: rgba(118, 118, 128, 0.12);
+
+  .ss-stage {
+    --gutter: 32px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #eef2f7;
+  }
+
+  .ss-stage[data-theme='dark'] {
+    --zr-accent: #6fa8ff;
+    --zr-accent-soft: rgba(111, 168, 255, 0.16);
+    --zr-view: #000;
+    --zr-ink: #fff;
+    --zr-faint: rgba(235, 235, 245, 0.6);
+    --zr-glass: rgba(118, 118, 128, 0.3);
+    background: #141a22;
+  }
+
+  /* ---- The phone: a gutter from the top and the right, off the bottom ---- */
+  .zr-phone {
+    position: absolute;
+    top: var(--gutter);
+    right: var(--gutter);
+  }
+
+  .ss-stage[data-layout='compact'] .zr-phone {
+    top: 68px;
+    right: 16px;
+  }
+
+  .ss-phone__screen {
+    background: var(--zr-view);
+  }
+
+  .ss-phone__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .zr-screen {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: 62px;
+    color: var(--zr-ink);
+  }
+
+  /* ---- The nav bar: back, the album and the counter, the zoom readout ---- */
+  .zr-nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 50px;
+    padding: 0 16px;
+  }
+
+  .zr-round {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--zr-glass);
+  }
+
+  .zr-title {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+  }
+
+  .zr-title__name {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+  }
+
+  .zr-title__count {
+    display: flex;
+    align-items: baseline;
+    color: var(--zr-faint);
+    font-size: 13px;
+    line-height: 16px;
+    white-space: pre;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zr-zoom {
+    justify-self: end;
+    min-width: 58px;
+    padding: 10px 12px;
+    border-radius: 20px;
+    background: var(--zr-glass);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- The viewport: the photos zoom and page inside it ---- */
+  .zr-viewport {
+    position: relative;
+    flex: none;
+    height: 330px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .zr-track {
+    display: flex;
+    will-change: transform;
+    gap: 20px;
+    height: 100%;
+  }
+
+  .zr-track[data-paging] {
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .zr-page {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 402px;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .zr-zoomable {
+    width: 402px;
+    height: 301.5px;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+
+  .zr-zoomable[data-ease='tap'] {
+    transition: transform 0.35s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  /* Back from past the limit: a spring, a little over and settle */
+  .zr-zoomable[data-ease='spring'] {
+    transition: transform 0.45s cubic-bezier(0.3, 1.25, 0.5, 1);
+  }
+
+  /* The throw: fast off the finger, easing out like a decay */
+  .zr-zoomable[data-ease='glide'] {
+    transition: transform 0.56s cubic-bezier(0.15, 0.75, 0.35, 1);
+  }
+
+  .zr-zoomable[data-ease='bounce'] {
+    transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .zr-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ---- The filmstrip ---- */
+  .zr-strip {
+    height: 40px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+
+  .zr-strip__track {
+    display: flex;
+    gap: 2px;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .zr-thumb {
+    flex: none;
+    width: 30px;
+    height: 40px;
+    overflow: hidden;
+    transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .zr-thumb[data-on] {
+    width: 54px;
+  }
+
+  .zr-thumb__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The toolbar under the filmstrip */
+  .zr-tools {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding: 0 36px;
+    color: var(--zr-accent);
+  }
+
+  /* ---- Fingers: the kit's touch dot and a second one for the pinch, both
+     made light enough to read over a photo ---- */
+  .ss-cursor[data-style='touch'] .ss-cursor__dot,
+  .zr-finger {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .ss-cursor[data-style='touch'][data-pressed='true'] .ss-cursor__dot,
+  .ss-cursor[data-style='touch'][data-swiping] .ss-cursor__dot {
+    background: rgba(255, 255, 255, 0.62);
+  }
+
+  .zr-finger {
+    position: absolute;
+    z-index: 5;
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.82);
+    transition: opacity 0.3s ease;
+  }
+
+  .zr-finger[data-on] {
+    opacity: 1;
+    transition: opacity 0.14s ease;
+  }
+
+  /* ---- The feature list beside the phone ---- */
+  .zr-features {
+    position: absolute;
+    top: 50%;
+    left: 28px;
+    display: grid;
+    gap: 2px;
+    width: 316px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform: translateY(-50%);
+  }
+
+  .zr-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 14px;
+    transition: background-color 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .zr-feature[data-state='on'] {
+    background: var(--ss-surface);
+    box-shadow: var(--ss-shadow-card);
+  }
+
+  .zr-feature__tile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--ss-line);
+    color: var(--ss-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .zr-feature[data-state='done'] .zr-feature__tile {
+    background: var(--zr-accent-soft);
+    color: var(--zr-accent);
+  }
+
+  .zr-feature[data-state='on'] .zr-feature__tile {
+    background: var(--zr-accent);
+    color: #fff;
+  }
+
+  .ss-stage[data-theme='dark'] .zr-feature[data-state='on'] .zr-feature__tile {
+    color: #0b1220;
+  }
+
+  .zr-feature__words {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .zr-feature__title {
+    color: var(--ss-text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    transition: color 0.3s ease;
+  }
+
+  .zr-feature[data-state='on'] .zr-feature__title,
+  .zr-feature[data-state='done'] .zr-feature__title {
+    color: var(--ss-text-strong);
+  }
+
+  .zr-feature__line {
+    color: var(--ss-text-faint);
+    font-size: 12.5px;
+    line-height: 16px;
+    transition: color 0.3s ease;
+  }
+
+  .zr-feature[data-state='on'] .zr-feature__line,
+  .zr-feature[data-state='done'] .zr-feature__line {
+    color: var(--ss-text);
+  }
+
+  .zr-more {
+    margin: 10px 12px 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--ss-line);
+    color: var(--ss-text);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  /* ---- Compact: the feature in play as a caption over the phone ---- */
+  .zr-caption {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    z-index: 4;
+    display: grid;
+    padding: 8px 14px;
+    border-radius: 18px;
+    background: var(--ss-surface);
+    box-shadow: var(--ss-shadow-card);
+    color: var(--ss-text-strong);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, -6px);
+    transition: opacity 0.3s ease, transform 0.4s var(--zr-ui);
+  }
+
+  .zr-caption[data-show] {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .zr-caption__item {
+    display: flex;
+    grid-area: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+
+    svg {
+      color: var(--zr-accent);
+    }
+  }
+
+  .zr-caption__item[data-on] {
+    opacity: 1;
+    transition: opacity 0.25s ease 0.14s;
+  }
+}

@@ -23,6 +23,13 @@
 </p>
 
 <p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/how-it-works-dark.gif" />
+    <img src="docs/images/how-it-works-light.gif" width="760" alt="A photo viewer on a phone: a double tap zooms to 2x where it lands, a pinch on the tram's destination board stays under the fingers, goes past 4x and springs back, a flick glides and bounces off the edge, and a swipe at the edge pages to the next photo" />
+  </picture>
+</p>
+
+<p align="center">
   <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
 </p>
 
