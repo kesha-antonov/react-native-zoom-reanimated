@@ -9,7 +9,7 @@ const config = {
   title: 'React Native Zoom Reanimated',
   tagline: 'Apple Photos-style pinch, pan and double-tap zoom for React Native, at 120fps',
 
-  url: 'https://kesha-antonov.github.io',
+  url: 'https://kesha-antonov.com',
   baseUrl: '/react-native-zoom-reanimated/',
   organizationName: 'kesha-antonov',
   projectName: 'react-native-zoom-reanimated',
