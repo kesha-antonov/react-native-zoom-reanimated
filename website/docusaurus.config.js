@@ -78,7 +78,8 @@ const config = {
           {
             title: 'Built by',
             items: [
-              { label: 'Kesha Antonov', href: 'https://github.com/kesha-antonov' },
+              { label: 'Kesha Antonov', href: 'https://kesha-antonov.com' },
+              { label: 'GitHub profile', href: 'https://github.com/kesha-antonov' },
               { label: 'cryptoc - crypto portfolio app', href: 'https://cryptoc-app.web.app/' },
               { label: 'Sponsor', href: 'https://github.com/sponsors/kesha-antonov' },
             ],
