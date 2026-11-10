@@ -35,6 +35,7 @@ export interface V3PinchEvent {
 type V3TouchCallback = (event: GestureTouchEvent) => void
 
 interface V3CommonConfig {
+  enabled?: boolean
   manualActivation?: boolean
   onTouchesDown?: V3TouchCallback
   onTouchesMove?: V3TouchCallback
@@ -77,6 +78,7 @@ export interface GestureApiV3 {
   usePanGesture: (config: V3PanConfig) => V3Gesture
   usePinchGesture: (config: V3PinchConfig) => V3Gesture
   useSimultaneousGestures: (...gestures: V3Gesture[]) => ZoomGestureV3
+  useExclusiveGestures: (...gestures: V3Gesture[]) => ZoomGestureV3
   GestureStateManager: V3GestureStateManager
 }
 
@@ -94,6 +96,7 @@ export function isGestureApiV3Supported(): boolean {
     && typeof maybeV3.usePanGesture === 'function'
     && typeof maybeV3.usePinchGesture === 'function'
     && typeof maybeV3.useSimultaneousGestures === 'function'
+    && typeof maybeV3.useExclusiveGestures === 'function'
     && typeof maybeV3.GestureStateManager === 'object'
   )
 }

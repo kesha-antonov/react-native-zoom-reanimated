@@ -70,6 +70,7 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [hasError, setHasError] = useState(false)
   const [currentScale, setCurrentScale] = useState(1)
   const [isZoomed, setIsZoomed] = useState(false)
+  const [lastTap, setLastTap] = useState<{ x: number, y: number } | null>(null)
   const imageWidth = 1100
   const imageHeight = 910
   const calculatedHeight = imageHeight * deviceWidth / imageWidth
@@ -85,6 +86,7 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         }}
         onZoomChange={setCurrentScale}
         onZoomStateChange={setIsZoomed}
+        onTap={setLastTap}
       >
         <Image
           source={{ uri: 'https://picsum.photos/1100/910' }}
@@ -120,6 +122,9 @@ const BasicExample: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         <Text style={[styles.zoomIndicatorText, { color: isDarkMode ? '#fff' : '#000' }]}>
           {isZoomed ? '🔍' : '🖼️'}{' '}{currentScale.toFixed(1)}x
         </Text>
+        <Text style={[styles.zoomIndicatorText, { color: isDarkMode ? '#888' : '#666' }]}>
+          {lastTap ? `last tap: ${Math.round(lastTap.x)}, ${Math.round(lastTap.y)}` : 'single tap the image'}
+        </Text>
       </View>
     </View>
   )
@@ -140,7 +145,7 @@ const MainMenu: React.FC<{ onSelect: (screen: Screen) => void, isDarkMode: boole
     <View style={styles.buttonList}>
       <MenuButton
         title="Basic Example"
-        subtitle="Simple zoomable image with pinch & double-tap"
+        subtitle="Simple zoomable image with pinch, double-tap & single tap"
         onPress={() => onSelect('basic')}
         isDarkMode={isDarkMode}
       />

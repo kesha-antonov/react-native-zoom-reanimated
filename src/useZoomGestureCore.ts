@@ -38,8 +38,11 @@ const SPRING_CONFIG = {
 }
 
 /**
- * Gesture payloads, described structurally so the same worklets can be fed by both the
- * react-native-gesture-handler v2 and v3 event shapes.
+ * Position of a tap, relative to the zoomed content.
+ *
+ * Gesture payloads are described structurally, so the same worklets can be fed by both the
+ * react-native-gesture-handler v2 and v3 event shapes. For the same reason `onTap` receives
+ * this plain `{ x, y }` instead of the raw, version-dependent gesture event.
  */
 export interface ZoomTapEvent {
   x: number
@@ -82,8 +85,11 @@ export interface ZoomPanGestureConfig {
  * the public hook result that do not depend on the gesture-handler API version.
  */
 export interface ZoomGestureCore extends Omit<UseZoomGestureReturnBase<never>, 'zoomGesture'> {
-  tapConfig: ZoomTapGestureConfig
+  doubleTapGestureConfig: ZoomTapGestureConfig
   panConfig: ZoomPanGestureConfig
+  /** Whether an `onTap` callback was passed, i.e. whether a single-tap recognizer is needed. */
+  hasOnTap: boolean
+  handleDoubleTapEnd: (event: ZoomTapEvent) => void
   handleTapEnd: (event: ZoomTapEvent) => void
   handlePanTouchesDown: (event: GestureTouchEvent) => void
   decidePanActivation: (event: GestureTouchEvent) => PanActivationDecision
@@ -118,6 +124,7 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
     parentScrollRef,
     currentIndex = 0,
     itemWidth = 0,
+    onTap,
   } = props
 
   // Boolean flag for worklet (refs can't be passed to worklets)
@@ -489,11 +496,20 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   // ============== GESTURE LOGIC (API-AGNOSTIC) ==============
 
   // ========== DOUBLE TAP ==========
-  const handleTapEnd = useCallback((event: ZoomTapEvent): void => {
+  const handleDoubleTapEnd = useCallback((event: ZoomTapEvent): void => {
     'worklet'
     updateZoomGestureLastTime()
     onDoubleTap(event.x, event.y)
   }, [updateZoomGestureLastTime, onDoubleTap])
+
+  // ========== SINGLE TAP ==========
+  // Runs inside a gesture callback, so the JS callback has to be scheduled with runOnJS.
+  // Only the position is forwarded: the gesture event shape differs between the
+  // react-native-gesture-handler v2 and v3 APIs, and that should not leak into the public API.
+  const handleTapEnd = useCallback((event: ZoomTapEvent): void => {
+    'worklet'
+    if (onTap) runOnJS(onTap)({ x: event.x, y: event.y })
+  }, [onTap])
 
   // ========== PAN GESTURE ==========
   // Apple Photos: 1 finger when zoomed in, 2 fingers when at 1x
@@ -897,7 +913,7 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
 
   // ============== GESTURE CONFIG ==============
 
-  const tapConfig = useMemo<ZoomTapGestureConfig>(() => ({
+  const doubleTapGestureConfig = useMemo<ZoomTapGestureConfig>(() => ({
     numberOfTaps: 2,
     maxDeltaX: TAP_MAX_DELTA,
     maxDeltaY: TAP_MAX_DELTA,
@@ -908,6 +924,11 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
     minPointers: 1,
     maxPointers: 2,
   }), [])
+
+  // A tap recognizer with nothing to call is not harmless: it still takes part in gesture
+  // arbitration and can swallow taps aimed at pressables inside the content (mostly on
+  // Android), so the adapters only attach the single-tap gesture when this is true.
+  const hasOnTap = !!onTap
 
   // ============== ANIMATED STYLE ==============
   // Transform order: translate first, then scale
@@ -931,8 +952,10 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
   }, [zoomOut])
 
   return useMemo(() => ({
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,
@@ -952,8 +975,10 @@ export function useZoomGestureCore(props: UseZoomGestureProps = {}): ZoomGesture
     zoomGestureLastTime,
     scale,
   }), [
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,
