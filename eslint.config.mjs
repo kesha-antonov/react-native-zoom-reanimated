@@ -23,6 +23,18 @@ export default [
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
+  // Plain JS (repo scripts) is outside tsconfig, so type-aware rules can't run on it.
+  {
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        fetch: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
   stylistic.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],

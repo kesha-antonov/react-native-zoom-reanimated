@@ -15,6 +15,16 @@
 - Example app's basic screen shows the position of the last single tap
 - README and docs site document `onTap`, with a usage example
 
+## v1.6.1
+
+No runtime changes to the library - `src/` is identical to v1.6.0. This release updates the README
+shown on npm.
+
+### 📦 Other Changes
+- README opens with an animated overview of the gestures: double tap, focal-point pinch, rubber band, momentum pan and gallery swipe
+- The docs site shows the same overview live on its intro page
+- CI lints the repo scripts without type-aware rules, which had been failing on them
+
 ## v1.6.0
 
 ### ✨ New Features

@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://badge.fury.io/js/react-native-zoom-reanimated"><img src="https://badge.fury.io/js/react-native-zoom-reanimated.svg" alt="npm version" /></a>
   <a href="https://www.npmjs.com/package/react-native-zoom-reanimated"><img src="https://img.shields.io/npm/dm/react-native-zoom-reanimated.svg" alt="npm downloads" /></a>
-  <a href="https://npm-stat.com/charts.html?package=react-native-zoom-reanimated&from=2015-01-01"><img src="https://img.shields.io/badge/total%20downloads-1.16M-blue.svg" alt="total npm downloads" /></a>
+  <a href="https://npm-stat.com/charts.html?package=react-native-zoom-reanimated&from=2015-01-01"><img src="https://img.shields.io/badge/total%20downloads-1.97M-blue.svg" alt="total npm downloads" /></a>
   <a href="https://www.npmjs.com/package/react-native-zoom-reanimated"><img src="https://img.shields.io/npm/dt/react-native-zoom-reanimated.svg?label=18-months%20downloads" alt="npm downloads (last 18 months)" /></a>
   <a href="https://github.com/kesha-antonov/react-native-zoom-reanimated/blob/main/LICENSE"><img src="https://img.shields.io/github/license/kesha-antonov/react-native-zoom-reanimated.svg" alt="license" /></a>
   <a href="https://reactnative.dev/"><img src="https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg" alt="platforms" /></a>
@@ -23,10 +23,31 @@
 </p>
 
 <p align="center">
+  <sub>Built and maintained by <a href="https://kesha-antonov.com">Kesha Antonov</a>, React Native lead engineer. More libraries, apps and case studies on <a href="https://kesha-antonov.com">kesha-antonov.com</a>.</sub>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/how-it-works-dark.gif" />
+    <img src="docs/images/how-it-works-light.gif" width="760" alt="A photo viewer on a phone: a double tap zooms to 2x where it lands, a pinch on the tram's destination board stays under the fingers, goes past 4x and springs back, a flick glides and bounces off the edge, and a swipe at the edge pages to the next photo" />
+  </picture>
+</p>
+
+<p align="center">
   <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
 </p>
 
 <!-- cryptoc-promo:start -->
+<hr />
+
+<h2 align="center">Sponsors</h2>
+
+<p align="center">
+  <a href="https://getstream.io/chat/sdk/react-native/?utm_source=github&utm_medium=sponsor&utm_campaign=keshaantonov&utm_term=react-native-zoom-reanimated"><img width="100" height="100" src="https://raw.githubusercontent.com/kesha-antonov/react-native-chat/main/media/getstream-sponsor-logo.png" alt="Stream" /></a>
+  <br />
+  <a href="https://getstream.io/chat/sdk/react-native/?utm_source=github&utm_medium=sponsor&utm_campaign=keshaantonov&utm_term=react-native-zoom-reanimated"><strong>Stream</strong></a> - React Native Chat SDK
+</p>
+
 <hr />
 
 <table align="center">
@@ -38,8 +59,10 @@
   <br />
   <sub>Scan to install</sub>
   <br /><br />
+  <!-- App Store button hidden for now
   <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://cryptoc-app.web.app/img/appstore.svg?v=2" alt="Download on the App Store" /></a>
   <br />
+  -->
   <a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://cryptoc-app.web.app/img/googleplay.png?v=2" alt="Get it on Google Play" /></a>
 </td>
 <td valign="top">

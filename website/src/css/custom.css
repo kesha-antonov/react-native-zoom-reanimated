@@ -27,3 +27,12 @@
   overflow-x: auto;
   max-width: 100%;
 }
+
+/* The overview animation on the intro page */
+.zoom-demo {
+  margin: 0 0 2rem;
+}
+
+.zoom-demo__placeholder {
+  aspect-ratio: 760 / 540;
+}

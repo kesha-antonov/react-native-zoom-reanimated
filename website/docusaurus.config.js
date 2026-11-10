@@ -9,7 +9,7 @@ const config = {
   title: 'React Native Zoom Reanimated',
   tagline: 'Apple Photos-style pinch, pan and double-tap zoom for React Native, at 120fps',
 
-  url: 'https://kesha-antonov.github.io',
+  url: 'https://kesha-antonov.com',
   baseUrl: '/react-native-zoom-reanimated/',
   organizationName: 'kesha-antonov',
   projectName: 'react-native-zoom-reanimated',
@@ -78,7 +78,8 @@ const config = {
           {
             title: 'Built by',
             items: [
-              { label: 'Kesha Antonov', href: 'https://github.com/kesha-antonov' },
+              { label: 'Kesha Antonov', href: 'https://kesha-antonov.com' },
+              { label: 'GitHub profile', href: 'https://github.com/kesha-antonov' },
               { label: 'cryptoc - crypto portfolio app', href: 'https://cryptoc-app.web.app/' },
               { label: 'Sponsor', href: 'https://github.com/sponsors/kesha-antonov' },
             ],
