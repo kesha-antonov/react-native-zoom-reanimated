@@ -53,17 +53,17 @@
 <table align="center">
 <tr>
 <td align="center" valign="top" width="190">
-  <a href="https://cryptoc-app.web.app/"><img src="https://cryptoc-app.web.app/img/icon.png?v=3" width="76" height="76" alt="cryptoc app icon" /></a>
+  <a href="https://getcryptoc.app/"><img src="https://getcryptoc.app/img/icon.png?v=3" width="76" height="76" alt="cryptoc app icon" /></a>
   <br /><br />
-  <img src="https://cryptoc-app.web.app/img/qr-get.png?v=2" width="124" height="124" alt="QR code that installs cryptoc" />
+  <img src="https://getcryptoc.app/img/qr-get.png?v=2" width="124" height="124" alt="QR code that installs cryptoc" />
   <br />
   <sub>Scan to install</sub>
   <br /><br />
   <!-- App Store button hidden for now
-  <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://cryptoc-app.web.app/img/appstore.svg?v=2" alt="Download on the App Store" /></a>
+  <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://getcryptoc.app/img/appstore.svg?v=2" alt="Download on the App Store" /></a>
   <br />
   -->
-  <a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://cryptoc-app.web.app/img/googleplay.png?v=2" alt="Get it on Google Play" /></a>
+  <a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://getcryptoc.app/img/googleplay.png?v=2" alt="Get it on Google Play" /></a>
 </td>
 <td valign="top">
 
