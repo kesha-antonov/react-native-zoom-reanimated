@@ -9,6 +9,11 @@ const config = {
   title: 'React Native Zoom Reanimated',
   tagline: 'Apple Photos-style pinch, pan and double-tap zoom for React Native, at 120fps',
 
+  favicon: 'https://kesha-antonov.com/favicon.ico',
+  headTags: [
+    { tagName: 'link', attributes: { rel: 'icon', type: 'image/png', sizes: '192x192', href: 'https://kesha-antonov.com/favicon-192.png' } },
+    { tagName: 'link', attributes: { rel: 'apple-touch-icon', href: 'https://kesha-antonov.com/apple-touch-icon.png' } },
+  ],
   url: 'https://kesha-antonov.com',
   baseUrl: '/react-native-zoom-reanimated/',
   organizationName: 'kesha-antonov',
