@@ -8,6 +8,7 @@ import type {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated'
+import type { ZoomTapEvent } from './useZoomGestureCore'
 
 /**
  * Which react-native-gesture-handler API the zoom gesture is built with.
@@ -117,6 +118,11 @@ export interface UseZoomGestureProps {
    * Required when using parentScrollRef. Usually equals device width.
    */
   itemWidth?: number
+  /**
+   * Callback fired when the content is single-tapped (i.e. not part of a double tap).
+   * Receives the tap position relative to the zoomed content.
+   */
+  onTap?: (event: ZoomTapEvent) => void
 }
 
 /**
@@ -183,6 +189,21 @@ export interface ZoomProps {
    * Note: For performance-critical use cases, use useZoomGesture hook with scale SharedValue instead.
    */
   onZoomChange?: (scale: number) => void
+  /**
+   * Callback fired when the content is single-tapped. A double tap does not trigger it,
+   * because the single-tap gesture is composed exclusively with the double-tap one.
+   *
+   * The callback runs on the JS thread and receives the tap position only, so the payload
+   * is the same whichever react-native-gesture-handler API built the gesture.
+   *
+   * @example
+   * ```tsx
+   * <Zoom onTap={({ x, y }) => console.log('tapped at', x, y)}>
+   *   <Image source={{ uri: imageUri }} />
+   * </Zoom>
+   * ```
+   */
+  onTap?: (event: ZoomTapEvent) => void
   /**
    * Enable seamless gallery swipe navigation to parent (e.g., FlatList) when at edge.
    * Apple Photos behavior: when zoomed and panning hits horizontal boundary,

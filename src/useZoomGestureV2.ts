@@ -20,8 +20,10 @@ import type { UseZoomGestureProps, UseZoomGestureReturnV2 } from './types'
  */
 export function useZoomGestureV2(props: UseZoomGestureProps = {}): UseZoomGestureReturnV2 {
   const {
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,
@@ -38,10 +40,18 @@ export function useZoomGestureV2(props: UseZoomGestureProps = {}): UseZoomGestur
 
   const zoomGesture = useMemo(() => {
     // ========== DOUBLE TAP ==========
+    const doubleTapGesture = Gesture.Tap()
+      .numberOfTaps(doubleTapGestureConfig.numberOfTaps)
+      .maxDeltaX(doubleTapGestureConfig.maxDeltaX)
+      .maxDeltaY(doubleTapGestureConfig.maxDeltaY)
+      .onEnd((event) => {
+        'worklet'
+        handleDoubleTapEnd(event)
+      })
+
+    // ========== SINGLE TAP ==========
     const tapGesture = Gesture.Tap()
-      .numberOfTaps(tapConfig.numberOfTaps)
-      .maxDeltaX(tapConfig.maxDeltaX)
-      .maxDeltaY(tapConfig.maxDeltaY)
+      .enabled(hasOnTap)
       .onEnd((event) => {
         'worklet'
         handleTapEnd(event)
@@ -103,10 +113,12 @@ export function useZoomGestureV2(props: UseZoomGestureProps = {}): UseZoomGestur
         handlePinchEnd()
       })
 
-    return Gesture.Simultaneous(tapGesture, panGesture, pinchGesture)
+    return Gesture.Simultaneous(Gesture.Exclusive(doubleTapGesture, tapGesture), panGesture, pinchGesture)
   }, [
-    tapConfig,
+    doubleTapGestureConfig,
     panConfig,
+    hasOnTap,
+    handleDoubleTapEnd,
     handleTapEnd,
     handlePanTouchesDown,
     decidePanActivation,

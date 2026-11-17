@@ -12,6 +12,7 @@ A simple example showing how to zoom a single image using the `Zoom` component.
 - Pinch to zoom gestures
 - Pan when zoomed in
 - Custom zoom scale configuration
+- Single tap callback (`onTap`), shown as the last tap position under the zoom indicator
 
 ### 2. Image Gallery with FlatList 
 A comprehensive example demonstrating how to use the `Zoom` component within a horizontal `FlatList` to create a swipeable image gallery.
@@ -55,5 +56,15 @@ The main `App.tsx` file includes a toggle button to switch between the two examp
   <Image {...imageProps} />
 </Zoom>
 ```
+
+### Single Tap Callback
+```javascript
+<Zoom onTap={({ x, y }) => console.log('tapped at', x, y)}>
+  <Image {...imageProps} />
+</Zoom>
+```
+
+`onTap` only fires for a real single tap - the single-tap gesture is composed exclusively
+with the double-tap one, so a double tap zooms without calling it.
 
 This addresses the user's request for "sliding pages" functionality as mentioned in issue #6.
