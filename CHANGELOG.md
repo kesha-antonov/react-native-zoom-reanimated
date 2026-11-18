@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.3
+
+No runtime changes to the library - `src/` is identical to v1.6.2. This release updates the README
+shown on npm.
+
+### 📦 Other Changes
+- The author line links to the hire page at its new address, without a trailing slash
+- The note about the author's app is gone from the README
+
 ## v1.6.2
 
 No runtime changes to the library - `src/` is identical to v1.6.1. This release updates the README
