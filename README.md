@@ -22,9 +22,11 @@
   <a href="https://kesha-antonov.com/react-native-zoom-reanimated/gesture-api">Gesture Handler v2 / v3</a>
 </p>
 
+<!-- author:start -->
 <p align="center">
   <sub>Built and maintained by <a href="https://kesha-antonov.com">Kesha Antonov</a>, React Native lead engineer, <a href="https://kesha-antonov.com/react-native-developer/">available for hire</a>. More libraries, apps and case studies on <a href="https://kesha-antonov.com">kesha-antonov.com</a>.</sub>
 </p>
+<!-- author:end -->
 
 <p align="center">
   <picture>
@@ -47,41 +49,6 @@
   <br />
   <a href="https://getstream.io/chat/sdk/react-native/?utm_source=github&utm_medium=sponsor&utm_campaign=keshaantonov&utm_term=react-native-zoom-reanimated"><strong>Stream</strong></a> - React Native Chat SDK
 </p>
-
-<hr />
-
-<table align="center">
-<tr>
-<td align="center" valign="top" width="190">
-  <a href="https://getcryptoc.app/"><img src="https://getcryptoc.app/img/icon.png?v=3" width="76" height="76" alt="cryptoc app icon" /></a>
-  <br /><br />
-  <img src="https://getcryptoc.app/img/qr-get.png?v=2" width="124" height="124" alt="QR code that installs cryptoc" />
-  <br />
-  <sub>Scan to install</sub>
-  <br /><br />
-  <!-- App Store button hidden for now
-  <a href="https://apps.apple.com/app/cryptoc/id1333169178"><img height="40" src="https://getcryptoc.app/img/appstore.svg?v=2" alt="Download on the App Store" /></a>
-  <br />
-  -->
-  <a href="https://play.google.com/store/apps/details?id=co.ssoul.CryptoC"><img height="59" src="https://getcryptoc.app/img/googleplay.png?v=2" alt="Get it on Google Play" /></a>
-</td>
-<td valign="top">
-
-### Support my work
-
-**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.
-
-- Portfolio with average buy price and 24h / 180-day / all-time P&L
-- Widgets in three sizes, refreshed in the background - most days you never open the app
-- Price alerts on 5,000+ coins, delivered while the app is closed
-- **No account, no email, no exchange API keys, no ads.** Your holdings never reach a server - they sync through your own iCloud or Google Drive
-- Free for 3 holdings, and that is not a trial timer
-
-<sub>Downloading it is what pays for the time that goes into these libraries.</sub>
-
-</td>
-</tr>
-</table>
 
 <hr />
 <!-- cryptoc-promo:end -->
