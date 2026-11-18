@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './styles.module.css'
 
-const SITE = 'https://cryptoc-app.web.app'
+const SITE = 'https://getcryptoc.app'
 const IOS = 'https://apps.apple.com/app/cryptoc/id1333169178'
 const PLAY = 'https://play.google.com/store/apps/details?id=co.ssoul.CryptoC'
 

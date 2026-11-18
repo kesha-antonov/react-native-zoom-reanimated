@@ -470,8 +470,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 Maintained by [Kesha Antonov](https://github.com/kesha-antonov)
 
-I also build **[cryptoc](https://cryptoc-app.web.app/)** - a crypto portfolio app with home screen, lock screen and Watch widgets, no account and no exchange API keys.
-
 > Please note that this project is maintained in free time. If you find it helpful, please consider [becoming a sponsor](https://github.com/sponsors/kesha-antonov).
 
 ## 📄 License

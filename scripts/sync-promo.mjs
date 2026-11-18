@@ -1,5 +1,5 @@
 // Keeps the Sponsors section and the cryptoc promo block in this README in step
-// with the canonical copy at https://cryptoc-app.web.app/promo/readme-block.md,
+// with the canonical copy at https://getcryptoc.app/promo/readme-block.md,
 // so they are written once rather than separately in every repository that
 // carries them.
 //
@@ -14,7 +14,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { basename } from 'node:path'
 
-const SOURCE = 'https://cryptoc-app.web.app/promo/readme-block.md'
+const SOURCE = 'https://getcryptoc.app/promo/readme-block.md'
 const README = 'README.md'
 const CONFIG = '.github/promo.json'
 const START = '<!-- cryptoc-promo:start -->'
@@ -25,7 +25,7 @@ const DEFAULTS = {
   intro: [
     '### Support my work',
     '',
-    '**[cryptoc](https://cryptoc-app.web.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.',
+    '**[cryptoc](https://getcryptoc.app/)** - my crypto portfolio app. Your coins on the home screen, lock screen and watch face. iPhone, iPad, Mac, Apple Watch, Android, Android tablet and Wear OS.',
   ].join('\n'),
   note: 'Downloading it is what pays for the time that goes into these libraries.',
 }

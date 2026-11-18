@@ -1,8 +1,51 @@
 // @ts-check
 import { themes as prismThemes } from 'prism-react-renderer'
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 
 const REPO = 'https://github.com/kesha-antonov/react-native-zoom-reanimated'
 const NPM = 'https://www.npmjs.com/package/react-native-zoom-reanimated'
+
+// The docs pages are generated from the README and the docs folder at build
+// time, so git has no date for the pages themselves. The sitemap takes the date
+// of the last commit that touched their sources. Without git history (a tarball,
+// a shallow clone with no match) the dates are left out.
+function docsLastModified() {
+  try {
+    const date = execFileSync(
+      'git',
+      ['log', '-1', '--format=%cs', '--', '../README.md', '../docs', '../MIGRATION.md', '.'],
+      { cwd: fileURLToPath(new URL('.', import.meta.url)), encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
+    ).trim()
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined
+  }
+  catch {
+    return undefined
+  }
+}
+const LASTMOD = docsLastModified()
+
+// Describes the library to search engines, on every page.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: 'React Native Zoom Reanimated',
+  description: 'Apple Photos-style zoom component for React Native with pinch, pan, and double-tap gestures, built with React Native Reanimated and Gesture Handler.',
+  codeRepository: REPO,
+  programmingLanguage: 'TypeScript',
+  runtimePlatform: 'React Native',
+  license: 'https://opensource.org/licenses/MIT',
+  url: 'https://kesha-antonov.com/react-native-zoom-reanimated/',
+  author: { '@type': 'Person', name: 'Kesha Antonov', url: 'https://kesha-antonov.com/' },
+}
+
+// Every page gets that one date.
+const sitemapWithDates = {
+  createSitemapItems: async ({ defaultCreateSitemapItems, ...rest }) => {
+    const items = await defaultCreateSitemapItems(rest)
+    return LASTMOD ? items.map(item => ({ ...item, lastmod: LASTMOD })) : items
+  },
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -13,6 +56,7 @@ const config = {
   headTags: [
     { tagName: 'link', attributes: { rel: 'icon', type: 'image/png', sizes: '192x192', href: 'https://kesha-antonov.com/favicon-192.png' } },
     { tagName: 'link', attributes: { rel: 'apple-touch-icon', href: 'https://kesha-antonov.com/apple-touch-icon.png' } },
+    { tagName: 'script', attributes: { type: 'application/ld+json' }, innerHTML: JSON.stringify(structuredData) },
   ],
   url: 'https://kesha-antonov.com',
   baseUrl: '/react-native-zoom-reanimated/',
@@ -39,9 +83,11 @@ const config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.js',
-          editUrl: `${REPO}/edit/main/`,
+          // Every page is generated from README.md, so that is the file to edit.
+          editUrl: () => `${REPO}/edit/main/README.md`,
         },
         blog: false,
+        sitemap: sitemapWithDates,
         theme: { customCss: './src/css/custom.css' },
       }),
     ],
@@ -50,6 +96,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      image: 'img/social-card.png',
       colorMode: { respectPrefersColorScheme: true },
       navbar: {
         title: 'React Native Zoom Reanimated',
@@ -78,6 +125,15 @@ const config = {
               { label: 'npm', href: NPM },
               { label: 'Issues', href: `${REPO}/issues` },
               { label: 'Changelog', href: `${REPO}/blob/main/CHANGELOG.md` },
+            ],
+          },
+          {
+            title: 'More libraries',
+            items: [
+              { label: 'React Native Chat', href: 'https://kesha-antonov.com/react-native-chat/' },
+              { label: 'React Native Background Downloader', href: 'https://kesha-antonov.com/react-native-background-downloader/' },
+              { label: 'React Native ActionCable', href: 'https://kesha-antonov.com/react-native-action-cable/' },
+              { label: 'React Native Cloud Sync', href: 'https://kesha-antonov.com/react-native-cloud-sync/' },
             ],
           },
           {

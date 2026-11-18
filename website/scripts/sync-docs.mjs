@@ -14,6 +14,8 @@ const OUT = join(HERE, '..', 'docs')
 
 const REPO = 'https://github.com/kesha-antonov/react-native-zoom-reanimated'
 const BRANCH = 'main'
+// Where the site is served from, for files in website/static.
+const BASE_URL = '/react-native-zoom-reanimated/'
 
 /**
  * Canonical key for a heading or a link anchor.
@@ -37,6 +39,9 @@ const PAGES = [
       "A pinch, pan and double-tap zoom component for React Native built on Reanimated and Gesture Handler, with Apple Photos-style rubber banding at 120fps.",
     keywords: ["react native pinch to zoom", "react native image zoom", "reanimated zoom"],
     sections: ["✨ Features", "📸 Preview"],
+    headTitle: "React Native Pinch to Zoom and Image Zoom with Reanimated",
+    lead: true,
+    install: "📦 Installation",
   },
   {
     id: "installation",
@@ -46,6 +51,7 @@ const PAGES = [
       "Requirements and install steps, including the Reanimated and Gesture Handler peer dependencies.",
     keywords: ["react-native-zoom-reanimated install"],
     sections: ["📋 Requirements", "📦 Installation"],
+    excerpts: [{ section: "💡 Examples", heading: "Basic Usage", title: "Basic Usage", next: "usage" }],
   },
   {
     id: "usage",
@@ -61,7 +67,7 @@ const PAGES = [
     title: "API reference",
     sidebarLabel: "API reference",
     description:
-      "Every prop on the Zoom component and every value the hook returns.",
+      "API reference for react-native-zoom-reanimated: every prop of the Zoom component, plus the DoubleTapConfig and ScrollableRef types.",
     keywords: ["react-native-zoom-reanimated props"],
     sections: ["📖 API Reference"],
   },
@@ -85,10 +91,10 @@ const PAGES = [
   },
   {
     id: "example-app",
-    title: "Example app and platform support",
+    title: "Example app and platforms",
     sidebarLabel: "Example app",
     description:
-      "Run the example app, and which platforms the library supports.",
+      "Run the react-native-zoom-reanimated example app with a FlatList image gallery and Apple Photos-style navigation. The library supports iOS and Android.",
     keywords: ["react-native-zoom-reanimated example"],
     sections: ["📦 Example App", "📱 Platform Support"],
   },
@@ -97,7 +103,7 @@ const PAGES = [
     title: "Contributing",
     sidebarLabel: "Contributing",
     description:
-      "How to propose a change.",
+      "Contribute to react-native-zoom-reanimated: fork the repository, create a feature branch, run the TypeScript and ESLint checks and open a pull request.",
     keywords: ["contributing"],
     sections: ["🤝 Contributing"],
   },
@@ -243,7 +249,11 @@ function rewriteLinks (markdown, pageId) {
   // GitHub instead of letting them resolve to a 404 inside the docs site.
   out = out.replace(/\]\(\.?\/?(LICENSE|CHANGELOG\.md|llms\.txt|[A-Z][A-Z_]+(?:\.[a-z]+)?)\)/g, `](${REPO}/blob/${BRANCH}/$1)`)
   out = out.replace(/\]\(\.?\/?(examples?|src|scripts|docs|__tests__)\/?\)/g, `](${REPO}/tree/${BRANCH}/$1)`)
-  out = out.replace(/\]\(\.?\/?((?:examples?|src|scripts|docs|__tests__)\/[^)\s]+)\)/g, `](${REPO}/blob/${BRANCH}/$1)`)
+  out = out.replace(/\]\(\.?\/?((?:examples?|src|scripts|docs|__tests__)\/[^)\s]+)\)/g, (_match, path) => {
+    // A path without a file extension is a folder, which GitHub serves under tree/.
+    const kind = /\.[A-Za-z0-9]+$/.test(path) ? 'blob' : 'tree'
+    return `](${REPO}/${kind}/${BRANCH}/${path})`
+  })
 
   // Root-level markdown with no page of its own (AGENTS.md, MIGRATION.md, ...).
   // Links the generator itself produced point at a page id and are left alone.
@@ -264,10 +274,120 @@ function frontmatter (page, index) {
     `description: ${JSON.stringify(page.description)}`,
   ]
   if (page.slug) fields.push(`slug: ${JSON.stringify(page.slug)}`)
+  // A browser title that differs from the heading. The frontmatter title stays
+  // the visible h1, and src/theme/MDXContent puts this one into <title>.
+  if (page.headTitle) fields.push(`head_title: ${JSON.stringify(page.headTitle)}`)
   if (page.keywords?.length) fields.push(`keywords: [${page.keywords.map((k) => JSON.stringify(k)).join(', ')}]`)
   return `---\n${fields.join('\n')}\n---\n`
 }
 
+/** The one-sentence summary that sits under the title in the README header. */
+function readmeLead (markdown) {
+  const m = /<h1[^>]*>[^<]*<\/h1>\s*<p[^>]*>\s*([^<]+?)\s*<\/p>/.exec(markdown)
+  if (!m) throw new Error('README summary paragraph not found. Update website/scripts/sync-docs.mjs.')
+  return m[1].replace(/\s+/g, ' ')
+}
+
+function sectionLines (title) {
+  const section = readmeSections.get(title)
+  if (!section) throw new Error(`README section not found: "${title}". Update website/scripts/sync-docs.mjs.`)
+  return section.lines
+}
+
+/** Fenced code blocks of a README section, each returned with its fences. */
+function codeBlocksIn (title) {
+  const blocks = []
+  let block = null
+  for (const line of sectionLines(title)) {
+    const fence = /^\s*(```|~~~)/.test(line)
+    if (fence && !block) {
+      block = [line]
+      continue
+    }
+    if (block) block.push(line)
+    if (fence) {
+      blocks.push(block.join('\n'))
+      block = null
+    }
+  }
+  return blocks
+}
+
+/** The body of one subsection of a README section, without its heading. */
+function subsection (title, heading) {
+  const found = []
+  let inside = false
+  let fenced = false
+  for (const line of sectionLines(title)) {
+    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced
+    const m = !fenced && /^#{3,6} (.+?)\s*$/.exec(line)
+    if (m) {
+      if (inside) break
+      inside = m[1] === heading
+      continue
+    }
+    if (inside) found.push(line)
+  }
+  if (!found.length) throw new Error(`README subsection not found: "${heading}". Update website/scripts/sync-docs.mjs.`)
+  return found.join('\n').trim()
+}
+
+/**
+ * Parts of the README that a page repeats from a section owned by another
+ * page: the summary and install commands on the landing page, a first snippet
+ * on the installation page. They are added after the anchor map is built, so
+ * links keep pointing at the page that owns the section.
+ */
+function extras (page) {
+  const before = []
+  const after = []
+
+  if (page.lead) before.push(readmeLead(readme))
+
+  if (page.install) {
+    const target = PAGES.find((other) => other.id === 'installation')
+    after.push(`## ${target.title} {#install}\n\n${codeBlocksIn(page.install).join('\n\n')}\n\nMore in [${target.title}](./${target.id}.md).`)
+  }
+
+  for (const excerpt of page.excerpts ?? []) {
+    const next = PAGES.find((other) => other.id === excerpt.next)
+    const more = next ? `\n\nContinue with [${next.title}](./${next.id}.md).` : ''
+    after.push(`## ${excerpt.title} {#${key(excerpt.title)}}\n\n${subsection(excerpt.section, excerpt.heading)}${more}`)
+  }
+  return { before, after }
+}
+
+/**
+ * The README shows its preview as bare GitHub attachment links, which GitHub
+ * turns into players and a docs page would print as plain urls. On the site
+ * they become players for the copies kept in website/static/video.
+ */
+const VIDEOS = [
+  {
+    url: 'https://github.com/user-attachments/assets/9da40463-7b70-46bb-bfe3-eb0ab4f8feb7',
+    file: 'video/preview-ios.mp4',
+    width: 300,
+    height: 660,
+    label: 'Preview of react-native-zoom-reanimated on iOS',
+  },
+  {
+    url: 'https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e8a572b-8130-4aea-88c7-2ca035a155a1',
+    file: 'video/preview-android.mp4',
+    width: 300,
+    height: 667,
+    label: 'Preview of react-native-zoom-reanimated on Android',
+  },
+]
+
+function embedVideos (markdown) {
+  let out = markdown
+  for (const video of VIDEOS) {
+    const src = `${BASE_URL}${video.file}`
+    const player = `<video controls muted loop playsinline preload="metadata" width="${video.width}" height="${video.height}" src="${src}" aria-label="${video.label}" style="max-width: 100%; height: auto;">${video.label}</video>`
+    out = out.split('\n').map((line) => (line.trim() === video.url ? player : line)).join('\n')
+  }
+  return out
+}
 rmSync(OUT, { recursive: true, force: true })
 mkdirSync(OUT, { recursive: true })
 
@@ -284,7 +404,15 @@ PAGES.forEach((page, index) => {
   }
 
   body = normaliseHeadings(body, depth)
+
+  const { before, after } = extras(page)
+  // A README section can end with a horizontal rule, which would otherwise sit
+  // between it and the parts added below.
+  if (after.length) body = body.trim().replace(/\n---$/, '')
+  body = [...before, body.trim(), ...after].join('\n\n')
+
   body = rewriteLinks(body, page.id)
+  body = embedVideos(body)
 
   const source = page.file ?? 'README.md'
   const note = `<!-- Generated from ${source} by website/scripts/sync-docs.mjs - edit that file, not this one. -->\n`

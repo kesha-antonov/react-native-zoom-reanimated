@@ -1,7 +1,7 @@
 name: Sync promo block
 
 # The cryptoc block in README.md is shared with several other repositories and
-# lives canonically at https://cryptoc-app.web.app/promo/readme-block.md.
+# lives canonically at https://getcryptoc.app/promo/readme-block.md.
 # This pulls any change to it back into this README.
 
 # The weekly run is paused while the cryptoc block is hidden from the README:
