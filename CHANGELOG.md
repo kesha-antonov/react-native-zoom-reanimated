@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.6.2
+
+No runtime changes to the library - `src/` is identical to v1.6.1. This release updates the README
+shown on npm.
+
+### 📦 Other Changes
+- README documentation links go straight to kesha-antonov.com
+- The package homepage on npm is the documentation site
+- The author line links to the author's site, and the app block is gone from the README
+
 ## v1.6.1
 
 No runtime changes to the library - `src/` is identical to v1.6.0. This release updates the README
