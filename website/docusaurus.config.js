@@ -35,14 +35,15 @@ const structuredData = {
   programmingLanguage: 'TypeScript',
   runtimePlatform: 'React Native',
   license: 'https://opensource.org/licenses/MIT',
-  url: 'https://kesha-antonov.com/react-native-zoom-reanimated/',
+  url: 'https://kesha-antonov.com/react-native-zoom-reanimated',
   author: { '@type': 'Person', name: 'Kesha Antonov', url: 'https://kesha-antonov.com/' },
 }
 
 // Every page gets that one date.
 const sitemapWithDates = {
   createSitemapItems: async ({ defaultCreateSitemapItems, ...rest }) => {
-    const items = await defaultCreateSitemapItems(rest)
+    // The root is listed without its trailing slash (plugins/slashless-root.js)
+    const items = (await defaultCreateSitemapItems(rest)).map(item => ({ ...item, url: item.url.replace(/\/$/, '') }))
     return LASTMOD ? items.map(item => ({ ...item, lastmod: LASTMOD })) : items
   },
 }
@@ -63,6 +64,7 @@ const config = {
   organizationName: 'kesha-antonov',
   projectName: 'react-native-zoom-reanimated',
   trailingSlash: false,
+  plugins: ['./plugins/slashless-root.js'],
 
   onBrokenLinks: 'throw',
 
@@ -130,10 +132,10 @@ const config = {
           {
             title: 'More libraries',
             items: [
-              { label: 'React Native Chat', href: 'https://kesha-antonov.com/react-native-chat/' },
-              { label: 'React Native Background Downloader', href: 'https://kesha-antonov.com/react-native-background-downloader/' },
-              { label: 'React Native ActionCable', href: 'https://kesha-antonov.com/react-native-action-cable/' },
-              { label: 'React Native Cloud Sync', href: 'https://kesha-antonov.com/react-native-cloud-sync/' },
+              { label: 'React Native Chat', href: 'https://kesha-antonov.com/react-native-chat' },
+              { label: 'React Native Background Downloader', href: 'https://kesha-antonov.com/react-native-background-downloader' },
+              { label: 'React Native ActionCable', href: 'https://kesha-antonov.com/react-native-action-cable' },
+              { label: 'React Native Cloud Sync', href: 'https://kesha-antonov.com/react-native-cloud-sync' },
             ],
           },
           {

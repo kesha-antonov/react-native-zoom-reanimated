@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://kesha-antonov.com/react-native-zoom-reanimated/">📖 Documentation</a></strong> &nbsp;·&nbsp;
+  <strong><a href="https://kesha-antonov.com/react-native-zoom-reanimated">📖 Documentation</a></strong> &nbsp;·&nbsp;
   <a href="https://kesha-antonov.com/react-native-zoom-reanimated/installation">Installation</a> &nbsp;·&nbsp;
   <a href="https://kesha-antonov.com/react-native-zoom-reanimated/usage">Usage</a> &nbsp;·&nbsp;
   <a href="https://kesha-antonov.com/react-native-zoom-reanimated/api">API reference</a> &nbsp;·&nbsp;
