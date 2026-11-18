@@ -1,6 +1,6 @@
 {
   "name": "react-native-zoom-reanimated",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "type": "module",
   "description": "Smooth pinch-to-zoom component for React Native with Apple Photos-style gestures and rubber-band physics",
   "workspaces": [
@@ -108,7 +108,7 @@
     "react": "*",
     "react-native": "*",
     "react-native-gesture-handler": ">=2.0.0",
-    "react-native-reanimated": ">=3.0.0"
+    "react-native-reanimated": ">=2.3.0"
   },
   "react-native-builder-bob": {
     "source": "src",

@@ -121,8 +121,10 @@ https://github.com/kesha-antonov/react-native-zoom-reanimated/assets/11584712/7e
 
 | Dependency | Version |
 |:----------:|:-------:|
-| react-native-reanimated | >= 2.0.0 |
+| react-native-reanimated | >= 2.3.0 |
 | react-native-gesture-handler | >= 2.0.0 |
+
+The bounce at the edge after a fling needs Reanimated 3.0 or newer. On Reanimated 2 the content stops at the edge. The library is developed and tested on Reanimated 4.
 
 ## 📦 Installation
 

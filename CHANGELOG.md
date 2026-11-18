@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.4
+
+No runtime changes to the library - `src/` is identical to v1.6.3.
+
+### 📦 Other Changes
+- The Reanimated peer requirement is `>=2.3.0` instead of `>=3.0.0`, and the README says the same. Every Reanimated function the library calls exists there, and its types need 2.3.0
+- README notes that the bounce at the edge after a fling needs Reanimated 3.0 or newer; on Reanimated 2 the content stops at the edge
+
 ## v1.6.3
 
 No runtime changes to the library - `src/` is identical to v1.6.2. This release updates the README
