@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.5
+
+No changes to the library code. This release updates the README shown on npm.
+
+### 📦 Other Changes
+
+- The README and the package homepage link the docs site without a trailing slash
+
 ## v1.6.4
 
 No runtime changes to the library - `src/` is identical to v1.6.3.
