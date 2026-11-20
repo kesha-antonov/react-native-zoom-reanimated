@@ -40,17 +40,6 @@
 </p>
 
 <!-- cryptoc-promo:start -->
-<hr />
-
-<h2 align="center">Sponsors</h2>
-
-<p align="center">
-  <a href="https://getstream.io/chat/sdk/react-native/?utm_source=github&utm_medium=sponsor&utm_campaign=keshaantonov&utm_term=react-native-zoom-reanimated"><img width="100" height="100" src="https://raw.githubusercontent.com/kesha-antonov/react-native-chat/main/media/getstream-sponsor-logo.png" alt="Stream" /></a>
-  <br />
-  <a href="https://getstream.io/chat/sdk/react-native/?utm_source=github&utm_medium=sponsor&utm_campaign=keshaantonov&utm_term=react-native-zoom-reanimated"><strong>Stream</strong></a> - React Native Chat SDK
-</p>
-
-<hr />
 <!-- cryptoc-promo:end -->
 
 ## ✨ Features
